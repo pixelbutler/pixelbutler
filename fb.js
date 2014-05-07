@@ -199,7 +199,7 @@
     this.width = width;
     this.height = height;
 
-    this.fillRect = function(x, y, w, h, col) {
+    this.fillrect = function(x, y, w, h, col) {
       x = Math.floor(x);
       y = Math.floor(y);
       w = Math.floor(w);
@@ -217,7 +217,7 @@
     };
 
     this.clear = function(col) {
-      this.fillRect(0, 0, width, height, col);
+      this.fillrect(0, 0, width, height, col);
     }
 
     this.rect = function(x, y, w, h, col) {
@@ -239,7 +239,7 @@
       }
     };
 
-    this.fillCircle = function(x, y, r, col) {
+    this.fillcircle = function(x, y, r, col) {
       x = Math.floor(x);
       y = Math.floor(y);
       r = Math.floor(r);
@@ -316,7 +316,7 @@
       }
     };
 
-    this.allocSprite = function(width, height) {
+    this.makesprite = function(width, height) {
       var sprite = new Array(width);
       for(var i=0; i < width; i++) {
         sprite[i] = new Array(height);
@@ -388,10 +388,13 @@ function rand(max) {
  * This, in turn, was taken from the snippet at
  * http://snipplr.com/view/14590/hsv-to-rgb/
  */
-function hsv2rgb(h, s, v) {
+function hsv2rgb(hsv) {
     var r, g, b;
     var i;
     var f, p, q, t;
+    var h = hsv[0];
+    var s = hsv[1];
+    var v = hsv[2];
 
     // Make sure our arguments stay in-range
     h = Math.max(0, Math.min(360, h));
@@ -464,11 +467,11 @@ function hsv2rgb(h, s, v) {
  * Gratefully lifted from Mic's code on StackOverflow:
  * http://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript#8023734
  */
-function rgb2hsv () {
+function rgb2hsv(rgb) {
     var rr, gg, bb,
-        r = arguments[0] / 255,
-        g = arguments[1] / 255,
-        b = arguments[2] / 255,
+        r = rgb[0] / 255,
+        g = rgb[1] / 255,
+        b = rgb[2] / 255,
         h, s,
         v = Math.max(r, g, b),
         diff = v - Math.min(r, g, b),
