@@ -4,9 +4,9 @@ framebufferJS is a framebuffer abstraction build on top of Canvas. It provides s
 
 Coded with ♥ for the [2014 lowrezjam](http://www.deviever.com/lowrezjam2014/).
 
-<center>
+<p align="center">
   ![Screenshot! :o](https://github.com/noffle/lowrez-js/raw/master/screenshot.png)
-</center>
+</p>
 
 Usage
 =====
@@ -14,52 +14,52 @@ Usage
 
 API
 ===
-$fb = framebuffer()
--------------------
+`$fb = framebuffer()`
+---------------------
 ...
 
-$fb.clear(rgb)
---------------
+`$fb.clear(rgb)`
+----------------
 ...
 
-$fb.rect(x, y, w, h, rgb)
--------------------------
+`$fb.rect(x, y, w, h, rgb)`
+---------------------------
 ...
 
-$fb.fillrect(x, y, w, h, rgb)
------------------------------
-...
-
-$fb.circle(x, y, r, rgb)
-------------------------
-...
-
-$fb.fillcircle(x, y, r, rgb)
-----------------------------
-...
-
-$fb.pixel(x, y, rgb)
---------------------
-...
-
-$fb.shader(f(x, y, rgb) -> rgb)
+`$fb.fillrect(x, y, w, h, rgb)`
 -------------------------------
 ...
 
-$fb.text(x, y, txt, rgb)
-------------------------
+`$fb.circle(x, y, r, rgb)`
+--------------------------
 ...
 
-$fb.makesprite(w, h)
---------------------
+`$fb.fillcircle(x, y, r, rgb)`
+------------------------------
 ...
 
-$fb.blit(sprite, x, y, w, h, sx, sy)
-------------------------------------
+`$fb.pixel(x, y, rgb)`
+----------------------
 ...
 
-$fb.render()
-------------
+`$fb.shader(f(x, y, rgb) -> rgb)`
+---------------------------------
+...
+
+`$fb.text(x, y, txt, rgb)`
+--------------------------
+...
+
+`$fb.makesprite(w, h)`
+----------------------
+...
+
+`$fb.blit(sprite, x, y, w, h, sx, sy)`
+--------------------------------------
+...
+
+`$fb.render()`
+--------------
 ...
 
 
@@ -67,15 +67,15 @@ Utilities
 =========
 framebufferJS also (callously) injects a few helper methods into your global namespace.
 
-rand(n)
--------
+`rand(n)`
+---------
 ...
 
-rgb2hsv(rgb)
-------------
+`rgb2hsv(rgb)`
+--------------
 ...
 
-hsv2rgb(hsv)
-------------
+`hsv2rgb(hsv)`
+--------------
 ...
 
