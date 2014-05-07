@@ -1,4 +1,4 @@
-// TODO(sww): fancy module.exports jazz
+// TODO(noffle): fancy module.exports jazz
 
 (function() {
   /**
@@ -185,14 +185,14 @@
   };
 
   window.framebuffer = function(width, height) {
-    // TODO(sww): Actually create + insert a canvas dynamically here.
+    // TODO(noffle): Actually create + insert a canvas dynamically here.
 
     this.px = new Array(width);
     for(var i=0; i < width; i++) {
       this.px[i] = new Array(height);
-        for(var j=0; j < height; j++) {
-          this.px[i][j] = [ Math.floor(Math.random()*256), Math.floor(Math.random()*256), Math.floor(Math.random()*256) ];
-        }
+      for(var j=0; j < height; j++) {
+        this.px[i][j] = [rand(256), rand(256), rand(256)];
+      }
     }
     var px = this.px;
 
@@ -295,7 +295,7 @@
           px[i][j][2] = result[2];
         }
       }
-    }
+    };
 
     var drawLetter = function(x, y, chr, rgb) {
       var l = letters[chr.toUpperCase()];
@@ -303,18 +303,52 @@
       for(var i=0; i < l[0].length; i++) {
         for(var j=0; j < l.length; j++) {
           if(l[j].charAt(i) === "1") {
-            $fb.pixel(x+i, y+j, rgb);
+            this.pixel(x+i, y+j, rgb);
           }
         }
       }
       return l[0].length;
-    }
+    };
 
     this.text = function(x, y, txt, rgb) {
       for(var i=0; i < txt.length; i++) {
         x += drawLetter(x, y, txt.charAt(i), rgb) + 1;
       }
-    }
+    };
+
+    this.allocSprite = function(width, height) {
+      var sprite = new Array(width);
+      for(var i=0; i < width; i++) {
+        sprite[i] = new Array(height);
+        for(var j=0; j < height; j++) {
+          sprite[i][j] = [rand(256), rand(256), rand(256)];
+        }
+      }
+      sprite.width = width;
+      sprite.height = height;
+      return sprite;
+    };
+
+    this.blit = function(sprite, x, y, w, h, sx, sy) {
+      x = Math.floor(x);
+      y = Math.floor(y);
+      w = !w ? sprite.width : Math.floor(w);
+      h = !h ? sprite.height : Math.floor(h);
+      sx = !sx ? 0 : Math.floor(sx);
+      sy = !sy ? 0 : Math.floor(sy);
+      for(var i=sx; i < sx+w; i++) {
+        for(var j=sy; j < sy+h; j++) {
+          if(i < 0 || j < 0 || i >= sprite.width || j >= sprite.height) {
+            continue;
+          }
+          var rgb = sprite[i][j];
+          if(rgb[0] == 255 && rgb[1] == 0 && rgb[2] == 255) {
+            continue;
+          }
+          this.pixel(x+i-sx, y+j-sy, rgb);
+        }
+      }
+    };
 
     this.render = function() {
       var canvas = document.getElementById('screen');
@@ -331,7 +365,7 @@
           ctx.fillRect(i*pWidth, j*pHeight, pWidth, pHeight);
         }
       }
-    }
+    };
 
     return this;
   }
