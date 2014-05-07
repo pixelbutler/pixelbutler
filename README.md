@@ -26,33 +26,26 @@ $fb.clear(brightGreen);
 
 API
 ===
-`$fb = framebuffer(width, height)`
----------------------
+### `$fb = framebuffer(width, height)`
 Creates a new framebuffer object with the given `width` and `height`. It
 supports the following operations:
 
-`$fb.clear(rgb)`
-----------------
+### `$fb.clear(rgb)`
 Sets all framebuffer pixels to the colour `rgb`.
 
-`$fb.render()`
---------------
+### `$fb.render()`
 Draws the state of the framebuffer to the screen.
 
-`$fb.rect(x, y, width, height, rgb)`, $fb.fillrect(x, y, width, height, rgb)`
------------------------------------------------------------------------------
+### `$fb.rect(x, y, width, height, rgb)`, `$fb.fillrect(x, y, width, height, rgb)`
 Draws a filled or unfilled rectangle at `x`,`y` with the given `width`, `height` and colour `rgb`.
 
-`$fb.circle(x, y, radius, rgb)`, `$fb.fillcircle(x, y, radius, rgb)`
---------------------------------------------------------------------
+### `$fb.circle(x, y, radius, rgb)`, `$fb.fillcircle(x, y, radius, rgb)`
 Draws a filled or unfilled circle at `x`,`y` with the given `radius` and colour `rgb`.
 
-`$fb.pixel(x, y, rgb)`
-----------------------
+### `$fb.pixel(x, y, rgb)`
 Safely (ignoring any out-of-bounds coordinates for you) draws a single pixel at coordinates `x`,`y` of colour `rgb`.
 
-`$fb.shader(func)
----------------------------------
+### `$fb.shader(func)`
 framebufferJS supports software shaders!
 
 This runs an arbitrary function across all of the framebuffer's pixels, modifying the framebuffer immediately.
@@ -88,21 +81,17 @@ $fb.shader(pipeline);
 $fb.render();
 ```
 
-
-`$fb.text(x, y, txt, rgb)`
---------------------------
+### `$fb.text(x, y, txt, rgb)`
 framebufferJS has a built-in low res 4x4(-ish) font that's ready to be used out of the box!
 
 ```
 $fb.text(7, 3, "Hello Warld.", [255,128,64]);
 ```
 
-`$fb.makesprite(width, height)`
-----------------------
+### `$fb.makesprite(width, height)`
 Allocates a `width`x`height` offscreen buffer, suitable for populating with RGB sprite pixel data that your game may have generated/loaded.
 
-`$fb.blit(sprite, x, y, width, height, sourceX, sourceY)`
---------------------------------------
+### `$fb.blit(sprite, x, y, width, height, sourceX, sourceY)`
 Draws a sprite (allocated with `$fb.makesprite()` to the framebuffer at the given `x`,`y` coordinates.
 
 `width` and `height` are used if present, but default to the full size of the sprite.
@@ -114,15 +103,12 @@ Utilities
 =========
 framebufferJS also (callously) injects a few helper methods into your global namespace.
 
-`rand(n)`
----------
+### `rand(n)`
 Generates a random integer between `0` and `n`.
 
-`rgb2hsv(rgb)`
---------------
+### `rgb2hsv(rgb)`
 Converts a `[r,g,b]` value to an `[h,s,v]` value.
 
-`hsv2rgb(hsv)`
---------------
+### `hsv2rgb(hsv)`
 Converts an `[h,s,v]` value to an `[r,g,b]` value.
 
