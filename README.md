@@ -5,7 +5,7 @@ framebufferJS is a framebuffer abstraction build on top of Canvas. It provides s
 Coded with ♥ for the [2014 lowrezjam](http://www.deviever.com/lowrezjam2014/).
 
 <p align="center">
-  ![Screenshot! :o](https://github.com/noffle/lowrez-js/raw/master/screenshot.png)
+  <img src="https://github.com/noffle/lowrez-js/raw/master/screenshot.png"/>
 </p>
 
 Usage
