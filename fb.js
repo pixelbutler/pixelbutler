@@ -184,9 +184,7 @@
       ]
   };
 
-  window.framebuffer = function(width, height) {
-    // TODO(noffle): Actually create + insert a canvas dynamically here.
-
+  window.framebuffer = function(width, height, canvasId) {
     this.px = new Array(width);
     for(var i=0; i < width; i++) {
       this.px[i] = new Array(height);
@@ -351,7 +349,7 @@
     };
 
     this.render = function() {
-      var canvas = document.getElementById('screen');
+      var canvas = document.getElementById(canvasId);
       var ctx = canvas.getContext('2d');
 
       var pWidth = Math.floor(canvas.width / px.length);
