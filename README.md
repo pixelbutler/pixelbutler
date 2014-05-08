@@ -141,3 +141,10 @@ Converts a `[r,g,b]` value to an `[h,s,v]` value.
 #### `hsv2rgb(hsv)`
 Converts an `[h,s,v]` value to an `[r,g,b]` value.
 
+Contributions
+-------------
+They are very welcome. More primitives (lines, polygons), stock shader effects (gradients, dithering), or running shaders on sprite blits, for example, would be great!
+
+License
+-------
+MIT
