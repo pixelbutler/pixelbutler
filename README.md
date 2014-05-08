@@ -4,7 +4,7 @@ framebufferJS is a framebuffer abstraction build on top of Canvas. It provides s
 
 It takes care to handle annoying details for you: all RGB values are automatically [0,255] capped, writes that go outside the framebuffer are silently ignored, and all arguments get properly `floor`ed for you to pixel boundaries.
 
-Coded with ♥ by [@noffle](http://www.twitter.com/noffle) for the [2014 lowrezjam](http://www.deviever.com/lowrezjam2014/).
+Coded with ♥ by [@noffle](http://www.twitter.com/noffle) for the [2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014).
 
 <p align="center">
   <img src="https://github.com/noffle/lowrez-js/raw/master/screenshot.png"/>
