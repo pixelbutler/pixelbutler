@@ -12,7 +12,7 @@ Coded with ♥ by [@noffle](http://www.twitter.com/noffle) for the [2014 lowrezj
 
 Example Usage
 -------------
-```
+```javascript
 <html>
   <body>
     <!-- 1. Create a canvas element. -->
@@ -34,7 +34,8 @@ Example Usage
 </html>
 ```
 
-[Demo in action!](https://github.com/noffle/framebufferJS/raw/master/demo.html)
+#### Little Demo
+[Wee little demo in action.](http://rawgit.com/noffle/framebufferJS/master/demo.html)
 
 Colours
 -------
@@ -100,7 +101,7 @@ This runs an arbitrary function across all of the framebuffer's pixels, modifyin
 The function provided should have the form `function(x, y, rgb)`. Its return value is the final colour the pixel at `x`,`y` will take.
 
 e.g. a grayscale shader
-```
+```javascript
 $fb.shader(function(x, y, rgb) {
   var hsv = rgb2hsv(rgb);
   return hsv2rgb(hsv[0], 0, hsv[2]);
@@ -110,7 +111,7 @@ $fb.render();
 
 Shaders can also be chained, creating shader pipelines.
 
-```
+```javascript
 var invert = function(x, y, rgb) {
   return [255-rgb[0], 255-rgb[1], 255-rgb[2]];
 };
