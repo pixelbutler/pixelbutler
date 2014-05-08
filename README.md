@@ -34,6 +34,8 @@ Example Usage
 </html>
 ```
 
+[Demo in action!](https://github.com/noffle/framebufferJS/raw/master/demo.html)
+
 Colours
 -------
 Colours throughout framebufferJS are specified as an array of size 3, with Red Green Blue values ranging from 0 to 255.
@@ -60,10 +62,12 @@ Safely (ignoring any out-of-bounds coordinates for you) draws a single pixel at 
 
 Shapes
 ------
-#### `$fb.rect(x, y, width, height, rgb)`, `$fb.fillrect(x, y, width, height, rgb)`
+#### `$fb.rect(x, y, width, height, rgb)`
+#### `$fb.fillrect(x, y, width, height, rgb)`
 Draws a filled or unfilled rectangle at `x`,`y` with the given `width`, `height` and colour `rgb`.
 
-#### `$fb.circle(x, y, radius, rgb)`, `$fb.fillcircle(x, y, radius, rgb)`
+#### `$fb.circle(x, y, radius, rgb)`
+#### `$fb.fillcircle(x, y, radius, rgb)`
 Draws a filled or unfilled circle at `x`,`y` with the given `radius` and colour `rgb`.
 
 Text
@@ -124,7 +128,7 @@ $fb.shader(pipeline);
 $fb.render();
 ```
 Utilities
-=========
+---------
 framebufferJS also (callously) injects a few helper methods into your global namespace.
 
 #### `rand(n)`
