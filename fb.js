@@ -1,5 +1,7 @@
 // UMD header from https://github.com/umdjs/umd/blob/master/returnExportsGlobal.js
 (function (root, factory) {
+    'use strict';
+
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(function () {
@@ -15,6 +17,8 @@
         root.Framebuffer = factory();
     }
 }(this, function () {
+    'use strict';
+
     /**
      * Based off of a Gist of a 4x4 font by Martin Holzhauer:
      * https://gist.github.com/woodworker/7696835
@@ -255,7 +259,7 @@
                 if (i < 0 || j < 0 || i >= this.width || j >= this.height) {
                     continue;
                 }
-                if (i == x || j == y || i == x + w - 1 || j == y + h - 1) {
+                if (i === x || j === y || i === x + w - 1 || j === y + h - 1) {
                     this.px[i][j][0] = col[0];
                     this.px[i][j][1] = col[1];
                     this.px[i][j][2] = col[2];
@@ -369,7 +373,7 @@
                     continue;
                 }
                 var rgb = sprite[i][j];
-                if (rgb[0] == 255 && rgb[1] == 0 && rgb[2] == 255) {
+                if (rgb[0] === 255 && rgb[1] === 0 && rgb[2] === 255) {
                     continue;
                 }
                 this.pixel(x + i - sx, y + j - sy, rgb);
@@ -435,7 +439,7 @@
         s /= 100;
         v /= 100;
 
-        if (s == 0) {
+        if (s === 0) {
             // Achromatic (grey)
             r = g = b = v;
             return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
@@ -506,7 +510,7 @@
                 return (v - c) / 6 / diff + 1 / 2;
             };
 
-        if (diff == 0) {
+        if (diff === 0) {
             h = s = 0;
         } else {
             s = diff / v;
