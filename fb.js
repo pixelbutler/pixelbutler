@@ -19,237 +19,155 @@
 }(this, function () {
     'use strict';
 
-    /**
-     * Based off of a Gist of a 4x4 font by Martin Holzhauer:
-     * https://gist.github.com/woodworker/7696835
-     *
-     * Features fairly significant modifications to fit characters into smaller horizontal space.
-     */
-    var letters = {
-        "A": [
-            "1111",
-            "1001",
-            "1111",
-            "1001"
-        ],
-        "B": [
-            "100",
-            "111",
-            "101",
-            "111"
-        ],
-        "C": [
-            "1111",
-            "1000",
-            "1000",
-            "1111"
-        ],
-        "D": [
-            "1110",
-            "1001",
-            "1001",
-            "1110"
-        ],
-        "E": [
-            "111",
-            "110",
-            "100",
-            "111"
-        ],
-        "F": [
-            "111",
-            "100",
-            "110",
-            "100"
-        ],
-        "G": [
-            "111",
-            "100",
-            "101",
-            "111"
-        ],
-        "H": [
-            "101",
-            "101",
-            "111",
-            "101"
-        ],
-        "I": [
-            "1",
-            "1",
-            "1",
-            "1"
-        ],
-        "J": [
-            "001",
-            "001",
-            "101",
-            "111"
-        ],
-        "K": [
-            "101",
-            "110",
-            "101",
-            "101"
-        ],
-        "L": [
-            "10",
-            "10",
-            "10",
-            "11"
-        ],
-        "M": [
-            "11011",
-            "11011",
-            "10101",
-            "10001"
-        ],
-        "N": [
-            "1101",
-            "1101",
-            "1011",
-            "1001"
-        ],
-        "O": [
-            "111",
-            "101",
-            "101",
-            "111"
-        ],
-        "P": [
-            "111",
-            "101",
-            "111",
-            "100"
-        ],
-        "Q": [
-            "1110",
-            "1010",
-            "1110",
-            "0001"
-        ],
-        "R": [
-            "111",
-            "101",
-            "100",
-            "100"
-        ],
-        "S": [
-            "111",
-            "100",
-            "111",
-            "011"
-        ],
-        "T": [
-            "111",
-            "010",
-            "010",
-            "010"
-        ],
-        "U": [
-            "101",
-            "101",
-            "101",
-            "111"
-        ],
-        "V": [
-            "101",
-            "101",
-            "101",
-            "010"
-        ],
-        "W": [
-            "10001",
-            "10001",
-            "10101",
-            "01110"
-        ],
-        "X": [
-            "101",
-            "010",
-            "101",
-            "101"
-        ],
-        "Y": [
-            "101",
-            "101",
-            "010",
-            "010"
-        ],
-        "Z": [
-            "111",
-            "011",
-            "100",
-            "111"
-        ],
-        " ": [
-            "0",
-            "0",
-            "0",
-            "0"
-        ],
-        "!": [
-            "1",
-            "1",
-            "0",
-            "1"
-        ],
-        ".": [
-            "0",
-            "0",
-            "0",
-            "1"
-        ]
+    // basic renderer with nearest-neighbour
+    function RenderPlain(image, canvas) {
+        this.canvas = canvas;
+
+        this.px = image.px;
+        this.width = image.width;
+        this.height = image.height;
+        this.channels = image.useAlpha ? 4 : 3;
+
+        this.ctx = this.canvas.getContext('2d');
+        this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+
+        // make sure pixels are visible
+        alphaData(this.output.data, this.output.width, this.output.height, 255);
+        this.ctx.putImageData(this.output, 0, 0);
+    }
+
+    RenderPlain.prototype.resize = function (render) {
+        if (this.output.width !== this.canvas.width || this.output.height !== this.canvas.height) {
+            this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+            if (!render) {
+                // set the alpha channel to visible
+                alphaData(this.output.data, this.output.width, this.output.height, 255);
+            }
+        }
+        if (render) {
+            this.update();
+        }
     };
 
-    function FrameBuffer(opts) {
-        // support usage without new
-        if (!(this instanceof FrameBuffer)) {
-            return new FrameBuffer(opts);
+    RenderPlain.prototype.update = function () {
+        var data = this.output.data;
+        var width = this.output.width;
+        var height = this.output.height;
+
+        var fx = this.width / width;
+        var fy = this.height / height;
+
+        for (var i = 0; i < width; i++) {
+            for (var j = 0; j < height; j++) {
+                var x = Math.floor(i * fx);
+                var y = Math.floor(j * fy);
+                var read = (x + y * this.width) * this.channels;
+                var write = (i + j * width) * 4;
+
+                data[write] = this.px[read];
+                data[write + 1] = this.px[read + 1];
+                data[write + 2] = this.px[read + 2];
+            }
         }
+        this.ctx.putImageData(this.output, 0, 0);
+    };
+
+    // container to hold pixels and some info
+    //TODO this might be the sprite? maybe add some methods?
+    function ImageArray(width, height, useAlpha) {
+        if (!(this instanceof ImageArray)) {
+            return new ImageArray(width, height, useAlpha);
+        }
+        this.width = width;
+        this.height = height;
+        this.useAlpha = !!useAlpha;
+        this.channels = (useAlpha ? 4 : 3);
+
+        // keep reference to raw buffer for aliasing as Uint8Array
+        this.buffer = new ArrayBuffer(width * height * this.channels);
+
+        // work on a clamped array for safety
+        this.px = new Uint8ClampedArray(this.buffer);
+    }
+
+    ImageArray.prototype.pixel = function (x, y, col) {
+        x = Math.floor(x);
+        y = Math.floor(y);
+
+        if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
+            return;
+        }
+        var p = (x + y * this.width) * this.channels;
+        this.px[p] = col[0];
+        this.px[p + 1] = col[1];
+        this.px[p + 2] = col[2];
+    };
+
+    function Framebuffer(opts) {
+        // support usage without new
+        if (!(this instanceof Framebuffer)) {
+            return new Framebuffer(opts);
+        }
+        // import options
         this.width = opts.width || 32;
         this.height = opts.height || 32;
         this.canvasId = opts.canvasId;
 
         // grab canvas stuff
-        this.canvas = document.getElementById(this.canvasId);
-        if (!this.canvas) {
-            throw new Error('cannot locate canvas with id "' + this.canvasId + '"');
+        var canvas = document.getElementById(opts.canvasId);
+        if (!canvas) {
+            throw new Error('cannot locate canvas with id "' + opts.canvasId + '"');
         }
-        this.ctx =  this.canvas.getContext('2d');
 
-        // init the data
-        this.px = new Array(this.width);
-        for (var i = 0; i <  this.width; i++) {
-            this.px[i] = new Array(this.height);
-            for (var j = 0; j < this.height; j++) {
-                this.px[i][j] = [rand(256), rand(256), rand(256)];
+        // init internal data, use RGB (no alpha) so 3 channels
+        this.image = new ImageArray(this.width, this.height, false);
+        this.px = this.image.px;
+        this.channels = 3;
+
+        //alphaData(this.px, this.width, this.height, 255);
+        discoData(this.px, this.width, this.height);
+
+        // optional renderer
+        if (typeof opts.renderer === 'function') {
+            try {
+                this.renderer = new (opts.renderer)(this.image, canvas);
             }
+            catch (e) {
+                console.log(e);
+                console.log('WebGL init error, switching to fallback');
+            }
+        }
+        // default & fallback
+        if (!this.renderer) {
+            this.renderer = new RenderPlain(this.image, canvas);
         }
     }
 
-    FrameBuffer.prototype.fillrect = function (x, y, w, h, col) {
+    Framebuffer.prototype.fillrect = function (x, y, w, h, col) {
         x = Math.floor(x);
         y = Math.floor(y);
         w = Math.floor(w);
         h = Math.floor(h);
+
         for (var i = x; i < x + w; i++) {
             for (var j = y; j < y + h; j++) {
+                // TODO move this outside the loop
                 if (i < 0 || j < 0 || i >= this.width || j >= this.height) {
                     continue;
                 }
-                this.px[i][j][0] = col[0];
-                this.px[i][j][1] = col[1];
-                this.px[i][j][2] = col[2];
+                var p = (i * this.height + j) * this.channels;
+                this.px[p] = col[0];
+                this.px[p + 1] = col[1];
+                this.px[p + 2] = col[2];
             }
         }
     };
 
-    FrameBuffer.prototype.clear = function (col) {
+    Framebuffer.prototype.clear = function (col) {
         this.fillrect(0, 0, this.width, this.height, col);
     };
 
-    FrameBuffer.prototype.rect = function (x, y, w, h, col) {
+    Framebuffer.prototype.rect = function (x, y, w, h, col) {
         x = Math.floor(x);
         y = Math.floor(y);
         w = Math.floor(w);
@@ -260,15 +178,16 @@
                     continue;
                 }
                 if (i === x || j === y || i === x + w - 1 || j === y + h - 1) {
-                    this.px[i][j][0] = col[0];
-                    this.px[i][j][1] = col[1];
-                    this.px[i][j][2] = col[2];
+                    var p = (i + j * this.width) * this.channels;
+                    this.px[p] = col[0];
+                    this.px[p + 1] = col[1];
+                    this.px[p + 2] = col[2];
                 }
             }
         }
     };
 
-    FrameBuffer.prototype.fillcircle = function (x, y, r, col) {
+    Framebuffer.prototype.fillcircle = function (x, y, r, col) {
         x = Math.floor(x);
         y = Math.floor(y);
         r = Math.floor(r);
@@ -278,15 +197,16 @@
                     continue;
                 }
                 if (i * i + j * j <= r * r) {
-                    this.px[x + i][y + j][0] = col[0];
-                    this.px[x + i][y + j][1] = col[1];
-                    this.px[x + i][y + j][2] = col[2];
+                    var p = (x + i + (y + j) * this.width) * this.channels;
+                    this.px[p] = col[0];
+                    this.px[p + 1] = col[1];
+                    this.px[p + 2] = col[2];
                 }
             }
         }
     };
 
-    FrameBuffer.prototype.circle = function (x, y, r, col) {
+    Framebuffer.prototype.circle = function (x, y, r, col) {
         x = Math.floor(x);
         y = Math.floor(y);
         r = Math.floor(r);
@@ -297,43 +217,46 @@
             if (cx < 0 || cy < 0 || cx >= this.width || cy >= this.height) {
                 continue;
             }
-            this.px[cx][cy][0] = col[0];
-            this.px[cx][cy][1] = col[1];
-            this.px[cx][cy][2] = col[2];
+            var p = (cx + cy * this.width) * this.channels;
+            this.px[p] = col[0];
+            this.px[p + 1] = col[1];
+            this.px[p + 2] = col[2];
         }
     };
 
-    FrameBuffer.prototype.pixel = function (x, y, col) {
+    Framebuffer.prototype.pixel = function (x, y, col) {
         x = Math.floor(x);
         y = Math.floor(y);
 
         if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
             return;
         }
-        this.px[x][y][0] = col[0];
-        this.px[x][y][1] = col[1];
-        this.px[x][y][2] = col[2];
+        var p = (x + y * this.width) * this.channels;
+        this.px[p] = col[0];
+        this.px[p + 1] = col[1];
+        this.px[p + 2] = col[2];
     };
 
-    FrameBuffer.prototype.shader = function (f) {
+    Framebuffer.prototype.shader = function (f) {
         for (var i = 0; i < this.width; i++) {
             for (var j = 0; j < this.height; j++) {
-                var result = f(i, j, this.px[i][j]);
-                this.px[i][j][0] = result[0];
-                this.px[i][j][1] = result[1];
-                this.px[i][j][2] = result[2];
+                var p = (i + j * this.width) * this.channels;
+                var col = f(i, j, [this.px[p], this.px[p + 1], this.px[p + 2]]);
+                this.px[p] = col[0];
+                this.px[p + 1] = col[1];
+                this.px[p + 2] = col[2];
             }
         }
     };
 
-    FrameBuffer.prototype.drawLetter = function (x, y, chr, rgb) {
+    Framebuffer.prototype.drawLetter = function (x, y, chr, rgb) {
         var l = letters[chr.toUpperCase()];
         if (!l) {
             return 0;
         }
         for (var i = 0; i < l[0].length; i++) {
             for (var j = 0; j < l.length; j++) {
-                if (l[j].charAt(i) === "1") {
+                if (l[j].charAt(i) === '1') {
                     this.pixel(x + i, y + j, rgb);
                 }
             }
@@ -341,26 +264,18 @@
         return l[0].length;
     };
 
-    FrameBuffer.prototype.text = function (x, y, txt, rgb) {
+    Framebuffer.prototype.text = function (x, y, txt, rgb) {
         for (var i = 0; i < txt.length; i++) {
             x += this.drawLetter(x, y, txt.charAt(i), rgb) + 1;
         }
     };
 
-    FrameBuffer.prototype.makesprite = function (width, height) {
-        var sprite = new Array(width);
-        for (var i = 0; i < width; i++) {
-            sprite[i] = new Array(height);
-            for (var j = 0; j < height; j++) {
-                sprite[i][j] = [rand(256), rand(256), rand(256)];
-            }
-        }
-        sprite.width = width;
-        sprite.height = height;
-        return sprite;
+    // TODO figure out what to do with sprite
+    Framebuffer.prototype.makesprite = function (width, height, useAlpha) {
+        return new ImageArray(width, height, useAlpha);
     };
 
-    FrameBuffer.prototype.blit = function (sprite, x, y, w, h, sx, sy) {
+    Framebuffer.prototype.blit = function (sprite, x, y, w, h, sx, sy) {
         x = Math.floor(x);
         y = Math.floor(y);
         w = !w ? sprite.width : Math.floor(w);
@@ -372,27 +287,23 @@
                 if (i < 0 || j < 0 || i >= sprite.width || j >= sprite.height) {
                     continue;
                 }
-                var rgb = sprite[i][j];
-                if (rgb[0] === 255 && rgb[1] === 0 && rgb[2] === 255) {
-                    continue;
-                }
-                this.pixel(x + i - sx, y + j - sy, rgb);
+                //TODO support alpha in sprite
+                var read = (i + j * sprite.width) * sprite.channels;
+                var write = (x + i - sx + (y + j - sy) * this.width) * this.channels;
+
+                this.px[write] = sprite.px[read];
+                this.px[write + 1] = sprite.px[read + 1];
+                this.px[write + 2] = sprite.px[read + 2];
             }
         }
     };
 
-    FrameBuffer.prototype.render = function () {
-        var pWidth = Math.floor(this.canvas.width / this.px.length);
-        var pHeight = Math.floor(this.canvas.height / this.px[0].length);
-        for (var i = 0; i < this.px.length; i++) {
-            for (var j = 0; j < this.px[i].length; j++) {
-                var r = Math.floor(this.px[i][j][0]);
-                var g = Math.floor(this.px[i][j][1]);
-                var b = Math.floor(this.px[i][j][2]);
-                this.ctx.fillStyle = 'rgb(' + r + ', ' + g + ', ' + b + ')';
-                this.ctx.fillRect(i * pWidth, j * pHeight, pWidth, pHeight);
-            }
-        }
+    Framebuffer.prototype.resize = function (render) {
+        this.renderer.resize();
+    };
+
+    Framebuffer.prototype.render = function () {
+        this.renderer.update();
     };
 
     /**
@@ -401,13 +312,13 @@
      * Static helpers (assigned later for speeed)
      *
      *  --- - --- - --- - --- - --- - --- - --- - --- - --- - ---
-    **/
+     **/
 
     function rand(max) {
         return Math.floor(Math.random() * max);
     }
 
-     /**
+    /**
      * HSV to RGB color conversion
      *
      * H runs from 0 to 360 degrees
@@ -538,11 +449,241 @@
         ];
     }
 
-    // export helpers (instace vs static.. why not both? :)
-    FrameBuffer.rand = FrameBuffer.prototype.rand = rand;
-    FrameBuffer.hsv2rgb = FrameBuffer.prototype.hsv2rgb = hsv2rgb;
-    FrameBuffer.rgb2hsv = FrameBuffer.prototype.rgb2hsv = rgb2hsv;
+    function discoData(px, width, height, useAlpha) {
+        var lim, i;
+        if (useAlpha) {
+            lim = width * height * 4;
+            for (i = 0; i < lim; i += 4) {
+                px[i] = rand(256);
+                px[i + 1] = rand(256);
+                px[i + 2] = rand(256);
+                px[i + 3] = 255;
+            }
+        } else {
+            lim = width * height * 3;
+            for (i = 0; i < lim; i += 3) {
+                px[i] = rand(256);
+                px[i + 1] = rand(256);
+                px[i + 2] = rand(256);
+            }
+        }
+    }
+
+    function clearData(px, width, height, useAlpha) {
+        var lim, i;
+        if (useAlpha) {
+            lim = width * height * 4;
+            for (i = 0; i < lim; i += 4) {
+                px[i] = 0;
+                px[i + 1] = 0;
+                px[i + 2] = 0;
+                px[i + 3] = 255;
+            }
+        } else {
+            lim = width * height * 3;
+            for (i = 0; i < lim; i += 3) {
+                px[i] = 0;
+                px[i + 1] = 0;
+                px[i + 2] = 0;
+            }
+        }
+    }
+
+    function alphaData(px, width, height, alpha) {
+        var lim = width * height * 4;
+        for (var i = 0; i < lim; i += 4) {
+            px[i + 3] = alpha;
+        }
+    }
+
+    // export helpers (instance vs static.. why not both? :)
+    Framebuffer.rand = Framebuffer.prototype.rand = rand;
+    Framebuffer.hsv2rgb = Framebuffer.prototype.hsv2rgb = hsv2rgb;
+    Framebuffer.rgb2hsv = Framebuffer.prototype.rgb2hsv = rgb2hsv;
+
+    /**
+     * Based off of a Gist of a 4x4 font by Martin Holzhauer:
+     * https://gist.github.com/woodworker/7696835
+     *
+     * Features fairly significant modifications to fit characters into smaller horizontal space.
+     */
+    var letters = {
+        'A': [
+            '1111',
+            '1001',
+            '1111',
+            '1001'
+        ],
+        'B': [
+            '100',
+            '111',
+            '101',
+            '111'
+        ],
+        'C': [
+            '1111',
+            '1000',
+            '1000',
+            '1111'
+        ],
+        'D': [
+            '1110',
+            '1001',
+            '1001',
+            '1110'
+        ],
+        'E': [
+            '111',
+            '110',
+            '100',
+            '111'
+        ],
+        'F': [
+            '111',
+            '100',
+            '110',
+            '100'
+        ],
+        'G': [
+            '111',
+            '100',
+            '101',
+            '111'
+        ],
+        'H': [
+            '101',
+            '101',
+            '111',
+            '101'
+        ],
+        'I': [
+            '1',
+            '1',
+            '1',
+            '1'
+        ],
+        'J': [
+            '001',
+            '001',
+            '101',
+            '111'
+        ],
+        'K': [
+            '101',
+            '110',
+            '101',
+            '101'
+        ],
+        'L': [
+            '10',
+            '10',
+            '10',
+            '11'
+        ],
+        'M': [
+            '11011',
+            '11011',
+            '10101',
+            '10001'
+        ],
+        'N': [
+            '1101',
+            '1101',
+            '1011',
+            '1001'
+        ],
+        'O': [
+            '111',
+            '101',
+            '101',
+            '111'
+        ],
+        'P': [
+            '111',
+            '101',
+            '111',
+            '100'
+        ],
+        'Q': [
+            '1110',
+            '1010',
+            '1110',
+            '0001'
+        ],
+        'R': [
+            '111',
+            '101',
+            '100',
+            '100'
+        ],
+        'S': [
+            '111',
+            '100',
+            '111',
+            '011'
+        ],
+        'T': [
+            '111',
+            '010',
+            '010',
+            '010'
+        ],
+        'U': [
+            '101',
+            '101',
+            '101',
+            '111'
+        ],
+        'V': [
+            '101',
+            '101',
+            '101',
+            '010'
+        ],
+        'W': [
+            '10001',
+            '10001',
+            '10101',
+            '01110'
+        ],
+        'X': [
+            '101',
+            '010',
+            '101',
+            '101'
+        ],
+        'Y': [
+            '101',
+            '101',
+            '010',
+            '010'
+        ],
+        'Z': [
+            '111',
+            '011',
+            '100',
+            '111'
+        ],
+        ' ': [
+            '0',
+            '0',
+            '0',
+            '0'
+        ],
+        '!': [
+            '1',
+            '1',
+            '0',
+            '1'
+        ],
+        '.': [
+            '0',
+            '0',
+            '0',
+            '1'
+        ]
+    };
 
     // exported value
-    return FrameBuffer;
+    return Framebuffer;
 }));

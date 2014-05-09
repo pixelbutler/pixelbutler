@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+<head>
+    <title>framebufferJS - speed tester</title>
+    <!--
+        !-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!
+
+        extremely hacky speed test page cobbled together while working on code.
+
+        if you are new to framebufferJS then please look at the nice demo pages instead of this ungodly file.
+
+        these horrible codes should be cleansed (with fire), or maybe just reimplemented nicely on the demo pages.
+
+        !-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!-?-!-!
+    -->
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background-color: #888;
+        }
+
+        html {
+            overflow: hidden;
+        }
+
+        .debugField {
+            width: 50px;
+        }
+
+        .screen {
+        }
+
+        #choose {
+            text-align: center;
+            margin-top: 20%
+        }
+
+        .bigButton {
+            width: 200px
+            height: 100px
+        }
+
+        #ui {
+            background-color: #fff;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+        }
+
+        #gameScreen {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameScreen" class="screen" width="640" height="480" style="display: none">
+    What, no canvas support? D:
+</canvas>
+
+<div id="ui" style="display: none">
+    <div><input type="text" class="debugField" id="fbFPS"/> fps</div>
+    <div><input type="text" class="debugField" id="fbRedraw"/> redraw (ms)</div>
+    <div>
+        <input type="button" class="debugButton" id="view1x" value="1x"/>
+        <input type="button" class="debugButton" id="view4x" value="4x"/>
+        <input type="button" class="debugButton" id="view8x" value="8x"/>
+        <input type="button" class="debugButton" id="viewFit" value="Fit"/>
+    </div>
+</div>
+
+<div id="choose">
+    <input type="button" class="bigButton" id="rendererPlain" value="Vanilla"/>
+    <input type="button" class="bigButton" id="rendererWebGL" value="WebGL"/>
+</div>
+
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+<script type="text/javascript">
+    // helper ripped from https://stackoverflow.com/questions/15451321/how-can-i-make-html5-javascript-canvas-fill-window-screen
+    function getViewport() {
+        var e = window, a = 'inner';
+        if (!( 'innerWidth' in window )) {
+            a = 'client';
+            e = document.documentElement || document.body;
+        }
+        return {width: e[a + 'Width'], height: e[a + 'Height']};
+    }
+
+    require(['./fb', './webgl'], function (FrameBuffer, RenderWebGL) {
+
+        document.getElementById('choose').addEventListener('click', function (e) {
+            if (e.target === document.getElementById('rendererPlain')) {
+                setup(false);
+            }
+            else if (e.target === document.getElementById('rendererWebGL')) {
+                setup(true);
+            }
+        });
+
+        function setup(useWebGl) {
+            document.getElementById('choose').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
+            document.getElementById('gameScreen').style.display = 'block';
+
+            var $fb = new FrameBuffer({
+                width: 160,
+                height: 120,
+                canvasId: 'gameScreen',
+                renderer: (useWebGl ? RenderWebGL : null)
+            });
+
+            var screen = document.getElementById('gameScreen');
+
+            function resize() {
+                var p = getViewport();
+                screen.width = p.width;
+                screen.height = p.height;
+                // needs a debounce
+                $fb.resize();
+            }
+
+            var fbRedraw = document.getElementById('fbRedraw');
+            var fbFPS = document.getElementById('fbFPS');
+
+            document.getElementById('view1x').addEventListener('click', function () {
+                window.removeEventListener('resize', resize);
+                screen.width = $fb.width;
+                screen.height = $fb.height;
+                $fb.resize();
+            });
+
+            document.getElementById('view4x').addEventListener('click', function () {
+                window.removeEventListener('resize', resize);
+                screen.width = $fb.width * 4;
+                screen.height = $fb.height * 4;
+                $fb.resize();
+            });
+
+            document.getElementById('view8x').addEventListener('click', function () {
+                window.removeEventListener('resize', resize);
+                screen.width = $fb.width * 8;
+                screen.height = $fb.height * 8;
+                $fb.resize();
+            });
+
+            document.getElementById('viewFit').addEventListener('click', function () {
+                window.addEventListener('resize', resize);
+                resize();
+            });
+
+            var t = 0;
+            var previous = performance.now();
+
+            function step() {
+                var start = performance.now();
+                render();
+
+                fbRedraw.value = Math.round(performance.now() - start);
+                fbFPS.value = Math.round(1000 / (start - previous));
+                previous = start;
+
+                window.requestAnimationFrame(step);
+            }
+
+            var greyShader = function (x, y, col) {
+                var avg = (col[0] + col[1] + col[2]) / 3;
+                return [
+                    avg * .7 + col[0] * .3,
+                    avg * .7 + col[1] * .3,
+                    avg * .7 + col[2] * .3
+                ];
+            };
+
+            var invertShader = function (x, y, col) {
+                return [
+                    255 - col[0],
+                    255 - col[1],
+                    255 - col[2]
+                ];
+            };
+
+            var red = [255, 0, 0];
+            var sprite = $fb.makesprite(3, 3);
+            sprite.pixel(0, 0, red);
+            sprite.pixel(2, 0, red);
+            sprite.pixel(0, 2, red);
+            sprite.pixel(2, 2, red);
+            sprite.pixel(1, 1, red);
+
+            function render() {
+                t++;
+
+                $fb.clear([0, 0, 0]);
+                $fb.fillcircle(80, 60, 48, [93, 27, 175]);
+                $fb.circle(80, 60, 48, [200, 150, 50]);
+                $fb.rect(2, 2, $fb.width - 4, $fb.height - 4, [172, 172, 172]);
+
+                $fb.text(50 + Math.sin(t / 13) * 50, 5, "Hello Warld!", $fb.hsv2rgb([t % 360, 100, 100]));
+
+                $fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, t / 5), $fb.hsv2rgb([220, $fb.rand(100), $fb.rand(100)]));
+
+                for (var i = 0; i < 15; i++) {
+                    var x = (i ^ (i << 12)) % 160;
+                    var y = ((i ^ (i << 7)) + t * 4) % 120;
+                    $fb.pixel(x, y, [64, 64, 200]);
+                    $fb.pixel(x, y + 1, [64, 64, 200]);
+                    $fb.pixel(x, y + 2, [64, 64, 255]);
+                }
+
+                $fb.blit(sprite, 1, 1);
+                $fb.blit(sprite, $fb.width - 4, 1);
+                $fb.blit(sprite, $fb.width - 4, $fb.height - 4);
+                $fb.blit(sprite, 1, $fb.height - 4);
+
+                for (var i = 0; i < 10; i++) {
+                    $fb.blit(sprite, Math.random() * $fb.width, Math.random() * $fb.height);
+                }
+
+                $fb.shader(greyShader);
+                // $fb.shader(invertShader);
+
+                $fb.render();
+            }
+
+            window.requestAnimationFrame(step);
+
+        }
+    });
+</script>
+</html>

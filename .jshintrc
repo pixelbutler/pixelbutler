@@ -14,6 +14,7 @@
     "undef"         : true,
     "strict"        : true,
     "trailing"      : true,
+    "quotmark"      : true,
 
     "asi"           : false,
     "boss"          : false,
