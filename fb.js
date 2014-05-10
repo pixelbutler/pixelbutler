@@ -241,10 +241,14 @@
     };
 
     Framebuffer.prototype.shader = function (f) {
+        var rgb = [0, 0, 0];
         for (var i = 0; i < this.width; i++) {
             for (var j = 0; j < this.height; j++) {
                 var p = (i + j * this.width) * this.channels;
-                var col = f(i, j, [this.px[p], this.px[p + 1], this.px[p + 2]]);
+                rgb[0] = this.px[p];
+                rgb[1] = this.px[p+1];
+                rgb[2] = this.px[p+2];
+                var col = f(i, j, rgb);
                 this.px[p] = col[0];
                 this.px[p + 1] = col[1];
                 this.px[p + 2] = col[2];
