@@ -197,6 +197,9 @@
     this.width = width;
     this.height = height;
 
+    this.canvas = document.getElementById(canvasId);
+    this.ctx    = this.canvas.getContext('2d');
+
     this.fillrect = function(x, y, w, h, col) {
       x = Math.floor(x);
       y = Math.floor(y);
@@ -349,13 +352,20 @@
     };
 
     this.render = function() {
-      var canvas = document.getElementById(canvasId);
-      var ctx = canvas.getContext('2d');
 
-      var pWidth = Math.floor(canvas.width / px.length);
+      var canvas = this.canvas,
+          ctx    = this.ctx,
+          pxLen  = px.length,
+          len    = 0;
+
+      var pWidth = Math.floor(canvas.width / pxLen);
       var pHeight = Math.floor(canvas.height / px[0].length);
-      for(var i=0; i < px.length; i++) {
-        for(var j=0; j < px[i].length; j++) {
+
+      for(var i=0; i < pxLen; i++) {
+
+        len = px[i].length;
+
+        for(var j=0; j < len; j++) {
           var r = Math.floor(px[i][j][0]);
           var g = Math.floor(px[i][j][1]);
           var b = Math.floor(px[i][j][2]);
