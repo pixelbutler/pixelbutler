@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "name": "framebufferJS",
+  "version": "0.1.0",
+  "description": "framebuffer abstraction build on top of Canvas",
+  "keywords": [
+    "framebuffer",
+    "canvas",
+    "low-res",
+    "gamejam"
+  ],
+  "homepage": "https://github.com/noffle/framebufferJS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noffle/framebufferJS.git"
+  },
+  "author": {
+    "name": "Stephen Whitmore",
+    "url": "https://github.com/noffle"
+  },
+  "bugs": {
+    "url": "https://github.com/noffle/framebufferJS/issues"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "https://raw.github.com/noffle/framebufferJS/master/LICENSE-MIT.txt"
+  },
+  "scripts": {
+    "test": "node ./node_modules/jshint/bin/jshint ./fb.js"
+  },
+  "main": "./fb.js",
+  "devDependencies": {
+    "jshint": "^2.5.0"
+  }
+}

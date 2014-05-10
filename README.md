@@ -12,7 +12,7 @@ Coded with ♥ by [@noffle](http://www.twitter.com/noffle) for the [2014 lowrezj
 
 Example Usage
 -------------
-```javascript
+````javascript
 <html>
   <body>
     <!-- 1. Create a canvas element. -->
@@ -26,13 +26,17 @@ Example Usage
 
   <!-- 3. <your awesomeness here> -->
   <script type="text/javascript">
-    var $fb = framebuffer(160, 120, "gameScreen");
+    var $fb = new Framebuffer({
+      width: 160,
+      height: 120,
+      canvasId: "gameScreen"
+    });
     $fb.clear([0,0,0]);
     $fb.fillcircle(80, 60, 48, [93,27,175]);
     $fb.render();
   </script>
 </html>
-```
+````
 
 #### Little Demo
 [Wee little demo in action.](http://rawgit.com/noffle/framebufferJS/master/demo.html)
