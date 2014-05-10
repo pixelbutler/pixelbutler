@@ -158,7 +158,7 @@
                 if (i < 0 || j < 0 || i >= this.width || j >= this.height) {
                     continue;
                 }
-                var p = (i * this.height + j) * this.channels;
+                var p = (j * this.height + i) * this.channels;
                 this.px[p] = col[0];
                 this.px[p + 1] = col[1];
                 this.px[p + 2] = col[2];
