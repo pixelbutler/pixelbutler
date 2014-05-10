@@ -29,6 +29,7 @@
         this.channels = image.useAlpha ? 4 : 3;
 
         this.ctx = this.canvas.getContext('2d');
+        // get canvas-sized image data
         this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
 
         // make sure pixels are visible
@@ -103,6 +104,8 @@
         this.px[p + 2] = col[2];
     };
 
+    //TODO figure out how Framebuffer and ImageArray and the renderers relate to each-other
+    // - maybe shovel some code around and put all pixel manipulation code in what is now ImageArray
     function Framebuffer(opts) {
         // support usage without new
         if (!(this instanceof Framebuffer)) {
@@ -241,7 +244,7 @@
         for (var i = 0; i < this.width; i++) {
             for (var j = 0; j < this.height; j++) {
                 var p = (i + j * this.width) * this.channels;
-                var col = f(i, j, [this.px[p], this.px[p + 1], this.px[p + 2]]);
+                var col = f(i, j, this.px[p], this.px[p + 1], this.px[p + 2]);
                 this.px[p] = col[0];
                 this.px[p + 1] = col[1];
                 this.px[p + 2] = col[2];
@@ -270,7 +273,6 @@
         }
     };
 
-    // TODO figure out what to do with sprite
     Framebuffer.prototype.makesprite = function (width, height, useAlpha) {
         return new ImageArray(width, height, useAlpha);
     };

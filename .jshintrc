@@ -62,6 +62,7 @@
     "maxerr"        : 100,
     "predef"        : [
         "module",
+        "console",
         "require",
         "define"
     ],
