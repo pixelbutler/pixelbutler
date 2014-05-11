@@ -12,6 +12,7 @@
 </body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 <script type="text/javascript">
+
     require(['../dist/suite'], function(Framebuffer) {
 
         var $fb = new Framebuffer({
@@ -100,9 +101,6 @@
 
             $fb.shader(discoShader);
 
-            // these work but current shader model makes FireFox garbage collector unhappy
-            // $fb.shader(invertShader);
-
             $fb.render();
         }
 
@@ -110,7 +108,7 @@
 
         step = Framebuffer.stats.wrap(step);
 
-        Framebuffer.ticker.request(step, 60).start();
+        Framebuffer.ticker.request(step).start();
 
     });
 </script>

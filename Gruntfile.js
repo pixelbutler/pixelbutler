@@ -15,9 +15,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-connect');
 
+    // list the files for reference (and verification)
     var dist = {
-        basic: './dist/basic.js',
-        // basic_min: './dist/basic.min.js',
+        basic: './dist/fb.js',
+        // basic_min: './dist/fb.min.js',
         suite: './dist/suite.js',
         // suite_min: './dist/suite.min.js'
     };
@@ -47,11 +48,6 @@ module.exports = function (grunt) {
                 hostname: '0.0.0.0',
                 base: '.'
             },
-            live: {
-                options: {
-                    livereload: true
-                }
-            },
             server: {
                 options: {
                     keepalive: true
@@ -77,26 +73,27 @@ module.exports = function (grunt) {
             suite: {
                 main: './lib/suite.js',
                 bundle: dist.suite
-            }
-            /*,
+            },
             basic_min: {
                 options: {
                     minify: true
                 },
                 main: './lib/basic.js',
                 bundle: dist.basic_min
-             },
-             suite_min: {
+            },
+            suite_min: {
                 options: {
                     minify: true
                 },
                 main: './lib/suite.js',
                 bundle: dist.suite_min
-            }*/
+            }
         }
     });
 
     // setup main aliases
+    grunt.registerTask('default', ['build']);
+
     grunt.registerTask('prep', [
         'clean:tmp',
         'clean:dist',
@@ -132,9 +129,7 @@ module.exports = function (grunt) {
         'bundle:suite'
     ]);
 
-    grunt.registerTask('default', ['build']);
-
-    // check if we miss some important build files (could be a pre-publish task/hook)
+    // check if we have all the important files
     grunt.registerTask('verify', function () {
         var missing = [];
 
@@ -164,7 +159,7 @@ module.exports = function (grunt) {
         }
     });
 
-    // custom browserify task
+    // custom browserify multi-task
     grunt.registerMultiTask('bundle', function () {
         var options = this.options({
             // name of the UMD global
@@ -183,6 +178,7 @@ module.exports = function (grunt) {
         // make sure we have the directory (fs-stream is naive)
         grunt.file.mkdir(path.dirname(bundleFile));
 
+        //setup stream
         var bundle = new browserify();
         bundle.add(mainFile);
 

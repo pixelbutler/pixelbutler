@@ -6,6 +6,7 @@
 // load raw html parts (strip to body content)
 define(['Framebuffer', 'text!../partial/ui.html!strip'], function (Framebuffer, uiHtml) {
 
+    // define demo defaults
     var config = {
         useWebGL: false,
         scale: {
@@ -35,35 +36,35 @@ define(['Framebuffer', 'text!../partial/ui.html!strip'], function (Framebuffer, 
         return document.getElementById(id);
     }
 
-
     function init(_config, _listener, initialiser) {
         config = _config;
         listener = _listener;
 
-        config.useWebGL = !!config.useWebGL;
-
-        // inject html
+        // inject html snippet
         var body = document.getElementsByTagName('body')[0];
         body.insertAdjacentHTML('afterbegin', uiHtml);
 
         elem('hud').style.display = 'none';
         elem('screen-wrap').style.display = 'none';
 
-        // grab context
+        // grab canvas
         config.canvas = (typeof config.canvas === 'string' ? elem(config.canvas) : config.canvas);
         if (!config.canvas) {
             throw new Error('cannot locate canvas ' + config.canvas);
         }
+
+         // keep size for later
         baseSize.width = config.canvas.width;
         baseSize.height = config.canvas.height;
 
-        // select options
+        // scaleMode selector
         var viewRes = elem('hud-viewRes');
         viewRes.addEventListener('change', function () {
             notify('scale', {scale: viewRes.value});
         });
         viewRes.selectedIndex = 0;
 
+        // navigation
         elem('hud').addEventListener('click', function (ev) {
             if (ev.target === elem('nav-next')) {
                 notify('next');
@@ -73,6 +74,7 @@ define(['Framebuffer', 'text!../partial/ui.html!strip'], function (Framebuffer, 
             }
         });
 
+        // when ready
         function initialise() {
             elem('hud').style.display = 'block';
             elem('screen-wrap').style.display = 'block';
@@ -90,15 +92,20 @@ define(['Framebuffer', 'text!../partial/ui.html!strip'], function (Framebuffer, 
         next.height = baseSize.height;
         config.canvas.parentElement.insertBefore(next, config.canvas);
         config.canvas.parentElement.removeChild(config.canvas);
+        // is this needed?
         config.canvas.width = 2;
         config.canvas.height = 2;
+
         config.canvas = next;
     }
 
     function loadDemo(demoName, callback) {
-        console.log(demoName);
+        console.log('load demo: ' + demoName);
+
         // require it
         require([demoName], function (factory) {
+
+            // get rid of previous demo
             if (demo) {
                 if (demo.ticker) {
                     demo.ticker.stop();
@@ -110,16 +117,18 @@ define(['Framebuffer', 'text!../partial/ui.html!strip'], function (Framebuffer, 
                     demo.stats.stop();
                 }
                 demo.close();
+
+                // can only ever use one context per canvas so create new one
                 newCanvas();
             }
 
-            //make instance
+            //make demo instance
             demo = factory(config);
 
+            // set default helpers if the demo didn't has custom ones
             if (!demo.autosize) {
                 demo.autosize = Framebuffer.autosize.create(demo.$fb, config.scale);
             }
-
             if (!demo.ticker) {
                 var render = demo.render;
                 if (config.stats) {
@@ -142,7 +151,7 @@ define(['Framebuffer', 'text!../partial/ui.html!strip'], function (Framebuffer, 
         });
     }
 
-    // mode export
+    // export the handle
     return {
         init: init,
         load: loadDemo
