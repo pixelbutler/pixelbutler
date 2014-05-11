@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>partial</title>
+    <link rel="stylesheet" type="text/css" href="../css/demo.css">
+</head>
+<body>
+
+<div id="hud" class="hud-pane">
+    <div class="hud-row">
+        <select id="hud-viewRes">
+            <option selected></option>
+            <option value="1">1x</option>
+            <option value="2">2x</option>
+            <option value="4">4x</option>
+            <option value="8">8x</option>
+            <option value="16">16x</option>
+            <option value="24">24x</option>
+            <option value="32">32x</option>
+            <option value="max">max</option>
+            <option value="fit">fit</option>
+        </select>
+    </div>
+    <div class="hud-row" style="display:none;">
+        <select id="hud-tickerType">
+            <option selected></option>
+            <option value="request">request</option>
+            <option value="interval">interval</option>
+            <option value="stable">stable</option>
+        </select>
+    </div>
+    <div class="hud-row">
+        <input type="button" id="nav-prev" value="prev"/>
+        <input type="button" id="nav-next" value="next"/>
+    </div>
+</div>
+
+</body>
+</html>
