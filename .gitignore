@@ -1,3 +1,7 @@
 /.idea
 /tmp
 /node_modules
+/*.tgz
+
+/dist/*.js.map
+/dist/*.js.map

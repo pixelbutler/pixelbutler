@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "framebufferJS",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "framebuffer abstraction build on top of Canvas",
   "keywords": [
     "framebuffer",
@@ -23,13 +23,23 @@
   },
   "license": {
     "type": "MIT",
-    "url": "https://raw.github.com/noffle/framebufferJS/master/LICENSE-MIT.txt"
+    "url": "https://raw.github.com/noffle/framebufferJS/master/LICENSE-MIT"
   },
+  "engines": {
+    "node": ">= 0.10.0 < 0.11.0"
+  },
+  "main": "./lib/suite.js",
   "scripts": {
-    "test": "node ./node_modules/jshint/bin/jshint ./fb.js"
+    "test": "grunt test"
   },
-  "main": "./fb.js",
   "devDependencies": {
-    "jshint": "^2.5.0"
+    "grunt": "^0.4.4",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-contrib-connect": "^0.7.1",
+    "browserify": "^3.46.1",
+    "exorcist": "^0.1.6",
+    "minifyify": "^2.4.1"
   }
 }

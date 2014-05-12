@@ -1,7 +1,9 @@
 <!doctype html>
 <html>
 <head>
-    <title>framebufferJS - AMD demo</title>
+    <meta charset="UTF-8">
+    <title>fast - framebufferJS</title>
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <body>
 <canvas id="gameScreen" width="640" height="480">
@@ -10,11 +12,14 @@
 </body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 <script type="text/javascript">
-    require(['./fb'], function(Framebuffer) {
+
+    require(['../dist/fb'], function(Framebuffer) {
+
         var $fb = new Framebuffer({
             width: 160,
             height: 120,
-            canvasId: "gameScreen"
+            canvas: "gameScreen",
+            renderer: Framebuffer.RenderWebGL
         });
 
         var t = 0;
@@ -37,6 +42,7 @@
             }
 
             $fb.render();
+
             window.requestAnimationFrame(step);
         }
         window.requestAnimationFrame(step);

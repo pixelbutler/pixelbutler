@@ -4,11 +4,22 @@ framebufferJS is a framebuffer abstraction build on top of Canvas. It provides s
 
 It takes care to handle annoying details for you: all RGB values are automatically [0,255] capped, writes that go outside the framebuffer are silently ignored, and all arguments get properly `floor`ed for you to pixel boundaries.
 
-Coded with ♥ by [@noffle](http://www.twitter.com/noffle) for the [2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014).
+The canvas rendering is specialised for up-scaling with 100% crispy pixels and in modern browsers the optional WebGL renderer can easily run at 60 frames-per-second in HD resolution. 
+
+framebufferJS is espcially suited for 32x32 pixel micro games displaying on large screens.
+
+Coded with ♥ by [@noffle](http://www.twitter.com/noffle) for the [2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014). 
+
+Performance upgrade ♣ by [@bartvds](http://github.com/bartvd)
 
 <p align="center">
   <img src="https://github.com/noffle/lowrez-js/raw/master/screenshot.png"/>
 </p>
+
+Demo page
+-------------
+
+For some pixel instant action and usage examples see the [Wee little demo page](http://rawgit.com/noffle/framebufferJS/master/demo/index.html) or browse the [demo](https://github.com/noffle/framebufferJS/blob/master/demo) and [gallery](https://github.com/noffle/framebufferJS/blob/master/demo/gallery) source files.
 
 Example Usage
 -------------
@@ -33,13 +44,40 @@ Example Usage
     });
     $fb.clear([0,0,0]);
     $fb.fillcircle(80, 60, 48, [93,27,175]);
+    $fb.pixel(10, 20, [255,0, 123]);
     $fb.render();
   </script>
 </html>
 ````
 
-#### Little Demo
-[Wee little demo in action.](http://rawgit.com/noffle/framebufferJS/master/demo.html)
+Get the code
+-------
+
+Pre-build files are located in the report in the `./dist` directory. The `fb.js` bundle is the main export and has the essentials needed to work with framebuffers and render to a canvas.
+
+The `suite.js` as everything from `fb.js` but contains additional helpers useful to get a project started quickly; see the usage sction for more info. 
+
+At some point pre-minified bundles could be provided there as well.
+
+### npm
+
+~~The modules are also available as [npm](https://www.npmjs.org/) package for use with CommonJS enabled build systems like [browserify](https://github.com/substack/node-browserify).~~
+
+:warning: This is queued for release.
+
+````bash
+$ npm install framebufferjs
+````
+
+### bower
+
+~~Alternately install via [bower](https://github.com/twitter/bower) ans use a browser global or AMD module~~
+
+:warning: This is queued for release.
+
+````bash
+$ bower install framebufferjs
+````
 
 Colours
 -------
@@ -144,6 +182,67 @@ Converts a `[r,g,b]` value to an `[h,s,v]` value.
 
 #### `hsv2rgb(hsv)`
 Converts an `[h,s,v]` value to an `[r,g,b]` value.
+
+Extra tools
+---------
+
+In the recent versions some additional helpers are exported for convenience, like various frame-tickers, a performance stats-display and small autoscaling/centering API. These are semi-experimental so see the examples for usage info.
+
+Output rendering
+-------------
+There are currently two display renderers supported. Both support arbitrary scaling of the canvas while keeping the pixel edges fully crisp.
+
+The default renderer uses plain JavaScript to project the internal framebuffer to canvas. This can become slow at large surface area and may not reach the highest frame rates on all devices. 
+
+For full-speed rendering and high resolutions a modern browser can use the WebGL renderer to run 60 FPS on full-screen HD resolutions. WebGL should also work on recent mobile devices (development tested on Samsung Galaxy S3 in FireFox- and Chrome mobile).
+
+See the examples for more info. 
+
+Development
+-------------
+
+The project is written in JavaScript using CommonJS module pattern, and build for browsers using [grunt](http://gruntjs.com) and [browserify](https://github.com/substack/node-browserify). Development tools run on [node.js](http://nodejs.org/) and are pulled from [npm](https://www.npmjs.org/).
+
+The generated bundles support UMD and work as browser global, CommonJS and AMD module. Browserify users can also use the npm package directly.
+
+To regenerate the bundles use the following steps:
+
+1) Clone the git repos to you local machine.
+
+2) Make sure you have the global grunt command:
+
+````bash
+$ npm install grunt-cli -g
+```` 
+
+3) Navigate your shell/terminal to the checkout directory.
+
+4) Install development dependencies from npm:
+
+````bash
+$ npm install
+````
+
+5) Rebuild bundles using grunt:
+
+````bash
+$ grunt build
+````
+
+6) Watch tasks to auto-build during development:
+
+````bash
+$ grunt watch
+````
+
+7) Run a local test server for the demos and tests:
+
+````bash
+$ grunt server
+````
+
+See the `Gruntfile.js` and `$ grunt --help` for additional commands.
+
 
 Contributions
 -------------
