@@ -13,10 +13,10 @@
 <script src="../dist/fb.js"></script>
 <script type="text/javascript">
 
-    var $fb = new Framebuffer({
+    var $fb = new FB.Framebuffer({
         width: 160,
         height: 120,
-        canvas: "gameScreen"
+        canvas: 'gameScreen'
     });
 
     var t = 0;
@@ -26,9 +26,9 @@
         $fb.clear([0, 0, 0]);
         $fb.fillcircle(80, 60, 48, [93, 27, 175]);
 
-        $fb.text(50 + Math.sin(t / 13) * 50, 5, "Hello Warld!", $fb.hsv2rgb([t % 360, 100, 100]));
+        $fb.text(50 + Math.sin(t / 13) * 50, 5, "Hello Warld!", FB.hsv2rgb([t % 360, 100, 100]));
 
-        $fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, t / 5), $fb.hsv2rgb([220, $fb.rand(100), $fb.rand(100)]));
+        $fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, t / 5), FB.hsv2rgb([220, FB.rand(100), FB.rand(100)]));
 
         for (var i = 0; i < 15; i++) {
             var x = (i ^ (i << 12)) % 160;

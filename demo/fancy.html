@@ -13,13 +13,13 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 <script type="text/javascript">
 
-    require(['../dist/suite'], function(Framebuffer) {
+    require(['../dist/fb'], function(FB) {
 
-        var $fb = new Framebuffer({
+        var $fb = new FB.Framebuffer({
             width: 160,
             height: 120,
-            canvas: "gameScreen",
-            renderer: Framebuffer.RenderWebGL
+            canvas: 'gameScreen',
+            renderer: 'webgl'
         });
 
         var shaderFactor = 0;
@@ -78,9 +78,9 @@
             $fb.circle(80, 60, 48, [200, 150, 50]);
             $fb.rect(2, 2, $fb.width - 4, $fb.height - 4, [172, 172, 172]);
 
-            $fb.text(50 + Math.sin(t / 13) * 50, 5, "Hello Warld!", $fb.hsv2rgb([t % 360, 100, 100]));
+            $fb.text(50 + Math.sin(t / 13) * 50, 5, "Hello Warld!", FB.hsv2rgb([t % 360, 100, 100]));
 
-            $fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, t / 5), $fb.hsv2rgb([220, $fb.rand(100), $fb.rand(100)]));
+            $fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, t / 5), FB.hsv2rgb([220, FB.rand(100), FB.rand(100)]));
 
             for (var i = 0; i < 15; i++) {
                 var x = (i ^ (i << 12)) % 160;
@@ -104,11 +104,11 @@
             $fb.render();
         }
 
-        Framebuffer.autosize.create($fb, {center: true, scale: 'fit'});
+        FB.autosize($fb, {center: true, scale: 'fit'});
 
-        step = Framebuffer.stats.wrap(step);
+        // step = Framebuffer.stats.wrap(step);
 
-        Framebuffer.ticker.request(step).start();
+        FB.ticker.request(step).start();
 
     });
 </script>
