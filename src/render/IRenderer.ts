@@ -1,7 +1,7 @@
 interface IRenderer {
-	resize(render?: boolean): void;
+	resize(): void;
 	update(): void;
-	close(): void;
+	destruct(): void;
 }
 
 export = IRenderer;

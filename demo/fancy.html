@@ -1,115 +1,124 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>fancy - framebufferJS</title>
-    <link rel="stylesheet" type="text/css" href="css/demo.css">
+	<meta charset="UTF-8">
+	<title>fancy - lorez</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <body>
 <canvas id="gameScreen" width="640" height="480">
-    What, no canvas support? D:
+	What, no canvas support? D:
 </canvas>
 </body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 <script type="text/javascript">
 
-    require(['../dist/fb'], function(FB) {
+	require(['../dist/lorez'], function (lorez) {
 
-        var $fb = new FB.Framebuffer({
-            width: 160,
-            height: 120,
-            canvas: 'gameScreen',
-            renderer: 'webgl'
-        });
+		var $fb = new lorez.Stage({
+			width: 160,
+			height: 120,
+			canvas: 'gameScreen',
+			center: true,
+			scale: 'fit'
+		});
 
-        var shaderFactor = 0;
+		var shaderFactor = 0;
+		var shaderFrame = 0;
 
-        var discoShader = function (x, y, col) {
-            var xa = (x + t) % $fb.width / $fb.width;
-            var ya = (y + t) * 2 % $fb.height / $fb.height;
+		var discoShader = function (x, y, col) {
+			var xa = (x + shaderFrame) % $fb.width / $fb.width;
+			var ya = (y + shaderFrame) * 2 % $fb.height / $fb.height;
 
-            col[0] = col[0] * (shaderFactor * xa);
-            col[1] = col[1] * (shaderFactor * ya);
-            col[2] = col[2] * (shaderFactor * xa * ya);
-            return col;
-        };
+			col.r *= (shaderFactor * xa);
+			col.g *= (shaderFactor * ya);
+			col.b *= (shaderFactor * xa * ya);
+			return col;
+		};
 
-        var white = [255, 255, 255];
-        var red = [255, 0, 0];
-        var green = [0, 255, 0];
-        var blue = [0, 0, 255];
-        var yellow = [255, 255];
-        
-        var sprites = [];
+		var white = lorez.rgb(255, 255, 255);
+		var black = lorez.rgb(0, 0, 0);
+		var red = lorez.rgb(255, 0, 0);
+		var green = lorez.rgb(0, 255, 0);
+		var blue = lorez.rgb(0, 0, 255);
+		var yellow = lorez.rgb(255, 255);
 
-        function makeSprite(color, size) {
-            var sprite = $fb.makesprite(size, size);
-            for (var i=0; i < size * size; i++) {
-                sprite.pixel(i % size, Math.floor(i / size), color);
-            }
-            return sprite;
-        }
-        var corner = makeSprite(white, 3);
+		var sprites = [];
 
-        sprites.push(makeSprite(white, 1));
-        sprites.push(makeSprite(red, 2));
-        sprites.push(makeSprite(green, 3));
-        sprites.push(makeSprite(blue, 3));
-        sprites.push(makeSprite(yellow, 4));
+		function makeSprite(color, size) {
+			var sprite = new lorez.Bitmap(size, size);
+			for (var i = 0; i < size * size; i++) {
+				sprite.setPixel(i % size, Math.floor(i / size), color);
+			}
+			return sprite;
+		}
 
+		var corner = makeSprite(white, 3);
 
-        var mp2 = Math.PI * 2;
+		sprites.push(makeSprite(white, 1));
+		sprites.push(makeSprite(red, 2));
+		sprites.push(makeSprite(green, 3));
+		sprites.push(makeSprite(blue, 3));
+		sprites.push(makeSprite(yellow, 4));
 
-        var t = 0;
-        var pix0 = [64, 64, 200];
-        var pix1 = [64, 64, 200];
-        var pix2 = [64, 64, 255];
+		var mp2 = Math.PI * 2;
 
-        function step() {
-            t++;
+		var pix0 = lorez.rgb(64, 64, 200);
+		var pix1 = lorez.rgb(64, 64, 200);
+		var pix2 = lorez.rgb(64, 64, 255);
 
-            shaderFactor = Math.sin(t / 60 * mp2) * .5 + 1;
+		var circle1 = lorez.rgb(93, 27, 175);
+		var circle2 = lorez.rgb(175, 93, 27);
+		var circle3 = lorez.rgb(27, 175, 93)
+		var circle4 = lorez.rgb(255, 200, 175);
+		var circle5 = lorez.rgb(200, 150, 50);
+		var rectC = lorez.rgb(172, 172, 172);
 
-            $fb.clear([0, 0, 0]);
-            $fb.fillcircle(80, 60, 48, [93, 27, 175]);
-            $fb.fillcircle(80, 60, 32, [175, 93, 27]);
-            $fb.fillcircle(80, 60, 16, [27, 175, 93]);
-            $fb.fillcircle(80, 60, 8, [255, 200, 175]);
-            $fb.circle(80, 60, 48, [200, 150, 50]);
-            $fb.rect(2, 2, $fb.width - 4, $fb.height - 4, [172, 172, 172]);
+		function step(frame, delta) {
+			shaderFactor = Math.sin(frame / 60 * mp2) * .5 + 1;
+			shaderFrame = frame;
 
-            $fb.text(50 + Math.sin(t / 13) * 50, 5, "Hello Warld!", FB.hsv2rgb([t % 360, 100, 100]));
+			$fb.clear(black);
 
-            $fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, t / 5), FB.hsv2rgb([220, FB.rand(100), FB.rand(100)]));
+			$fb.fillCircle(80, 60, 48, circle1);
+			$fb.fillCircle(80, 60, 32, circle2);
+			$fb.fillCircle(80, 60, 16, circle3);
+			$fb.fillCircle(80, 60, 8, circle4);
+			$fb.drawCircle(80, 60, 48, circle5);
+			$fb.drawRect(2, 2, $fb.width - 4, $fb.height - 4, rectC);
 
-            for (var i = 0; i < 15; i++) {
-                var x = (i ^ (i << 12)) % 160;
-                var y = ((i ^ (i << 7)) + t * 4) % 120;
-                $fb.pixel(x, y, pix0);
-                $fb.pixel(x, y + 1, pix1);
-                $fb.pixel(x, y + 2, pix2);
-            }
+			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv2rgb({h: frame % 360, s: 100, v: 100}));
 
-            $fb.blit(corner, 1, 1);
-            $fb.blit(corner, $fb.width - 4, 1);
-            $fb.blit(corner, $fb.width - 4, $fb.height - 4);
-            $fb.blit(corner, 1, $fb.height - 4);
+			$fb.text(5, 10, '0123456789', white);
+			$fb.text(5, 15, '+-_.,!?\\/', white);
+			$fb.text(5, 20, '<>[]()\'/"\\`~', white);
 
-            for (var i = 0; i < 10; i++) {
-                $fb.blit(sprites[t % sprites.length], Math.random() * $fb.width, Math.random() * $fb.height);
-            }
+			$fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, frame / 5), lorez.hsv2rgb({h: 220, s: lorez.rand(100), v: lorez.rand(100)}));
 
-            $fb.shader(discoShader);
+			for (var i = 0; i < 15; i++) {
+				var x = (i ^ (i << 12)) % 160;
+				var y = ((i ^ (i << 7)) + frame * 4) % 120;
+				$fb.setPixel(x, y, pix0);
+				$fb.setPixel(x, y + 1, pix1);
+				$fb.setPixel(x, y + 2, pix2);
+			}
 
-            $fb.render();
-        }
+			$fb.blit(corner, 1, 1);
+			$fb.blit(corner, $fb.width - 4, 1);
+			$fb.blit(corner, $fb.width - 4, $fb.height - 4);
+			$fb.blit(corner, 1, $fb.height - 4);
 
-        FB.autosize($fb, {center: true, scale: 'fit'});
+			for (var i = 0; i < 10; i++) {
+				$fb.blit(sprites[frame % sprites.length], Math.random() * $fb.width, Math.random() * $fb.height);
+			}
 
-        // step = Framebuffer.stats.wrap(step);
+			$fb.shader(discoShader);
 
-        FB.ticker.request(step).start();
+			$fb.render();
+		}
 
-    });
+		lorez.ticker.request(step).start();
+
+	});
 </script>
 </html>

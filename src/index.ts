@@ -2,22 +2,30 @@
 
 'use strict';
 
-export import Framebuffer = require('./core/Framebuffer');
+export import Stage = require('./core/Stage');
 
-import _pixel = require('./core/pixel');
-export import rgb2hsv = _pixel.rgb2hsv;
-export import hsv2rgb = _pixel.hsv2rgb;
-export import rand = _pixel.rand;
+export import Bitmap = require('./core/Bitmap');
 
-import _autosize = require('./extras/autosize');
-export import autosize = _autosize.create;
+import RGBA = require('./core/RGBA');
 
-export import ticker = require('./extras/ticker');
+import _util = require('./core/util');
+export import rand = _util.rand;
+
+import _color = require('./core/color');
+export import rgb2hsv = _color.rgb2hsv;
+export import hsv2rgb = _color.hsv2rgb;
+
+export import ticker = require('./core/ticker');
+
+export function rgb(r: number, g: number, b: number): RGBA {
+	return new RGBA(r, g, b);
+}
 
 // fake stuff for compiler bug
 [
-	_pixel,
-	_autosize,
+	_util,
+	_color,
 	ticker,
-	Framebuffer
+	Bitmap,
+	Stage
 ];

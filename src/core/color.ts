@@ -2,9 +2,10 @@
 
 'use strict';
 
-export function rand(max) {
-	return Math.floor(Math.random() * max);
-}
+import IRGB = require('../types/IRGB');
+import IHSV = require('../types/IHSV');
+import RGBA = require('./RGBA');
+import HSV = require('./HSV');
 
 /**
  * HSV to RGB color conversion
@@ -18,13 +19,13 @@ export function rand(max) {
  * This, in turn, was taken from the snippet at
  * http://snipplr.com/view/14590/hsv-to-rgb/
  */
-export function hsv2rgb(hsv) {
+export function hsv2rgb(hsv: IHSV): IRGB {
 	var r, g, b;
 	var i;
 	var f, p, q, t;
-	var h = hsv[0];
-	var s = hsv[1];
-	var v = hsv[2];
+	var h = hsv.h;
+	var s = hsv.s;
+	var v = hsv.v;
 
 	// Make sure our arguments stay in-range
 	h = Math.max(0, Math.min(360, h));
@@ -41,7 +42,7 @@ export function hsv2rgb(hsv) {
 	if (s === 0) {
 		// Achromatic (grey)
 		r = g = b = v;
-		return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+		return new RGBA(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
 	}
 
 	h /= 60; // sector 0 to 5
@@ -88,7 +89,11 @@ export function hsv2rgb(hsv) {
 			b = q;
 	}
 
-	return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+	return new RGBA(
+		Math.round(r * 255),
+		Math.round(g * 255),
+		Math.round(b * 255)
+	);
 }
 
 /**
@@ -97,11 +102,11 @@ export function hsv2rgb(hsv) {
  * Gratefully lifted from Mic's code on StackOverflow:
  * http://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript#8023734
  */
-export function rgb2hsv(rgb) {
+export function rgb2hsv(rgb: IRGB): IHSV {
 	var rr, gg, bb,
-		r = rgb[0] / 255,
-		g = rgb[1] / 255,
-		b = rgb[2] / 255,
+		r = rgb.r / 255,
+		g = rgb.g / 255,
+		b = rgb.b / 255,
 		h, s,
 		v = Math.max(r, g, b),
 		diff = v - Math.min(r, g, b),
@@ -111,7 +116,8 @@ export function rgb2hsv(rgb) {
 
 	if (diff === 0) {
 		h = s = 0;
-	} else {
+	}
+	else {
 		s = diff / v;
 		rr = diffc(r);
 		gg = diffc(g);
@@ -130,9 +136,9 @@ export function rgb2hsv(rgb) {
 			h -= 1;
 		}
 	}
-	return [
+	return new HSV(
 		Math.round(h * 360),
 		Math.round(s * 100),
 		Math.round(v * 100)
-	];
+	);
 }

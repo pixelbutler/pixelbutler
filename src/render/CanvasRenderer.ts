@@ -2,10 +2,16 @@
 
 'use strict';
 
-import fill = require('../core/fill');
-import ImageArray = require('../core/ImageArray');
+import Bitmap = require('../core/Bitmap');
 
 import IRenderer = require('../render/IRenderer');
+
+function clearAlpha(data: Uint8Array) {
+	var lim = data.length;
+	for (var i = 3; i < lim; i++) {
+		data[i] = 255;
+	}
+}
 
 // basic renderer with nearest-neighbour
 class CanvasRender implements IRenderer {
@@ -18,34 +24,30 @@ class CanvasRender implements IRenderer {
 	private ctx: CanvasRenderingContext2D;
 	private output: ImageData;
 
-	constructor(image: ImageArray, canvas) {
+	constructor(bitmap: Bitmap, canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
 
-		this.px = image.px;
-		this.width = image.width;
-		this.height = image.height;
-		this.channels = image.useAlpha ? 4 : 3;
+		this.px = bitmap.data;
+		this.width = bitmap.width;
+		this.height = bitmap.height;
+		this.channels = bitmap.useAlpha ? 4 : 3;
 
 		this.ctx = this.canvas.getContext('2d');
+
 		// get canvas-sized image data
 		this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
 
-		// make sure pixels are visible
-		fill.alphaData(this.output.data, this.output.width, this.output.height, 255);
+		// set the alpha channel to visible
+		clearAlpha(this.output.data);
 
 		this.ctx.putImageData(this.output, 0, 0);
 	}
 
-	resize(render?: boolean): void {
+	resize(): void {
 		if (this.output.width !== this.canvas.width || this.output.height !== this.canvas.height) {
 			this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
-			if (!render) {
-				// set the alpha channel to visible
-				fill.alphaData(this.output.data, this.output.width, this.output.height, 255);
-			}
-		}
-		if (render) {
-			this.update();
+			// set the alpha channel to visible
+			clearAlpha(this.output.data);
 		}
 	}
 
@@ -57,12 +59,12 @@ class CanvasRender implements IRenderer {
 		var fx = this.width / width;
 		var fy = this.height / height;
 
-		for (var j = 0; j < height; j++) {
-			for (var i = 0; i < width; i++) {
-				var x = Math.floor(i * fx);
-				var y = Math.floor(j * fy);
+		for (var iy = 0; iy < height; iy++) {
+			for (var ix = 0; ix < width; ix++) {
+				var x = Math.floor(ix * fx);
+				var y = Math.floor(iy * fy);
 				var read = (x + y * this.width) * this.channels;
-				var write = (i + j * width) * 4;
+				var write = (ix + iy * width) * 4;
 
 				data[write] = this.px[read];
 				data[write + 1] = this.px[read + 1];
@@ -72,7 +74,7 @@ class CanvasRender implements IRenderer {
 		this.ctx.putImageData(this.output, 0, 0);
 	}
 
-	close(): void {
+	destruct(): void {
 		this.px = null;
 		this.ctx = null;
 		this.canvas = null;

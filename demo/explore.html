@@ -1,68 +1,70 @@
 <!doctype html>
 <html class="dark">
 <head>
-    <meta charset="UTF-8">
-    <title>explore demos - framebufferJS</title>
-    <link rel="stylesheet" type="text/css" href="css/demo.css">
+	<meta charset="UTF-8">
+	<title>explore demos - lorez</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <body>
 <div id="screen-wrap">
-    <canvas id="gameScreen" width="480" height="480">
-        What, no canvas support? D:
-    </canvas>
+	<canvas id="gameScreen" width="480" height="480">
+		What, no canvas support? D:
+	</canvas>
 </div>
 </body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 <script type="text/javascript">
 
-    requirejs.config({
-        paths: {
-            'Framebuffer': '../dist/suite',
-            'text': '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text.min'
-        }
-    });
+	requirejs.config({
+		paths: {
+			'lorez': '../dist/lorez',
+			'text': '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text.min'
+		}
+	});
 
-    require(['./js/runner'], function (runner) {
-        var config = {
-            canvas: 'gameScreen',
-            webGL: true
-        };
+	require(['./js/runner'], function (runner) {
+		var config = {
+			canvas: 'gameScreen',
+			renderer: 'webgl',
+			center: true,
+			scale: 'max'
+		};
 
-        var examples = [
-            './gallery/frame32',
-            './gallery/movers'
-        ];
-        var currentI = 0;
-        var demo = null;
+		var examples = [
+			'./gallery/frame32',
+			'./gallery/movers'
+		];
+		var currentI = 0;
+		var demo = null;
 
-        function load(name) {
-            runner.load(name, function (_demo) {
-                demo = _demo;
-                demo.ticker.start();
-            });
-        }
+		function load(name) {
+			runner.load(name, function (_demo) {
+				demo = _demo;
+				demo.ticker.start();
+			});
+		}
 
-        function listener (ev){
-            if(ev.type === 'next') {
-                currentI = (currentI + 1) % examples.length;
-                load(examples[currentI]);
-            }
-            else if(ev.type === 'prev') {
-                currentI = (currentI - 1) % examples.length;
-                load(examples[currentI]);
-            }
-            else if(ev.type === 'scale') {
-                demo.autosize.scale(ev.scale);
-            }
-            else{
-                console.log(ev);
-            }
-            // more
-        }
+		function listener(ev) {
+			if (ev.type === 'next') {
+				currentI = (currentI + 1) % examples.length;
+				load(examples[currentI]);
+			}
+			else if (ev.type === 'prev') {
+				currentI = (currentI - 1) % examples.length;
+				load(examples[currentI]);
+			}
+			else if (ev.type === 'scale') {
+				demo.stage.autoSize.scale(ev.scale);
+			}
+			else {
+				console.log(ev);
+			}
+			// more
+		}
 
-        runner.init(config, listener, function () {
-            load(examples[currentI]);
-        });
-    });
+		runner.init(config, listener, function () {
+			load(examples[currentI]);
+		});
+	});
 </script>
 </html>

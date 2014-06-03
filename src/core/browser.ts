@@ -2,13 +2,10 @@
 
 'use strict';
 
-export interface Block {
-	width: number;
-	height: number;
-}
+import IBlock = require('./../types/IBlock');
 
 // helper ripped from https://stackoverflow.com/questions/15451321/how-can-i-make-html5-javascript-canvas-fill-window-screen
-export function getViewport(): Block {
+export function getViewport(): IBlock {
 	var e: any = window;
 	var a = 'inner';
 	if (!('innerWidth' in window )) {

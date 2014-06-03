@@ -17,10 +17,7 @@ module.exports = function (grunt) {
 
 	// list the files for reference (and verification)
 	var dist = {
-		basic: './dist/fb.js',
-		// basic_min: './dist/fb.min.js',
-		suite: './dist/suite.js',
-		// suite_min: './dist/suite.min.js'
+		basic: './dist/lorez.js'
 	};
 
 	grunt.initConfig({
@@ -77,7 +74,7 @@ module.exports = function (grunt) {
 		},
 		bundle: {
 			options: {
-				standalone: 'FB'
+				standalone: 'lorez'
 			},
 			index: {
 				main: './build/index.js',
@@ -100,7 +97,7 @@ module.exports = function (grunt) {
 		'prep',
 		'ts:index',
 		'bundle:index',
-		// 'verify'
+		'verify'
 	]);
 
 	grunt.registerTask('test', [
@@ -156,8 +153,7 @@ module.exports = function (grunt) {
 	grunt.registerMultiTask('bundle', function () {
 		var options = this.options({
 			// name of the UMD global
-			standalone: 'Framebuffer',
-			minify: false
+			standalone: 'lorez'
 		});
 		// always source-map (minifyify expects this)
 		options.debug = true;

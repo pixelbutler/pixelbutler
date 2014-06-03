@@ -2,6 +2,7 @@
 
 'use strict';
 
+import Bitmap = require('../core/Bitmap');
 import IRenderer = require('../render/IRenderer');
 
 var vertexShaderSource = [
@@ -54,7 +55,6 @@ class WebGLRender implements IRenderer {
 	private canvas: HTMLCanvasElement;
 	private width: number;
 	private height: number;
-	private image: number;
 	private px: Uint8Array;
 
 	private gl: WebGLRenderingContext;
@@ -64,14 +64,13 @@ class WebGLRender implements IRenderer {
 	private texCoordBuffer: WebGLBuffer;
 	private texture: WebGLTexture;
 
-	constructor(image, canvas) {
+	constructor(bitmap: Bitmap, canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
-		this.image = image;
-		this.width = image.width;
-		this.height = image.height;
+		this.width = bitmap.width;
+		this.height = bitmap.height;
 
 		// use a Uint8Array view for WebGL compatibility
-		this.px = new Uint8Array(image.buffer);
+		this.px = new Uint8Array(bitmap.buffer);
 
 		// cheap check
 		if (!window.WebGLRenderingContext) {
@@ -162,15 +161,9 @@ class WebGLRender implements IRenderer {
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 	}
 
-	resize(render?: boolean): void {
+	resize(): void {
 		this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-
-		if (render) {
-			this.update();
-		}
-		else {
-			this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-		}
+		this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 	}
 
 	update(): void {
@@ -180,7 +173,7 @@ class WebGLRender implements IRenderer {
 		this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
 	}
 
-	close(): void {
+	destruct(): void {
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 		//TODO what else? how unload WebGL?
 		this.gl = null;

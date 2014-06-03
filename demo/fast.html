@@ -1,51 +1,57 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>fast - framebufferJS</title>
-    <link rel="stylesheet" type="text/css" href="css/demo.css">
+	<meta charset="UTF-8">
+	<title>fast - lorez</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <body>
 <canvas id="gameScreen" width="640" height="480">
-    What, no canvas support? D:
+	What, no canvas support? D:
 </canvas>
 </body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 <script type="text/javascript">
 
-    require(['../dist/fb'], function(FB) {
+	require(['../dist/lorez'], function (lorez) {
 
-        var $fb = new FB.Framebuffer({
-            width: 160,
-            height: 120,
-            canvas: 'gameScreen',
-            renderer: 'webgl'
-        });
+		var $fb = new lorez.Stage({
+			width: 160,
+			height: 120,
+			canvas: 'gameScreen'
+		});
 
-        var t = 0;
-        function step() {
-            t++;
+		var p1 = {r: 48, g: 48, b: 200};
+		var p2 = {r: 48, g: 48, b: 255};
+		var p3 = {r: 64, g: 64, b: 255};
+		var circleC = {r: 93, g: 27, b: 175};
 
-            $fb.clear([0, 0, 0]);
-            $fb.fillcircle(80, 60, 48, [93, 27, 175]);
+		var frame = 0;
 
-            $fb.text(50 + Math.sin(t / 13) * 50, 5, "Hello Warld!", FB.hsv2rgb([t % 360, 100, 100]));
+		function step() {
+			frame++;
 
-            $fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, t / 5), FB.hsv2rgb([220, FB.rand(100), FB.rand(100)]));
+			$fb.clear();
+			$fb.fillCircle(80, 60, 48, circleC);
 
-            for (var i = 0; i < 15; i++) {
-                var x = (i ^ (i << 12)) % 160;
-                var y = ((i ^ (i << 7)) + t * 4) % 120;
-                $fb.pixel(x, y, [64, 64, 200]);
-                $fb.pixel(x, y + 1, [64, 64, 200]);
-                $fb.pixel(x, y + 2, [64, 64, 255]);
-            }
+			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv2rgb({h: frame % 360, s: 100, v: 100}));
 
-            $fb.render();
+			$fb.text(5, 80, "Woooooaaaaah! Lorez FramebufferJS!".substring(0, frame / 5), lorez.hsv2rgb({h: 220, s: lorez.rand(100), v: lorez.rand(100)}));
 
-            window.requestAnimationFrame(step);
-        }
-        window.requestAnimationFrame(step);
-    });
+			for (var i = 0; i < 15; i++) {
+				var x = (i ^ (i << 12)) % 160;
+				var y = ((i ^ (i << 7)) + frame * 4) % 120;
+				$fb.setPixel(x, y, p1);
+				$fb.setPixel(x, y + 1, p2);
+				$fb.setPixel(x, y + 2, p3);
+			}
+
+			$fb.render();
+
+			window.requestAnimationFrame(step);
+		}
+
+		window.requestAnimationFrame(step);
+	});
 </script>
 </html>
