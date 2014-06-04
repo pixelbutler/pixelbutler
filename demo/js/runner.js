@@ -60,11 +60,19 @@ define(['lorez', 'text!../partial/ui.html!strip'], function (lorez, uiHtml) {
 
 		// navigation
 		elem('hud').addEventListener('click', function (ev) {
-			if (ev.target === elem('nav-next')) {
-				notify('next');
-			}
-			else if (ev.target === elem('nav-prev')) {
-				notify('prev');
+			switch(ev.target.id){
+				case 'nav-next':
+					notify('next');
+					break;
+				case 'nav-prev':
+					notify('next');
+					break;
+				case 'hud-source':
+					notify('source');
+					break;
+				default:
+					console.log()
+					break;
 			}
 		});
 

@@ -50,7 +50,7 @@
 		}
 
 		function getDemoURL(name) {
-			return './gallery/' + name;
+			return window.location.origin + '/demo/gallery/' + name + '.js';
 		}
 
 		function getDemoI(name) {
@@ -78,19 +78,24 @@
 		}
 
 		function listener(ev) {
-			if (ev.type === 'next') {
-				currentI = (currentI + 1) % demos.length;
-				load(demos[currentI], true);
-			}
-			else if (ev.type === 'prev') {
-				currentI = (currentI - 1) % demos.length;
-				load(demos[currentI], true);
-			}
-			else if (ev.type === 'scale') {
-				demo.stage.autoSize.scale(ev.scale);
-			}
-			else {
-				console.log(ev);
+			switch (ev.type) {
+				case 'next':
+					currentI = (currentI + 1) % demos.length;
+					load(demos[currentI], true);
+					break;
+				case 'prev':
+					currentI = (currentI - 1) % demos.length;
+					load(demos[currentI], true);
+					break;
+				case 'scale':
+					demo.stage.autoSize.scale(ev.scale);
+					break;
+				case 'source':
+					window.open(getDemoURL(demos[currentI], '_blank'));
+					break;
+				default:
+					console.log(ev);
+					break;
 			}
 			// more
 		}
