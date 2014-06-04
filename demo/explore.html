@@ -58,11 +58,13 @@
 			return demos.indexOf(name) > -1;
 		}
 
-		function load(name) {
-			if (hash.demo !== name) {
-				hash.demo = name;
-				var str = urlUtil.makeHash(hash);
-				window.history.pushState(null, null, window.location.origin + window.location.pathname + str);
+		function load(name, history) {
+			if (history) {
+				if (hash.demo !== name) {
+					hash.demo = name;
+					var str = urlUtil.makeHash(hash);
+					window.history.pushState(null, null, window.location.origin + window.location.pathname + str);
+				}
 			}
 			window.document.title = name + ' - lorez';
 
@@ -75,11 +77,11 @@
 		function listener(ev) {
 			if (ev.type === 'next') {
 				currentI = (currentI + 1) % demos.length;
-				load(demos[currentI]);
+				load(demos[currentI], true);
 			}
 			else if (ev.type === 'prev') {
 				currentI = (currentI - 1) % demos.length;
-				load(demos[currentI]);
+				load(demos[currentI], true);
 			}
 			else if (ev.type === 'scale') {
 				demo.stage.autoSize.scale(ev.scale);
@@ -97,6 +99,10 @@
 					currentI = getDemoI(hash.demo);
 					load(hash.demo);
 				}
+			}
+			else {
+				currentI = 0;
+				load(demos[currentI]);
 			}
 		});
 
