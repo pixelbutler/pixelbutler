@@ -25,19 +25,20 @@ define(['lorez'], function (lorez) {
 		alpha.setPixel(0, 1, blue);
 		alpha.setPixel(1, 0, blue);
 
-		var char = new lorez.Bitmap(1, 1, false);
+		var char = new lorez.Bitmap(1, 1, true);
 		char.clear(blue);
 
-		var radial = new lorez.Bitmap(1, 1, false);
+		var radial = new lorez.Bitmap(1, 1, true);
 
-		new lorez.ImageLoader('assets/trollop.png').load(function(err, bitmap) {
+		new lorez.ImageLoader('assets/trollop.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;
 			}
 			char = bitmap;
 		});
-		new lorez.ImageLoader('assets/radial.png').load(function(err, bitmap) {
+
+		new lorez.ImageLoader('assets/radial.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;

@@ -1,7 +1,7 @@
-import IRGB = require('./IRGB');
+import IRGBA = require('./IRGBA');
 
 interface IShader {
-	(x: number, y: number, col: IRGB): IRGB
+	(x: number, y: number, col: IRGBA): IRGBA;
 }
 
 export = IShader;

@@ -1,5 +1,7 @@
-import IRGB = require('./IRGB');
-interface IRGBA extends IRGB {
+interface IRGBA {
+	r: number;
+	g: number;
+	b: number;
 	a: number;
 }
 

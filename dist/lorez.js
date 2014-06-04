@@ -2,7 +2,7 @@
 'use strict';
 var RGBA = _dereq_('./RGBA');
 
-var font = _dereq_('../font/micro');
+var microFont = _dereq_('../font/micro');
 
 var util = _dereq_('./util');
 var rand = util.rand;
@@ -14,12 +14,13 @@ var magenta = new RGBA(255, 0, 255);
 
 var Bitmap = (function () {
     function Bitmap(width, height, useAlpha, buffer) {
-        if (typeof useAlpha === "undefined") { useAlpha = true; }
+        if (typeof useAlpha === "undefined") { useAlpha = false; }
         if (typeof buffer === "undefined") { buffer = null; }
         this.width = width;
         this.height = height;
         this.useAlpha = useAlpha;
         this.channels = (useAlpha ? 4 : 3);
+
         if (buffer) {
             var total = (this.width * this.height * this.channels);
             if (buffer.byteLength !== total) {
@@ -136,6 +137,7 @@ var Bitmap = (function () {
         x = Math.floor(x);
         y = Math.floor(y);
         r = Math.floor(r);
+
         for (var iy = -r; iy <= r; iy++) {
             for (var ix = -r; ix <= r; ix++) {
                 if (x + ix < 0 || y + iy < 0 || x + ix >= this.width || y + iy >= this.height) {
@@ -171,14 +173,20 @@ var Bitmap = (function () {
 
     Bitmap.prototype.shader = function (f) {
         var rgb = new RGBA();
-        for (var iy = 0; iy < this.height; iy++) {
-            for (var ix = 0; ix < this.width; ix++) {
-                var p = (ix + iy * this.width) * this.channels;
+
+        var iy;
+        var ix;
+        var p;
+        var col;
+
+        for (iy = 0; iy < this.height; iy++) {
+            for (ix = 0; ix < this.width; ix++) {
+                p = (ix + iy * this.width) * this.channels;
                 rgb.r = this.data[p];
                 rgb.g = this.data[p + 1];
                 rgb.b = this.data[p + 2];
 
-                var col = f(ix, iy, rgb);
+                col = f(ix, iy, rgb);
 
                 this.data[p] = col.r;
                 this.data[p + 1] = col.g;
@@ -195,11 +203,11 @@ var Bitmap = (function () {
     };
 
     Bitmap.prototype.drawChar = function (x, y, chr, col) {
-        var char = font.chars[chr.toUpperCase()];
+        var char = microFont.chars[chr.toUpperCase()];
         if (!char) {
             return 0;
         }
-        for (var iy = 0; iy < font.height; iy++) {
+        for (var iy = 0; iy < microFont.height; iy++) {
             for (var ix = 0; ix < char.width; ix++) {
                 if (char.map[iy * char.width + ix]) {
                     this.setPixel(x + ix, y + iy, col);
@@ -217,14 +225,17 @@ var Bitmap = (function () {
         sx = (sx ? Math.floor(sx) : 0);
         sy = (sy ? Math.floor(sy) : 0);
 
-        var iy, ix, read, write;
+        var iy;
+        var ix;
+        var read;
+        var write;
+
         if (sprite.useAlpha) {
             for (iy = sy; iy < sy + h; iy++) {
                 for (ix = sx; ix < sx + w; ix++) {
                     if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
                         continue;
                     }
-
                     read = (ix + iy * sprite.width) * sprite.channels;
                     write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
 
@@ -241,7 +252,6 @@ var Bitmap = (function () {
                     if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
                         continue;
                     }
-
                     read = (ix + iy * sprite.width) * sprite.channels;
                     write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
 
@@ -255,14 +265,17 @@ var Bitmap = (function () {
 
     Bitmap.prototype.clear = function (color) {
         color = color || black;
-        var lim, i;
+
+        var lim;
+        var i;
+
         if (this.useAlpha) {
             lim = this.width * this.height * 4;
             for (i = 0; i < lim; i += 4) {
                 this.data[i] = color.r;
                 this.data[i + 1] = color.g;
                 this.data[i + 2] = color.b;
-                this.data[i + 3] = 255;
+                this.data[i + 3] = color.a;
             }
         } else {
             lim = this.width * this.height * 3;
@@ -275,7 +288,9 @@ var Bitmap = (function () {
     };
 
     Bitmap.prototype.clearDisco = function () {
-        var lim, i;
+        var lim;
+        var i;
+
         if (this.useAlpha) {
             lim = this.width * this.height * 4;
             for (i = 0; i < lim; i += 4) {
@@ -864,8 +879,10 @@ exports.clamp = clamp;
 var Bitmap = _dereq_('../core/Bitmap');
 
 var ImageLoader = (function () {
-    function ImageLoader(url) {
+    function ImageLoader(url, useAlpha) {
+        if (typeof useAlpha === "undefined") { useAlpha = false; }
         this.url = url;
+        this.useAlpha = useAlpha;
     }
     ImageLoader.prototype.load = function (callback) {
         var _this = this;
@@ -874,11 +891,29 @@ var ImageLoader = (function () {
             var canvas = document.createElement('canvas');
             canvas.width = image.width;
             canvas.height = image.height;
+
             var ctx = canvas.getContext('2d');
             ctx.drawImage(image, 0, 0);
 
-            var bitmap = new Bitmap(image.width, image.height, true, ctx.getImageData(0, 0, image.width, image.height).data.buffer);
-            callback(null, bitmap);
+            if (_this.useAlpha) {
+                callback(null, new Bitmap(image.width, image.height, true, ctx.getImageData(0, 0, image.width, image.height).data.buffer));
+            } else {
+                var bitmap = new Bitmap(image.width, image.height, false);
+                var data = ctx.getImageData(0, 0, image.width, image.height).data;
+                var width = image.width;
+
+                for (var iy = 0; iy < image.height; iy++) {
+                    for (var ix = 0; ix < width; ix++) {
+                        var read = (iy * width + ix) * 4;
+                        var write = (iy * width + ix) * 3;
+
+                        bitmap.data[write] = data[read];
+                        bitmap.data[write + 1] = data[read + 1];
+                        bitmap.data[write + 2] = data[read + 2];
+                    }
+                }
+                callback(null, bitmap);
+            }
         };
         image.onerror = function () {
             callback(new Error('cannot load ' + _this.url), null);

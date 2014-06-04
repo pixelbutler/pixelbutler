@@ -5,11 +5,13 @@
 import INumberArray = require('../types/INumberArray');
 import IShader = require('../types/IShader');
 import IRGB = require('../types/IRGB');
-import RGBA = require('./RGBA');
+import IRGBA = require('../types/IRGBA');
 
+import RGBA = require('./RGBA');
 import Font = require('./Font');
 import Char = require('./Char');
-import font = require('../font/micro');
+
+import microFont = require('../font/micro');
 import color = require('./color');
 
 import util = require('./util');
@@ -35,11 +37,12 @@ class Bitmap {
 	public buffer: ArrayBuffer;
 	public data: Uint8ClampedArray;
 
-	constructor(width: number, height: number, useAlpha: boolean = true, buffer: ArrayBuffer = null) {
+	constructor(width: number, height: number, useAlpha: boolean = false, buffer: ArrayBuffer = null) {
 		this.width = width;
 		this.height = height;
 		this.useAlpha = useAlpha;
 		this.channels = (useAlpha ? 4 : 3);
+
 		if (buffer) {
 			var total = (this.width * this.height * this.channels);
 			if (buffer.byteLength !== total) {
@@ -160,6 +163,7 @@ class Bitmap {
 		x = Math.floor(x);
 		y = Math.floor(y);
 		r = Math.floor(r);
+
 		for (var iy = -r; iy <= r; iy++) {
 			for (var ix = -r; ix <= r; ix++) {
 				if (x + ix < 0 || y + iy < 0 || x + ix >= this.width || y + iy >= this.height) {
@@ -195,14 +199,20 @@ class Bitmap {
 
 	shader(f: IShader): void {
 		var rgb = new RGBA();
-		for (var iy = 0; iy < this.height; iy++) {
-			for (var ix = 0; ix < this.width; ix++) {
-				var p = (ix + iy * this.width) * this.channels;
+
+		var iy: number;
+		var ix: number;
+		var p: number;
+		var col: IRGBA;
+
+		for (iy = 0; iy < this.height; iy++) {
+			for (ix = 0; ix < this.width; ix++) {
+				p = (ix + iy * this.width) * this.channels;
 				rgb.r = this.data[p];
 				rgb.g = this.data[p + 1];
 				rgb.b = this.data[p + 2];
 
-				var col = f(ix, iy, rgb);
+				col = f(ix, iy, rgb);
 
 				this.data[p] = col.r;
 				this.data[p + 1] = col.g;
@@ -219,11 +229,11 @@ class Bitmap {
 	}
 
 	private drawChar(x: number, y: number, chr: string, col: IRGB): number {
-		var char: Char = font.chars[chr.toUpperCase()];
+		var char: Char = microFont.chars[chr.toUpperCase()];
 		if (!char) {
 			return 0;
 		}
-		for (var iy = 0; iy < font.height; iy++) {
+		for (var iy = 0; iy < microFont.height; iy++) {
 			for (var ix = 0; ix < char.width; ix++) {
 				if (char.map[iy * char.width + ix]) {
 					this.setPixel(x + ix, y + iy, col);
@@ -242,7 +252,11 @@ class Bitmap {
 		sy = (sy ?  Math.floor(sy) : 0);
 
 		// TODO optimise clipping
-		var iy: number, ix: number, read: number, write: number;
+		var iy: number;
+		var ix: number;
+		var read: number;
+		var write: number;
+
 		if (sprite.useAlpha) {
 			for (iy = sy; iy < sy + h; iy++) {
 				for (ix = sx; ix < sx + w; ix++) {
@@ -277,16 +291,19 @@ class Bitmap {
 		}
 	}
 
-	clear(color?: IRGB): void {
+	clear(color?: IRGBA): void {
 		color = color || black;
-		var lim: number, i: number;
+
+		var lim: number;
+		var i: number;
+
 		if (this.useAlpha) {
 			lim = this.width * this.height * 4;
 			for (i = 0; i < lim; i += 4) {
 				this.data[i] = color.r;
 				this.data[i + 1] = color.g;
 				this.data[i + 2] = color.b;
-				this.data[i + 3] = 255;
+				this.data[i + 3] = color.a;
 			}
 		} else {
 			lim = this.width * this.height * 3;
@@ -299,7 +316,9 @@ class Bitmap {
 	}
 
 	clearDisco(): void {
-		var lim: number, i: number;
+		var lim: number;
+		var i: number;
+
 		if (this.useAlpha) {
 			lim = this.width * this.height * 4;
 			for (i = 0; i < lim; i += 4) {
