@@ -6,6 +6,7 @@
 /tscommand*
 *.psd
 
+/docs
 /build
 /dist/*.js.map
 
