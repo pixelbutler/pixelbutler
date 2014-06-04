@@ -1,3 +1,7 @@
+/// <reference path="../../typings/tsd.d.ts" />
+
+'use strict';
+
 class Char {
 	public char: string;
 	public width: number;

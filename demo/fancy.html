@@ -19,12 +19,15 @@
 			width: 160,
 			height: 120,
 			canvas: 'gameScreen',
+			renderer: 'canvas',
 			center: true,
 			scale: 'fit'
 		});
 
 		var shaderFactor = 0;
 		var shaderFrame = 0;
+
+		var fps = new lorez.FPS(60, 10);
 
 		var discoShader = function (x, y, col) {
 			var xa = (x + shaderFrame) % $fb.width / $fb.width;
@@ -75,6 +78,8 @@
 		var rectC = lorez.rgb(172, 172, 172);
 
 		function step(frame, delta) {
+			fps.begin();
+
 			shaderFactor = Math.sin(frame / 60 * mp2) * .5 + 1;
 			shaderFrame = frame;
 
@@ -87,9 +92,9 @@
 			$fb.drawCircle(80, 60, 48, circle5);
 			$fb.drawRect(2, 2, $fb.width - 4, $fb.height - 4, rectC);
 
-			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv2rgb({h: frame % 360, s: 100, v: 100}));
+			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv(frame % 360, 100, 100));
 
-			$fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, frame / 5), lorez.hsv2rgb({h: 220, s: lorez.rand(100), v: lorez.rand(100)}));
+			$fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, frame / 5), lorez.hsv(220, lorez.rand(100), lorez.rand(100)));
 
 			for (var i = 0; i < 15; i++) {
 				var x = (i ^ (i << 12)) % 160;
@@ -108,9 +113,16 @@
 				$fb.blit(sprites[frame % sprites.length], Math.random() * $fb.width, Math.random() * $fb.height);
 			}
 
+			$fb.text(5, 10, 'fps: ' + fps.fps, white);
+			$fb.text(5, 15, 'ms: ' + fps.redraw, white);
+			$fb.text(5, 20, 'frame: ' + frame, white);
+			$fb.text(5, 25, 'delta: ' + delta, white);
+
 			$fb.shader(discoShader);
 
 			$fb.render();
+
+			fps.end();
 		}
 
 		lorez.ticker.request(step).start();

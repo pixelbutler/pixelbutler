@@ -1,3 +1,7 @@
+/// <reference path="../../typings/tsd.d.ts" />
+
+'use strict';
+
 import IHSV = require('../types/IHSV');
 
 class HSV implements IHSV {

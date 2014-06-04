@@ -1,3 +1,7 @@
+/// <reference path="../../typings/tsd.d.ts" />
+
+'use strict';
+
 import Char = require('./Char');
 
 class Font {

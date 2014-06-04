@@ -279,7 +279,8 @@ var Bitmap = (function () {
 module.exports = Bitmap;
 //# sourceMappingURL=Bitmap.js.map
 
-},{"../font/micro":12,"./RGBA":5,"./util":11}],2:[function(_dereq_,module,exports){
+},{"../font/micro":13,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
+'use strict';
 var Char = (function () {
     function Char(char, map) {
         this.char = char;
@@ -300,6 +301,65 @@ module.exports = Char;
 //# sourceMappingURL=Char.js.map
 
 },{}],3:[function(_dereq_,module,exports){
+'use strict';
+var FPS = (function () {
+    function FPS(smoothFPS, smoothDelta) {
+        if (typeof smoothFPS === "undefined") { smoothFPS = 30; }
+        if (typeof smoothDelta === "undefined") { smoothDelta = 2; }
+        this.tickHistory = [0];
+        this.deltaHistory = [0];
+        this.tickI = 0;
+        this.deltaI = 0;
+        this.smoothFPS = smoothFPS;
+        this.smoothDelta = smoothDelta;
+        this.previous = performance.now();
+    }
+    FPS.prototype.begin = function () {
+        var now = performance.now();
+        var delta = now - this.previous;
+        this.tickHistory[this.tickI % this.smoothFPS] = delta;
+        this.tickI++;
+        this.previous = now;
+    };
+
+    FPS.prototype.end = function () {
+        var now = performance.now();
+        var delta = now - this.previous;
+        this.deltaHistory[this.deltaI % this.smoothDelta] = delta;
+        this.deltaI++;
+    };
+
+    Object.defineProperty(FPS.prototype, "fps", {
+        get: function () {
+            var tot = 0;
+            for (var i = 0; i < this.tickHistory.length; i++) {
+                tot += this.tickHistory[i];
+            }
+            return Math.ceil(1000 / (tot / this.tickHistory.length));
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(FPS.prototype, "redraw", {
+        get: function () {
+            var tot = 0;
+            for (var i = 0; i < this.deltaHistory.length; i++) {
+                tot += this.deltaHistory[i];
+            }
+            return Math.ceil(tot / this.deltaHistory.length);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return FPS;
+})();
+
+module.exports = FPS;
+//# sourceMappingURL=FPS.js.map
+
+},{}],4:[function(_dereq_,module,exports){
+'use strict';
 var Char = _dereq_('./Char');
 
 var Font = (function () {
@@ -319,7 +379,8 @@ var Font = (function () {
 module.exports = Font;
 //# sourceMappingURL=Font.js.map
 
-},{"./Char":2}],4:[function(_dereq_,module,exports){
+},{"./Char":2}],5:[function(_dereq_,module,exports){
+'use strict';
 var HSV = (function () {
     function HSV(h, s, v) {
         if (typeof h === "undefined") { h = 0; }
@@ -335,7 +396,8 @@ var HSV = (function () {
 module.exports = HSV;
 //# sourceMappingURL=HSV.js.map
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
+'use strict';
 var RGBA = (function () {
     function RGBA(r, g, b, a) {
         if (typeof r === "undefined") { r = 0; }
@@ -353,7 +415,7 @@ var RGBA = (function () {
 module.exports = RGBA;
 //# sourceMappingURL=RGBA.js.map
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 'use strict';
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -423,7 +485,7 @@ var Stage = (function (_super) {
 module.exports = Stage;
 //# sourceMappingURL=Stage.js.map
 
-},{"./../render/CanvasRenderer":14,"./../render/WebGLRenderer":15,"./Bitmap":1,"./autosize":7}],7:[function(_dereq_,module,exports){
+},{"./../render/CanvasRenderer":15,"./../render/WebGLRenderer":16,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
 'use strict';
 var browser = _dereq_('./browser');
 
@@ -550,7 +612,7 @@ var AutoSize = (function () {
 exports.AutoSize = AutoSize;
 //# sourceMappingURL=autosize.js.map
 
-},{"./browser":8}],8:[function(_dereq_,module,exports){
+},{"./browser":9}],9:[function(_dereq_,module,exports){
 'use strict';
 function getViewport() {
     var e = window;
@@ -564,7 +626,7 @@ function getViewport() {
 exports.getViewport = getViewport;
 //# sourceMappingURL=browser.js.map
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 'use strict';
 var RGBA = _dereq_('./RGBA');
 var HSV = _dereq_('./HSV');
@@ -668,7 +730,7 @@ function rgb2hsv(rgb) {
 exports.rgb2hsv = rgb2hsv;
 //# sourceMappingURL=color.js.map
 
-},{"./HSV":4,"./RGBA":5}],10:[function(_dereq_,module,exports){
+},{"./HSV":5,"./RGBA":6}],11:[function(_dereq_,module,exports){
 'use strict';
 function interval(callback, fps) {
     var intervalID = 0;
@@ -747,7 +809,7 @@ function request(callback) {
 exports.request = request;
 //# sourceMappingURL=ticker.js.map
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 'use strict';
 function rand(max) {
     return Math.floor(Math.random() * max);
@@ -766,7 +828,7 @@ function clamp(value, min, max) {
 exports.clamp = clamp;
 //# sourceMappingURL=util.js.map
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 'use strict';
 var Font = _dereq_('../core/Font');
 
@@ -797,7 +859,7 @@ var font = new Font('micro', 4, {
     ],
     '4': [
         '100',
-        '110',
+        '101',
         '111',
         '010'
     ],
@@ -1012,10 +1074,10 @@ var font = new Font('micro', 4, {
         '1'
     ],
     ',': [
-        '00',
-        '00',
-        '01',
-        '10'
+        '0',
+        '0',
+        '1',
+        '1'
     ],
     '+': [
         '000',
@@ -1034,6 +1096,12 @@ var font = new Font('micro', 4, {
         '111',
         '000',
         '111'
+    ],
+    '*': [
+        '000',
+        '101',
+        '010',
+        '101'
     ],
     '_': [
         '000',
@@ -1095,12 +1163,6 @@ var font = new Font('micro', 4, {
         '00',
         '00'
     ],
-    '*': [
-        '000',
-        '111',
-        '010',
-        '101'
-    ],
     '~': [
         '000',
         '110',
@@ -1124,15 +1186,18 @@ var font = new Font('micro', 4, {
 module.exports = font;
 //# sourceMappingURL=micro.js.map
 
-},{"../core/Font":3}],13:[function(_dereq_,module,exports){
+},{"../core/Font":4}],14:[function(_dereq_,module,exports){
 'use strict';
 var Stage = _dereq_('./core/Stage');
 exports.Stage = Stage;
 
 var Bitmap = _dereq_('./core/Bitmap');
 exports.Bitmap = Bitmap;
+var FPS = _dereq_('./core/FPS');
+exports.FPS = FPS;
 
 var RGBA = _dereq_('./core/RGBA');
+var HSV = _dereq_('./core/HSV');
 
 var _util = _dereq_('./core/util');
 var rand = _util.rand;
@@ -1152,16 +1217,28 @@ function rgb(r, g, b) {
 }
 exports.rgb = rgb;
 
+var hsvTmp = new HSV();
+function hsv(h, s, v) {
+    hsvTmp.h = h;
+    hsvTmp.s = s;
+    hsvTmp.v = v;
+    return exports.hsv2rgb(hsvTmp);
+}
+exports.hsv = hsv;
+
 [
     _util,
     _color,
     exports.ticker,
+    RGBA,
+    HSV,
     exports.Bitmap,
+    exports.FPS,
     exports.Stage
 ];
 //# sourceMappingURL=index.js.map
 
-},{"./core/Bitmap":1,"./core/RGBA":5,"./core/Stage":6,"./core/color":9,"./core/ticker":10,"./core/util":11}],14:[function(_dereq_,module,exports){
+},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12}],15:[function(_dereq_,module,exports){
 'use strict';
 function clearAlpha(data) {
     var lim = data.length;
@@ -1230,7 +1307,7 @@ var CanvasRender = (function () {
 module.exports = CanvasRender;
 //# sourceMappingURL=CanvasRenderer.js.map
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 'use strict';
 var vertexShaderSource = [
     'attribute vec2 a_position;',
@@ -1366,9 +1443,9 @@ var WebGLRender = (function () {
 module.exports = WebGLRender;
 //# sourceMappingURL=WebGLRenderer.js.map
 
-},{}]},{},[13])
+},{}]},{},[14])
 
-(13)
+(14)
 });
 
 //# sourceMappingURL=lorez.js.map

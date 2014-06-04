@@ -34,9 +34,9 @@
 			$fb.clear();
 			$fb.fillCircle(80, 60, 48, circleC);
 
-			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv2rgb({h: frame % 360, s: 100, v: 100}));
+			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv(frame % 360, 100, 100));
 
-			$fb.text(5, 80, "Woooooaaaaah! Lorez FramebufferJS!".substring(0, frame / 5), lorez.hsv2rgb({h: 220, s: lorez.rand(100), v: lorez.rand(100)}));
+			$fb.text(5, 80, "Woooooaaaaah! Lorez FramebufferJS!".substring(0, frame / 5), lorez.hsv(220, lorez.rand(100),lorez.rand(100)));
 
 			for (var i = 0; i < 15; i++) {
 				var x = (i ^ (i << 12)) % 160;

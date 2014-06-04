@@ -1,3 +1,7 @@
+/// <reference path="../../typings/tsd.d.ts" />
+
+'use strict';
+
 import IRGBA = require('../types/IRGBA');
 
 class RGBA implements IRGBA {

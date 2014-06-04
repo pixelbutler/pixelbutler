@@ -25,7 +25,6 @@ define(['lorez'], function (lorez) {
 
 		var bellish = lorez.rgb(32, 32, 64);
 		var purrrpl = lorez.rgb(64, 32, 64);
-		var grrhey = lorez.rgb(32, 32, 32);
 
 		var pix0 = lorez.rgb(32, 32, 64);
 		var pix1 = lorez.rgb(48, 48, 164);
@@ -36,7 +35,7 @@ define(['lorez'], function (lorez) {
 
 		var mp2 = Math.PI * 2;
 
-		function render() {
+		function render(frame) {
 			$fb.clear(black);
 
 			var factor = Math.sin(frame / 60 * mp2) * 0.5 + 1;
@@ -64,11 +63,11 @@ define(['lorez'], function (lorez) {
 				$fb.blit(sprite, Math.random() * $fb.width, Math.random() * $fb.height);
 			}
 
-			var col = lorez.hsv2rgb({h: 220, s: lorez.rand(100), v: 50 + lorez.rand(50)});
+			var col = lorez.hsv(220, lorez.rand(100), 50 + lorez.rand(50));
 			$fb.text(5, 5, 'frame'.substring(0, (frame % 80 / 5)), col);
 			$fb.text(5, 23, 'buffer'.substring(0, (frame % 80 / 5)), col);
 
-			$fb.drawRect(2, 2, $fb.width - 5, $fb.height - 5, lorez.hsv2rgb({h: 220, s: lorez.rand(100), v: lorez.rand(100)}));
+			$fb.drawRect(2, 2, $fb.width - 4, $fb.height - 4, lorez.hsv(220, lorez.rand(100), lorez.rand(100)));
 
 			$fb.blit(sprite, 1, 1);
 			$fb.blit(sprite, $fb.width - 4, 1);

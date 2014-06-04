@@ -3,6 +3,7 @@
 'use strict';
 
 import IRGB = require('../types/IRGB');
+import IRGBA = require('../types/IRGBA');
 import IHSV = require('../types/IHSV');
 import RGBA = require('./RGBA');
 import HSV = require('./HSV');
@@ -19,7 +20,7 @@ import HSV = require('./HSV');
  * This, in turn, was taken from the snippet at
  * http://snipplr.com/view/14590/hsv-to-rgb/
  */
-export function hsv2rgb(hsv: IHSV): IRGB {
+export function hsv2rgb(hsv: IHSV): IRGBA {
 	var r, g, b;
 	var i;
 	var f, p, q, t;
