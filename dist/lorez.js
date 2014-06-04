@@ -13,12 +13,23 @@ var black = new RGBA(0, 0, 0);
 var magenta = new RGBA(255, 0, 255);
 
 var Bitmap = (function () {
-    function Bitmap(width, height, useAlpha) {
+    function Bitmap(width, height, useAlpha, buffer) {
         if (typeof useAlpha === "undefined") { useAlpha = true; }
+        if (typeof buffer === "undefined") { buffer = null; }
         this.width = width;
         this.height = height;
+        this.useAlpha = useAlpha;
         this.channels = (useAlpha ? 4 : 3);
-        this._resetData();
+        if (buffer) {
+            var total = (this.width * this.height * this.channels);
+            if (buffer.byteLength !== total) {
+                throw new Error('bad raw data dimensions; expected ' + total + ', received ' + buffer.byteLength);
+            }
+            this.buffer = buffer;
+            this.data = new Uint8ClampedArray(this.buffer);
+        } else {
+            this._resetData();
+        }
     }
     Bitmap.prototype._resetData = function () {
         this.buffer = new ArrayBuffer(this.width * this.height * this.channels);
@@ -199,25 +210,45 @@ var Bitmap = (function () {
     };
 
     Bitmap.prototype.blit = function (sprite, x, y, w, h, sx, sy) {
-        x = Math.floor(x);
-        y = Math.floor(y);
-        w = (!w ? sprite.width : Math.floor(w));
-        h = (!h ? sprite.height : Math.floor(h));
-        sx = (!sx ? 0 : Math.floor(sx));
-        sy = (!sy ? 0 : Math.floor(sy));
+        x = (x ? Math.floor(x) : 0);
+        y = (y ? Math.floor(y) : 0);
+        w = (w ? Math.floor(w) : sprite.width);
+        h = (h ? Math.floor(h) : sprite.height);
+        sx = (sx ? Math.floor(sx) : 0);
+        sy = (sy ? Math.floor(sy) : 0);
 
-        for (var iy = sy; iy < sy + h; iy++) {
-            for (var ix = sx; ix < sx + w; ix++) {
-                if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
-                    continue;
+        var iy, ix, read, write;
+        if (sprite.useAlpha) {
+            for (iy = sy; iy < sy + h; iy++) {
+                for (ix = sx; ix < sx + w; ix++) {
+                    if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
+                        continue;
+                    }
+
+                    read = (ix + iy * sprite.width) * sprite.channels;
+                    write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
+
+                    var alpha = sprite.data[read + 3] / 255;
+                    var inv = 1 - alpha;
+                    this.data[write] = Math.round(this.data[write] * inv + sprite.data[read] * alpha);
+                    this.data[write + 1] = Math.round(this.data[write + 1] * inv + sprite.data[read + 1] * alpha);
+                    this.data[write + 2] = Math.round(this.data[write + 2] * inv + sprite.data[read + 2] * alpha);
                 }
+            }
+        } else {
+            for (iy = sy; iy < sy + h; iy++) {
+                for (ix = sx; ix < sx + w; ix++) {
+                    if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
+                        continue;
+                    }
 
-                var read = (ix + iy * sprite.width) * sprite.channels;
-                var write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
+                    read = (ix + iy * sprite.width) * sprite.channels;
+                    write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
 
-                this.data[write] = sprite.data[read];
-                this.data[write + 1] = sprite.data[read + 1];
-                this.data[write + 2] = sprite.data[read + 2];
+                    this.data[write] = sprite.data[read];
+                    this.data[write + 1] = sprite.data[read + 1];
+                    this.data[write + 2] = sprite.data[read + 2];
+                }
             }
         }
     };
@@ -279,7 +310,7 @@ var Bitmap = (function () {
 module.exports = Bitmap;
 //# sourceMappingURL=Bitmap.js.map
 
-},{"../font/micro":14,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
+},{"../font/micro":15,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
 'use strict';
 var Char = (function () {
     function Char(char, map) {
@@ -485,7 +516,7 @@ var Stage = (function (_super) {
 module.exports = Stage;
 //# sourceMappingURL=Stage.js.map
 
-},{"./../render/CanvasRenderer":16,"./../render/WebGLRenderer":17,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
+},{"./../render/CanvasRenderer":17,"./../render/WebGLRenderer":18,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
 'use strict';
 var browser = _dereq_('./browser');
 
@@ -829,6 +860,38 @@ exports.clamp = clamp;
 //# sourceMappingURL=util.js.map
 
 },{}],13:[function(_dereq_,module,exports){
+'use strict';
+var Bitmap = _dereq_('../core/Bitmap');
+
+var ImageLoader = (function () {
+    function ImageLoader(url) {
+        this.url = url;
+    }
+    ImageLoader.prototype.load = function (callback) {
+        var _this = this;
+        var image = document.createElement('img');
+        image.onload = function () {
+            var canvas = document.createElement('canvas');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0);
+
+            var bitmap = new Bitmap(image.width, image.height, true, ctx.getImageData(0, 0, image.width, image.height).data.buffer);
+            callback(null, bitmap);
+        };
+        image.onerror = function () {
+            callback(new Error('cannot load ' + _this.url), null);
+        };
+        image.src = this.url;
+    };
+    return ImageLoader;
+})();
+
+module.exports = ImageLoader;
+//# sourceMappingURL=ImageLoader.js.map
+
+},{"../core/Bitmap":1}],14:[function(_dereq_,module,exports){
 var PerlinNoise = (function () {
     function PerlinNoise() {
         this.permutation = [
@@ -900,7 +963,7 @@ var PerlinNoise = (function () {
 module.exports = PerlinNoise;
 //# sourceMappingURL=PerlinNoise.js.map
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 'use strict';
 var Font = _dereq_('../core/Font');
 
@@ -1258,7 +1321,7 @@ var font = new Font('micro', 4, {
 module.exports = font;
 //# sourceMappingURL=micro.js.map
 
-},{"../core/Font":4}],15:[function(_dereq_,module,exports){
+},{"../core/Font":4}],16:[function(_dereq_,module,exports){
 'use strict';
 var Stage = _dereq_('./core/Stage');
 exports.Stage = Stage;
@@ -1271,6 +1334,8 @@ exports.FPS = FPS;
 var RGBA = _dereq_('./core/RGBA');
 var HSV = _dereq_('./core/HSV');
 
+var ImageLoader = _dereq_('./extra/ImageLoader');
+exports.ImageLoader = ImageLoader;
 var PerlinNoise = _dereq_('./extra/PerlinNoise');
 exports.PerlinNoise = PerlinNoise;
 
@@ -1302,6 +1367,7 @@ function hsv(h, s, v) {
 exports.hsv = hsv;
 
 [
+    exports.ImageLoader,
     exports.PerlinNoise,
     _util,
     _color,
@@ -1314,7 +1380,7 @@ exports.hsv = hsv;
 ];
 //# sourceMappingURL=index.js.map
 
-},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12,"./extra/PerlinNoise":13}],16:[function(_dereq_,module,exports){
+},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12,"./extra/ImageLoader":13,"./extra/PerlinNoise":14}],17:[function(_dereq_,module,exports){
 'use strict';
 function clearAlpha(data) {
     var lim = data.length;
@@ -1383,7 +1449,7 @@ var CanvasRender = (function () {
 module.exports = CanvasRender;
 //# sourceMappingURL=CanvasRenderer.js.map
 
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 'use strict';
 var vertexShaderSource = [
     'attribute vec2 a_position;',
@@ -1519,9 +1585,9 @@ var WebGLRender = (function () {
 module.exports = WebGLRender;
 //# sourceMappingURL=WebGLRenderer.js.map
 
-},{}]},{},[15])
+},{}]},{},[16])
 
-(15)
+(16)
 });
 
 //# sourceMappingURL=lorez.js.map

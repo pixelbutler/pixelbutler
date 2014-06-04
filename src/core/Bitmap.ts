@@ -2,6 +2,7 @@
 
 'use strict';
 
+import INumberArray = require('../types/INumberArray');
 import IShader = require('../types/IShader');
 import IRGB = require('../types/IRGB');
 import RGBA = require('./RGBA');
@@ -34,17 +35,27 @@ class Bitmap {
 	public buffer: ArrayBuffer;
 	public data: Uint8ClampedArray;
 
-	constructor(width: number, height: number, useAlpha: boolean = true) {
+	constructor(width: number, height: number, useAlpha: boolean = true, buffer: ArrayBuffer = null) {
 		this.width = width;
 		this.height = height;
+		this.useAlpha = useAlpha;
 		this.channels = (useAlpha ? 4 : 3);
-		this._resetData();
+		if (buffer) {
+			var total = (this.width * this.height * this.channels);
+			if (buffer.byteLength !== total) {
+				throw new Error('bad raw data dimensions; expected ' + total + ', received ' + buffer.byteLength);
+			}
+			this.buffer = buffer;
+			this.data = new Uint8ClampedArray(this.buffer);
+		}
+		else {
+			this._resetData();
+		}
 	}
 
 	private _resetData(): void {
 		// keep reference to raw buffer for aliasing as Uint8Array
 		this.buffer = new ArrayBuffer(this.width * this.height * this.channels);
-
 		// work on a clamped array for safety
 		this.data = new Uint8ClampedArray(this.buffer);
 	}
@@ -222,26 +233,46 @@ class Bitmap {
 		return char.width;
 	}
 
-	blit(sprite: Bitmap, x: number, y: number, w?: number, h?: number, sx?: number, sy?: number): void {
-		x = Math.floor(x);
-		y = Math.floor(y);
-		w = (!w ? sprite.width : Math.floor(w));
-		h = (!h ? sprite.height : Math.floor(h));
-		sx = (!sx ? 0 : Math.floor(sx));
-		sy = (!sy ? 0 : Math.floor(sy));
+	blit(sprite: Bitmap, x?: number, y?: number, w?: number, h?: number, sx?: number, sy?: number): void {
+		x = (x ? Math.floor(x) : 0);
+		y = (y ? Math.floor(y) : 0);
+		w = (w ? Math.floor(w) : sprite.width);
+		h = (h ? Math.floor(h) : sprite.height);
+		sx = (sx ? Math.floor(sx) : 0);
+		sy = (sy ?  Math.floor(sy) : 0);
 
-		for (var iy = sy; iy < sy + h; iy++) {
-			for (var ix = sx; ix < sx + w; ix++) {
-				if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
-					continue;
+		// TODO optimise clipping
+		var iy: number, ix: number, read: number, write: number;
+		if (sprite.useAlpha) {
+			for (iy = sy; iy < sy + h; iy++) {
+				for (ix = sx; ix < sx + w; ix++) {
+					if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
+						continue;
+					}
+					read = (ix + iy * sprite.width) * sprite.channels;
+					write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
+
+					var alpha = sprite.data[read + 3] / 255;
+					var inv = 1 - alpha;
+					this.data[write] = Math.round(this.data[write] * inv + sprite.data[read] * alpha);
+					this.data[write + 1] = Math.round(this.data[write + 1] * inv + sprite.data[read + 1] * alpha);
+					this.data[write + 2] = Math.round(this.data[write + 2] * inv + sprite.data[read + 2] * alpha);
 				}
-				// TODO support alpha in sprite
-				var read = (ix + iy * sprite.width) * sprite.channels;
-				var write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
+			}
+		}
+		else {
+			for (iy = sy; iy < sy + h; iy++) {
+				for (ix = sx; ix < sx + w; ix++) {
+					if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
+						continue;
+					}
+					read = (ix + iy * sprite.width) * sprite.channels;
+					write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
 
-				this.data[write] = sprite.data[read];
-				this.data[write + 1] = sprite.data[read + 1];
-				this.data[write + 2] = sprite.data[read + 2];
+					this.data[write] = sprite.data[read];
+					this.data[write + 1] = sprite.data[read + 1];
+					this.data[write + 2] = sprite.data[read + 2];
+				}
 			}
 		}
 	}
