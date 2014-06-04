@@ -45,10 +45,17 @@ class ImageLoader {
 				}
 				callback(null, bitmap);
 			}
+
+			image.onload = null;
+			image.onerror = null;
 		};
 		image.onerror = () => {
 			callback(new Error('cannot load ' + this.url), null);
+
+			image.onload = null;
+			image.onerror = null;
 		};
+		// load it
 		image.src = this.url;
 	}
 }
