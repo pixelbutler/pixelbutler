@@ -188,10 +188,23 @@ module.exports = function (grunt) {
 		'gh-pages:publish'
 	]);
 
-	grunt.registerTask('deploy', 'Publish from Travis', [
-		'build',
-		'check-deploy'
-	]);
+	grunt.registerTask('deploy', 'Publish from Travis',function() {
+		if (process.env.TRAVIS !== 'true' || process.env.TRAVIS_BRANCH !== 'master') {
+			grunt.log.writeln('not travis master');
+			return;
+		}
+
+		// only deploy under these conditions
+		if (process.env.TRAVIS_SECURE_ENV_VARS === 'true' && process.env.TRAVIS_PULL_REQUEST === 'false') {
+			grunt.log.writeln('executing deployment');
+			// queue bul & deploy
+			grunt.task.run('build');
+			grunt.task.run('gh-pages:deploy');
+		}
+		else {
+			grunt.log.writeln('skipped deployment');
+		}
+	});
 
 	// check if we have all the important files
 	grunt.registerTask('verify', function () {
@@ -260,20 +273,5 @@ module.exports = function (grunt) {
 		// split source-map to own file
 		stream = stream.pipe(exorcist(mapFile));
 		stream.pipe(fs.createWriteStream(bundleFile));
-	});
-
-	grunt.registerTask('check-deploy', function() {
-		// need this
-		this.requires(['build']);
-
-		// only deploy under these conditions
-		if (process.env.TRAVIS === 'true' && process.env.TRAVIS_SECURE_ENV_VARS === 'true' && process.env.TRAVIS_PULL_REQUEST === 'false') {
-			grunt.log.writeln('executing deployment');
-			// queue deploy
-			grunt.task.run('gh-pages:deploy');
-		}
-		else {
-			grunt.log.writeln('skipped deployment');
-		}
 	});
 };

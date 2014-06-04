@@ -33,7 +33,7 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "browserify": "^3.46.1",
+    "browserify": "^4.1.8",
     "exorcist": "^0.1.6",
     "grunt": "^0.4.4",
     "grunt-contrib-clean": "^0.5.0",

@@ -1,16 +1,22 @@
 # lorez
 
+[![Build Status](https://secure.travis-ci.org/Bartvds/lorez.svg?branch=master)](http://travis-ci.org/Bartvds/lorez) [![NPM version](https://badge.fury.io/js/lorez.png)](http://badge.fury.io/js/lorez) [![Dependency Status](https://david-dm.org/Bartvds/lorez.png)](https://david-dm.org/Bartvds/lorez) [![devDependency Status](https://david-dm.org/Bartvds/lorez/dev-status.png)](https://david-dm.org/Bartvds/lorez#info=devDependencies)
+
 Bitmap rendering system for low-res pixel rendering on big screens.
 
 The canvas rendering ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily at 60 frames-per-second in high resolutions. This works great on modern mobile devices. 
 
 lorez is especially suited for 32x32 pixel micro games on large screens or class 320x240 gaming.
 
-Original code forked from [framebufferJS](https://github.com/noffle/framebufferJS) by [@noffle](http://www.twitter.com/noffle)
+Originally forked from [framebufferJS](https://github.com/noffle/framebufferJS) by [@noffle](http://www.twitter.com/noffle)
 
 Refactored and expanded in [TypeScript](http://www.typescriptlang.org/) with ♥ by [@bartvds](http://github.com/bartvds)
 
 Work-in-progress :sunglasses:
+
+## Demo
+
+Usage examples and demo gallery can be found on [bartvds.github.io/lorez](https://bartvds.github.io/lorez/)
 
 ## Get the code
 
@@ -86,4 +92,11 @@ They are very welcome.
 
 ## License
 
-MIT
+Copyright (c) 2014 [Bart van der Schoor](https://github.com/Bartvds)
+
+Licensed under the MIT license.
+
+Forked from [framebufferJS](https://github.com/noffle/framebufferJS) under MIT licence
+
+Copyright (c) 2014 [Stephen Whitmore](https://github.com/noffle)
+

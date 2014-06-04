@@ -11,7 +11,7 @@ import RGBA = require('./RGBA');
 import Font = require('./Font');
 import Char = require('./Char');
 
-import microFont = require('../font/micro');
+import microFont = require('../font/Micro');
 import color = require('./color');
 
 import util = require('./util');
