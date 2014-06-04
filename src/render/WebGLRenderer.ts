@@ -80,11 +80,15 @@ class WebGLRender implements IRenderer {
 		// let's not bother with alpha on main canvas
 		var glOpts = {alpha: false};
 
+		/* tslint:disable:no-duplicate-variable */
+
 		// lazy alias to local var to keep code clear, also do fancy context lookup
 		var gl = this.gl = this.canvas.getContext('webgl', glOpts) || this.canvas.getContext('experimental-webgl', glOpts);
 		if (!gl) {
 			throw new Error('could not create WebGL context');
 		}
+
+		/* tslint:enable:no-duplicate-variable */
 
 		// setup a GLSL program
 		var program = gl.createProgram();
@@ -175,7 +179,7 @@ class WebGLRender implements IRenderer {
 
 	destruct(): void {
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-		//TODO what else? how unload WebGL?
+		// TODO what else? how unload WebGL?
 		this.gl = null;
 		this.px = null;
 		this.canvas = null;

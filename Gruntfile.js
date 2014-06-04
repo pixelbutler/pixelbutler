@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-connect');
+	grunt.loadNpmTasks('grunt-tslint');
 	grunt.loadNpmTasks('grunt-ts');
 
 	// list the files for reference (and verification)
@@ -27,6 +28,13 @@ module.exports = function (grunt) {
 			support: {
 				src: ['Gruntfile.js', '*.js']
 			}
+		},
+		tslint: {
+			options: {
+				configuration: grunt.file.readJSON('tslint.json'),
+				formatter: 'tslint-path-formatter'
+			},
+			src: ['src/**/*.ts']
 		},
 		clean: {
 			dist: [
@@ -96,6 +104,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('build', [
 		'prep',
 		'ts:index',
+		'tslint:src',
 		'bundle:index',
 		'verify'
 	]);

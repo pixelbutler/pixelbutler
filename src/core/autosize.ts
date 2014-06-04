@@ -15,7 +15,7 @@ function assertMode(scaleMode: any): void {
 		|| scaleMode === 'none') {
 		return;
 	}
-	var int = parseInt(scaleMode);
+	var int = parseInt(scaleMode, 10);
 	if (!isNaN(int) && int > 0) {
 		return;
 	}
@@ -62,7 +62,7 @@ export class AutoSize implements IAutoSize {
 			else {
 				this.moveScreenTo(0, 0);
 			}
-		}
+		};
 
 		this.setMode(this.scaleMode, this.centerView);
 	}
@@ -110,7 +110,8 @@ export class AutoSize implements IAutoSize {
 	}
 
 	private moveScreenCenter(viewPort: IBlock): void {
-		this.moveScreenTo(Math.floor((viewPort.width - this.stage.canvas.width) / 2), Math.floor((viewPort.height - this.stage.canvas.height) / 2));
+		this.moveScreenTo(Math.floor((viewPort.width - this.stage.canvas.width) / 2),
+			Math.floor((viewPort.height - this.stage.canvas.height) / 2));
 	}
 
 	private listen(): void {
@@ -129,7 +130,7 @@ export class AutoSize implements IAutoSize {
 
 		this.scaleMode = mode;
 
-		var multi = parseInt(this.scaleMode);
+		var multi = parseInt(this.scaleMode, 10);
 		if (!isNaN(multi)) {
 			this.scaleMode = multi;
 			this.scaleTo(Math.floor(this.stage.width * multi), Math.floor(this.stage.height * multi));

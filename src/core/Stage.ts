@@ -52,7 +52,7 @@ class Stage extends Bitmap {
 		});
 	}
 
-	resizeTo(width: number, height: number):void {
+	resizeTo(width: number, height: number): void {
 		if (width === this.width && height === this.height) {
 			return;
 		}

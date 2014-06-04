@@ -6,7 +6,7 @@ export function rand(max: number): number {
 	return Math.floor(Math.random() * max);
 }
 
-export function clamp(value: number, min:number, max:number) {
+export function clamp(value: number, min: number, max: number) {
 	if (value < min) {
 		return min;
 	}

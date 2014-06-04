@@ -431,7 +431,7 @@ function assertMode(scaleMode) {
     if ((typeof scaleMode === 'number' && scaleMode > 0) || scaleMode === 'max' || scaleMode === 'fit' || scaleMode === 'none') {
         return;
     }
-    var int = parseInt(scaleMode);
+    var int = parseInt(scaleMode, 10);
     if (!isNaN(int) && int > 0) {
         return;
     }
@@ -531,7 +531,7 @@ var AutoSize = (function () {
 
         this.scaleMode = mode;
 
-        var multi = parseInt(this.scaleMode);
+        var multi = parseInt(this.scaleMode, 10);
         if (!isNaN(multi)) {
             this.scaleMode = multi;
             this.scaleTo(Math.floor(this.stage.width * multi), Math.floor(this.stage.height * multi));

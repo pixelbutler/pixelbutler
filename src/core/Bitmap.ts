@@ -19,11 +19,11 @@ var alpha = new RGBA(0, 0, 0, 0);
 var black = new RGBA(0, 0, 0);
 var magenta = new RGBA(255, 0, 255);
 
-//TODO split to alpha and non-alpha version
+// TODO split to alpha and non-alpha version
 
-//TODO profile element access
-//TODO profile loop order
-//TODO profile fast-mode
+// TODO profile element access
+// TODO profile loop order
+// TODO profile fast-mode
 
 class Bitmap {
 
@@ -49,7 +49,7 @@ class Bitmap {
 		this.data = new Uint8ClampedArray(this.buffer);
 	}
 
-	resizeTo(width: number, height: number):void {
+	resizeTo(width: number, height: number): void {
 		if (width === this.width && height === this.height) {
 			return;
 		}
@@ -235,7 +235,7 @@ class Bitmap {
 				if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
 					continue;
 				}
-				//TODO support alpha in sprite
+				// TODO support alpha in sprite
 				var read = (ix + iy * sprite.width) * sprite.channels;
 				var write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
 

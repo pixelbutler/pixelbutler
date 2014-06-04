@@ -3,9 +3,9 @@ import Char = require('./Char');
 class Font {
 	public name: string;
 	public height: number;
-	public chars: {[char:string]: Char};
+	public chars: {[char: string]: Char};
 
-	//TODO assert height
+	// TODO assert height
 
 	constructor(name: string, height: number, data: Object) {
 		this.name = name;

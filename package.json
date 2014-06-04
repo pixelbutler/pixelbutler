@@ -41,6 +41,8 @@
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-ts": "^1.11.2",
+    "grunt-tslint": "^0.4.1",
+    "tslint-path-formatter": "^0.1.1",
     "typescript": "^1.0.1"
   }
 }
