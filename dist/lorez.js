@@ -1,8 +1,8 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.lorez=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.lorez=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 'use strict';
 var RGBA = _dereq_('./RGBA');
 
-var microFont = _dereq_('../font/micro');
+var microFont = _dereq_('../font/Micro');
 
 var util = _dereq_('./util');
 var rand = util.rand;
@@ -375,7 +375,7 @@ var Bitmap = (function () {
 module.exports = Bitmap;
 //# sourceMappingURL=Bitmap.js.map
 
-},{"../font/micro":15,"./RGBA":6,"./util":13}],2:[function(_dereq_,module,exports){
+},{"../font/Micro":15,"./RGBA":6,"./util":13}],2:[function(_dereq_,module,exports){
 'use strict';
 var Char = (function () {
     function Char(char, map) {
@@ -609,7 +609,7 @@ var Stage = (function (_super) {
 module.exports = Stage;
 //# sourceMappingURL=Stage.js.map
 
-},{"./../render/CanvasRenderer":24,"./../render/WebGLRenderer":25,"./Bitmap":1,"./autosize":9}],9:[function(_dereq_,module,exports){
+},{"./../render/CanvasRenderer":25,"./../render/WebGLRenderer":26,"./Bitmap":1,"./autosize":9}],9:[function(_dereq_,module,exports){
 'use strict';
 var browser = _dereq_('./browser');
 
@@ -1380,7 +1380,7 @@ var font = new Font('micro', 4, {
 });
 
 module.exports = font;
-//# sourceMappingURL=micro.js.map
+//# sourceMappingURL=Micro.js.map
 
 },{"../core/Font":4}],16:[function(_dereq_,module,exports){
 'use strict';
@@ -1442,9 +1442,10 @@ exports.hsv = hsv;
 ];
 //# sourceMappingURL=index.js.map
 
-},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":8,"./core/color":11,"./core/ticker":12,"./core/util":13,"./extra/PerlinNoise":14,"./loaders/loader":23}],17:[function(_dereq_,module,exports){
+},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":8,"./core/color":11,"./core/ticker":12,"./core/util":13,"./extra/PerlinNoise":14,"./loaders/loader":24}],17:[function(_dereq_,module,exports){
 'use strict';
 var Bitmap = _dereq_('../core/Bitmap');
+
 var ImageDataLoader = _dereq_('./ImageDataLoader');
 
 var BitmapLoader = (function () {
@@ -1553,7 +1554,54 @@ var JSONLoader = (function () {
 module.exports = JSONLoader;
 //# sourceMappingURL=JSONLoader.js.map
 
-},{"./TextLoader":22}],20:[function(_dereq_,module,exports){
+},{"./TextLoader":23}],20:[function(_dereq_,module,exports){
+'use strict';
+var MultiLoader = (function () {
+    function MultiLoader(loaders) {
+        var _this = this;
+        this.queued = [];
+        if (loaders) {
+            loaders.forEach(function (loader) {
+                _this.queued.push(loader);
+            });
+        }
+    }
+    MultiLoader.prototype.load = function (callback) {
+        var _this = this;
+        var errored = false;
+        var results = new Array(this.queued.length);
+
+        this.queued.forEach(function (loader, index) {
+            loader.load(function (err, res) {
+                if (errored) {
+                    return;
+                }
+                if (err) {
+                    console.log(loader.url);
+                    console.error(err);
+                    callback(err, null);
+                    errored = true;
+                    return;
+                }
+                results[index] = res;
+                _this.queued[index] = null;
+
+                if (_this.queued.every(function (loader) {
+                    return !loader;
+                })) {
+                    callback(err, results);
+                    _this.queued = null;
+                }
+            });
+        });
+    };
+    return MultiLoader;
+})();
+
+module.exports = MultiLoader;
+//# sourceMappingURL=MultiLoader.js.map
+
+},{}],21:[function(_dereq_,module,exports){
 'use strict';
 var JSONLoader = _dereq_('./JSONLoader');
 var SpriteSheetLoader = _dereq_('./SpriteSheetLoader');
@@ -1589,10 +1637,11 @@ var SpriteSheetJSONLoader = (function () {
 module.exports = SpriteSheetJSONLoader;
 //# sourceMappingURL=SpriteSheetJSONLoader.js.map
 
-},{"./JSONLoader":19,"./SpriteSheetLoader":21}],21:[function(_dereq_,module,exports){
+},{"./JSONLoader":19,"./SpriteSheetLoader":22}],22:[function(_dereq_,module,exports){
 'use strict';
 var Bitmap = _dereq_('../core/Bitmap');
 var SpriteSheet = _dereq_('../core/SpriteSheet');
+
 var ImageDataLoader = _dereq_('./ImageDataLoader');
 
 var SpriteSheetLoader = (function () {
@@ -1631,7 +1680,7 @@ var SpriteSheetLoader = (function () {
 module.exports = SpriteSheetLoader;
 //# sourceMappingURL=SpriteSheetLoader.js.map
 
-},{"../core/Bitmap":1,"../core/SpriteSheet":7,"./ImageDataLoader":18}],22:[function(_dereq_,module,exports){
+},{"../core/Bitmap":1,"../core/SpriteSheet":7,"./ImageDataLoader":18}],23:[function(_dereq_,module,exports){
 'use strict';
 function getXHR() {
     if (XMLHttpRequest) {
@@ -1679,7 +1728,7 @@ var TextLoader = (function () {
 module.exports = TextLoader;
 //# sourceMappingURL=TextLoader.js.map
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 var ImageDataLoader = _dereq_('./ImageDataLoader');
 exports.ImageDataLoader = ImageDataLoader;
 var BitmapLoader = _dereq_('./BitmapLoader');
@@ -1692,8 +1741,11 @@ var SpriteSheetLoader = _dereq_('./SpriteSheetLoader');
 exports.SpriteSheetLoader = SpriteSheetLoader;
 var SpriteSheetJSONLoader = _dereq_('./SpriteSheetJSONLoader');
 exports.SpriteSheetJSONLoader = SpriteSheetJSONLoader;
+var MultiLoader = _dereq_('./MultiLoader');
+exports.MultiLoader = MultiLoader;
 
 [
+    exports.MultiLoader,
     exports.ImageDataLoader,
     exports.BitmapLoader,
     exports.TextLoader,
@@ -1703,7 +1755,7 @@ exports.SpriteSheetJSONLoader = SpriteSheetJSONLoader;
 ];
 //# sourceMappingURL=loader.js.map
 
-},{"./BitmapLoader":17,"./ImageDataLoader":18,"./JSONLoader":19,"./SpriteSheetJSONLoader":20,"./SpriteSheetLoader":21,"./TextLoader":22}],24:[function(_dereq_,module,exports){
+},{"./BitmapLoader":17,"./ImageDataLoader":18,"./JSONLoader":19,"./MultiLoader":20,"./SpriteSheetJSONLoader":21,"./SpriteSheetLoader":22,"./TextLoader":23}],25:[function(_dereq_,module,exports){
 'use strict';
 function clearAlpha(data) {
     var lim = data.length;
@@ -1772,7 +1824,7 @@ var CanvasRender = (function () {
 module.exports = CanvasRender;
 //# sourceMappingURL=CanvasRenderer.js.map
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 'use strict';
 var vertexShaderSource = [
     'attribute vec2 a_position;',

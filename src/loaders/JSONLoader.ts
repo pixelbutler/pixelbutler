@@ -2,9 +2,10 @@
 
 'use strict';
 
+import ILoader = require('./ILoader');
 import TextLoader = require('./TextLoader');
 
-class JSONLoader {
+class JSONLoader implements ILoader {
 	public url: string;
 
 	// TODO assert line width

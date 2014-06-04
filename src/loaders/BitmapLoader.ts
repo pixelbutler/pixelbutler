@@ -3,9 +3,11 @@
 'use strict';
 
 import Bitmap = require('../core/Bitmap');
+
+import ILoader = require('./ILoader');
 import ImageDataLoader = require('./ImageDataLoader');
 
-class BitmapLoader {
+class BitmapLoader implements ILoader {
 	public url: string;
 	public useAlpha: boolean;
 

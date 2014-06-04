@@ -20,41 +20,36 @@ define(['lorez'], function (lorez) {
 
 		var fps = new lorez.FPS();
 
-		var char = new lorez.Bitmap(1, 1, true);
-		char.clear(blue);
-
-		new lorez.loader.SpriteSheetJSONLoader('assets/blocks1.json', true).load(function (err, sheet) {
+		new lorez.loader.MultiLoader([
+			new lorez.loader.SpriteSheetJSONLoader('assets/blocks1.json', true),
+			new lorez.loader.SpriteSheetJSONLoader('assets/runner.json', true)
+		]).load(function (err, results) {
 			if (err) {
 				console.error(err);
 				return;
 			}
+			var sheet = results[0];
+			var runner = results[1];
 
-			new lorez.loader.SpriteSheetJSONLoader('assets/runner.json', true).load(function (err, runner) {
-				if (err) {
-					console.error(err);
-					return;
-				}
+			function renderContent(frame) {
+				$fb.blit(sheet.getSprite(6, 5), -8, -8);
+				$fb.blit(sheet.getSprite(7, 5), 8, -8);
 
-				function renderContent(frame) {
-					$fb.blit(sheet.getSprite(6, 5), -8, -8);
-					$fb.blit(sheet.getSprite(7, 5), 8, -8);
+				$fb.blit(sheet.getSprite(8, 5), 24, 8);
+				$fb.blit(sheet.getSprite(9, 5), 40, 8);
+				$fb.blit(sheet.getSprite(10, 5), 56, 8);
 
-					$fb.blit(sheet.getSprite(8, 5), 24, 8);
-					$fb.blit(sheet.getSprite(9, 5), 40, 8);
-					$fb.blit(sheet.getSprite(10, 5), 56, 8);
+				$fb.blit(sheet.getSprite(5, 1), 0, 48);
+				$fb.blit(sheet.getSprite(6, 1), 16, 48);
+				$fb.blit(sheet.getSprite(7, 1), 32, 48);
+				$fb.blit(sheet.getSprite(10, 1), 48, 48);
 
-					$fb.blit(sheet.getSprite(5, 1), 0, 48);
-					$fb.blit(sheet.getSprite(6, 1), 16, 48);
-					$fb.blit(sheet.getSprite(7, 1), 32, 48);
-					$fb.blit(sheet.getSprite(10, 1), 48, 48);
+				$fb.blit(runner.getSpriteAt(Math.floor(frame / 10) % 7), (Math.floor(frame / 3) % 100) - 32, 12);
+				// $fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), 32, 12);
+			}
 
-					$fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), (Math.floor(frame / 3) % 100) - 32, 12);
-					// $fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), 32, 12);
-				}
-
-				// ugly swop
-				renderFunc = renderContent;
-			});
+			// ugly swop
+			renderFunc = renderContent;
 		});
 
 		var renderFunc = function () {

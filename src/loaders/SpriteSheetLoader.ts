@@ -4,10 +4,12 @@
 
 import Bitmap = require('../core/Bitmap');
 import SpriteSheet = require('../core/SpriteSheet');
+
+import ILoader = require('./ILoader');
 import ImageDataLoader = require('./ImageDataLoader');
 import ISpriteSheetOpts = require('../types/ISpriteSheetOpts');
 
-class SpriteSheetLoader {
+class SpriteSheetLoader implements ILoader {
 	public url: string;
 	public useAlpha: boolean;
 	public opts: ISpriteSheetOpts;

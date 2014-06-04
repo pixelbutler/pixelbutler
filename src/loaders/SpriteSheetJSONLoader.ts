@@ -4,6 +4,7 @@
 
 import Bitmap = require('../core/Bitmap');
 import SpriteSheet = require('../core/SpriteSheet');
+import ILoader = require('./ILoader');
 import JSONLoader = require('./JSONLoader');
 import SpriteSheetLoader = require('./SpriteSheetLoader');
 import ISpriteSheetOpts = require('../types/ISpriteSheetOpts');
@@ -17,7 +18,7 @@ function getURL(main: string, append: string): string {
 }
 
 
-class SpriteSheetJSONLoader {
+class SpriteSheetJSONLoader implements ILoader {
 	public url: string;
 	public useAlpha: boolean;
 	public opts: ISpriteSheetOpts;

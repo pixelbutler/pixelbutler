@@ -3,8 +3,9 @@
 'use strict';
 
 import Bitmap = require('../core/Bitmap');
+import ILoader = require('./ILoader');
 
-class ImageDataLoader {
+class ImageDataLoader implements ILoader {
 	public url: string;
 
 	// TODO assert line width

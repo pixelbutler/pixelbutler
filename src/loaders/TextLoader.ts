@@ -2,6 +2,8 @@
 
 'use strict';
 
+import ILoader = require('./ILoader');
+
 // https://en.wikipedia.org/wiki/XMLHttpRequest
 function getXHR() {
 	if (XMLHttpRequest) {
@@ -25,7 +27,7 @@ function getXHR() {
 	throw new Error('This browser does not support XMLHttpRequest.');
 }
 
-class TextLoader {
+class TextLoader implements ILoader {
 	public url: string;
 
 	// TODO assert line width
