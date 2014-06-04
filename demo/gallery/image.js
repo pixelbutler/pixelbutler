@@ -30,7 +30,7 @@ define(['lorez'], function (lorez) {
 
 		var radial = new lorez.Bitmap(1, 1, true);
 
-		new lorez.ImageLoader('assets/trollop.png', true).load(function(err, bitmap) {
+		new lorez.BitmapLoader('assets/trollop.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;
@@ -38,7 +38,7 @@ define(['lorez'], function (lorez) {
 			char = bitmap;
 		});
 
-		new lorez.ImageLoader('assets/radial.png', true).load(function(err, bitmap) {
+		new lorez.BitmapLoader('assets/radial.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;

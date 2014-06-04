@@ -3,8 +3,9 @@
 'use strict';
 
 import Bitmap = require('../core/Bitmap');
+import ImageDataLoader = require('./ImageDataLoader');
 
-class ImageLoader {
+class BitmapLoader {
 	public url: string;
 	public useAlpha: boolean;
 
@@ -15,22 +16,19 @@ class ImageLoader {
 	}
 
 	load(callback: (err: Error, bitmap: Bitmap) => void): void {
-		var image = document.createElement('img');
-		image.onload = () => {
-			var canvas = document.createElement('canvas');
-			canvas.width = image.width;
-			canvas.height = image.height;
-
-			var ctx = canvas.getContext('2d');
-			ctx.drawImage(image, 0, 0);
+		new ImageDataLoader(this.url).load((err, image) => {
+			if (err) {
+				callback(err, null);
+				return;
+			}
 
 			if (this.useAlpha) {
-				callback(null, new Bitmap(image.width, image.height, true, ctx.getImageData(0, 0, image.width, image.height).data.buffer));
+				callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
 			}
 			else {
 				// resample, ditch alpha
 				var bitmap = new Bitmap(image.width, image.height, false);
-				var data = ctx.getImageData(0, 0, image.width, image.height).data;
+				var data = image.data;
 				var width = image.width;
 
 				for (var iy = 0; iy < image.height; iy++) {
@@ -45,19 +43,8 @@ class ImageLoader {
 				}
 				callback(null, bitmap);
 			}
-
-			image.onload = null;
-			image.onerror = null;
-		};
-		image.onerror = () => {
-			callback(new Error('cannot load ' + this.url), null);
-
-			image.onload = null;
-			image.onerror = null;
-		};
-		// load it
-		image.src = this.url;
+		});
 	}
 }
 
-export = ImageLoader;
+export = BitmapLoader;

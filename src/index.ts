@@ -10,7 +10,7 @@ export import FPS = require('./core/FPS');
 import RGBA = require('./core/RGBA');
 import HSV = require('./core/HSV');
 
-export import ImageLoader = require('./extra/ImageLoader');
+export import BitmapLoader = require('./extra/BitmapLoader');
 export import PerlinNoise = require('./extra/PerlinNoise');
 
 import _util = require('./core/util');
@@ -34,9 +34,9 @@ export function hsv(h: number, s: number, v: number): RGBA {
 	return hsv2rgb(hsvTmp);
 }
 
-// fake stuff for compiler bug (borked unused-imports-optimiser faulty removes exports)
+// fake stuff for compiler bug (borked unused-imports-optimiser errornously removes exports)
 [
-	ImageLoader,
+	BitmapLoader,
 	PerlinNoise,
 	_util,
 	_color,

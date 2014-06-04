@@ -325,7 +325,7 @@ var Bitmap = (function () {
 module.exports = Bitmap;
 //# sourceMappingURL=Bitmap.js.map
 
-},{"../font/micro":15,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
+},{"../font/micro":16,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
 'use strict';
 var Char = (function () {
     function Char(char, map) {
@@ -531,7 +531,7 @@ var Stage = (function (_super) {
 module.exports = Stage;
 //# sourceMappingURL=Stage.js.map
 
-},{"./../render/CanvasRenderer":17,"./../render/WebGLRenderer":18,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
+},{"./../render/CanvasRenderer":18,"./../render/WebGLRenderer":19,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
 'use strict';
 var browser = _dereq_('./browser');
 
@@ -877,29 +877,27 @@ exports.clamp = clamp;
 },{}],13:[function(_dereq_,module,exports){
 'use strict';
 var Bitmap = _dereq_('../core/Bitmap');
+var ImageDataLoader = _dereq_('./ImageDataLoader');
 
-var ImageLoader = (function () {
-    function ImageLoader(url, useAlpha) {
+var BitmapLoader = (function () {
+    function BitmapLoader(url, useAlpha) {
         if (typeof useAlpha === "undefined") { useAlpha = false; }
         this.url = url;
         this.useAlpha = useAlpha;
     }
-    ImageLoader.prototype.load = function (callback) {
+    BitmapLoader.prototype.load = function (callback) {
         var _this = this;
-        var image = document.createElement('img');
-        image.onload = function () {
-            var canvas = document.createElement('canvas');
-            canvas.width = image.width;
-            canvas.height = image.height;
-
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(image, 0, 0);
+        new ImageDataLoader(this.url).load(function (err, image) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
 
             if (_this.useAlpha) {
-                callback(null, new Bitmap(image.width, image.height, true, ctx.getImageData(0, 0, image.width, image.height).data.buffer));
+                callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
             } else {
                 var bitmap = new Bitmap(image.width, image.height, false);
-                var data = ctx.getImageData(0, 0, image.width, image.height).data;
+                var data = image.data;
                 var width = image.width;
 
                 for (var iy = 0; iy < image.height; iy++) {
@@ -914,19 +912,52 @@ var ImageLoader = (function () {
                 }
                 callback(null, bitmap);
             }
+        });
+    };
+    return BitmapLoader;
+})();
+
+module.exports = BitmapLoader;
+//# sourceMappingURL=BitmapLoader.js.map
+
+},{"../core/Bitmap":1,"./ImageDataLoader":14}],14:[function(_dereq_,module,exports){
+'use strict';
+var ImageDataLoader = (function () {
+    function ImageDataLoader(url) {
+        this.url = url;
+    }
+    ImageDataLoader.prototype.load = function (callback) {
+        var _this = this;
+        var image = document.createElement('img');
+        image.onload = function () {
+            var canvas = document.createElement('canvas');
+            canvas.width = image.width;
+            canvas.height = image.height;
+
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0);
+
+            callback(null, ctx.getImageData(0, 0, image.width, image.height));
+
+            image.onload = null;
+            image.onerror = null;
         };
         image.onerror = function () {
             callback(new Error('cannot load ' + _this.url), null);
+
+            image.onload = null;
+            image.onerror = null;
         };
+
         image.src = this.url;
     };
-    return ImageLoader;
+    return ImageDataLoader;
 })();
 
-module.exports = ImageLoader;
-//# sourceMappingURL=ImageLoader.js.map
+module.exports = ImageDataLoader;
+//# sourceMappingURL=ImageDataLoader.js.map
 
-},{"../core/Bitmap":1}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var PerlinNoise = (function () {
     function PerlinNoise() {
         this.permutation = [
@@ -998,7 +1029,7 @@ var PerlinNoise = (function () {
 module.exports = PerlinNoise;
 //# sourceMappingURL=PerlinNoise.js.map
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 'use strict';
 var Font = _dereq_('../core/Font');
 
@@ -1356,7 +1387,7 @@ var font = new Font('micro', 4, {
 module.exports = font;
 //# sourceMappingURL=micro.js.map
 
-},{"../core/Font":4}],16:[function(_dereq_,module,exports){
+},{"../core/Font":4}],17:[function(_dereq_,module,exports){
 'use strict';
 var Stage = _dereq_('./core/Stage');
 exports.Stage = Stage;
@@ -1369,8 +1400,8 @@ exports.FPS = FPS;
 var RGBA = _dereq_('./core/RGBA');
 var HSV = _dereq_('./core/HSV');
 
-var ImageLoader = _dereq_('./extra/ImageLoader');
-exports.ImageLoader = ImageLoader;
+var BitmapLoader = _dereq_('./extra/BitmapLoader');
+exports.BitmapLoader = BitmapLoader;
 var PerlinNoise = _dereq_('./extra/PerlinNoise');
 exports.PerlinNoise = PerlinNoise;
 
@@ -1402,7 +1433,7 @@ function hsv(h, s, v) {
 exports.hsv = hsv;
 
 [
-    exports.ImageLoader,
+    exports.BitmapLoader,
     exports.PerlinNoise,
     _util,
     _color,
@@ -1415,7 +1446,7 @@ exports.hsv = hsv;
 ];
 //# sourceMappingURL=index.js.map
 
-},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12,"./extra/ImageLoader":13,"./extra/PerlinNoise":14}],17:[function(_dereq_,module,exports){
+},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12,"./extra/BitmapLoader":13,"./extra/PerlinNoise":15}],18:[function(_dereq_,module,exports){
 'use strict';
 function clearAlpha(data) {
     var lim = data.length;
@@ -1484,7 +1515,7 @@ var CanvasRender = (function () {
 module.exports = CanvasRender;
 //# sourceMappingURL=CanvasRenderer.js.map
 
-},{}],18:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 'use strict';
 var vertexShaderSource = [
     'attribute vec2 a_position;',
@@ -1620,9 +1651,9 @@ var WebGLRender = (function () {
 module.exports = WebGLRender;
 //# sourceMappingURL=WebGLRenderer.js.map
 
-},{}]},{},[16])
+},{}]},{},[17])
 
-(16)
+(17)
 });
 
 //# sourceMappingURL=lorez.js.map
