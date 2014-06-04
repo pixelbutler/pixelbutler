@@ -22,7 +22,11 @@
 		}
 	});
 
-	require(['./js/runner'], function (runner) {
+	require(['./js/runner', './js/urlUtil'], function (runner, urlUtil) {
+		'use strict';
+
+		var hash = urlUtil.parseHash(window.location.hash);
+
 		var config = {
 			canvas: 'gameScreen',
 			renderer: 'webgl',
@@ -30,16 +34,39 @@
 			scale: 'max'
 		};
 
-		var examples = [
-			'./gallery/noise',
-			'./gallery/frame32',
-			'./gallery/movers'
+		var demos = [
+			'noise',
+			'frame32',
+			'movers'
 		];
 		var currentI = 0;
 		var demo = null;
 
+		function makeDemoPath(name) {
+			return './gallery/' + name;
+		}
+
+		function getDemoURL(name) {
+			return './gallery/' + name;
+		}
+
+		function getDemoI(name) {
+			return demos.indexOf(name);
+		}
+
+		function hasDemo(name) {
+			return demos.indexOf(name) > -1;
+		}
+
 		function load(name) {
-			runner.load(name, function (_demo) {
+			if (hash.demo !== name) {
+				hash.demo = name;
+				var str = urlUtil.makeHash(hash);
+				window.history.pushState(null, null, window.location.origin + window.location.pathname + str);
+			}
+			window.document.title = name + ' - lorez';
+
+			runner.load(makeDemoPath(name), function (_demo) {
 				demo = _demo;
 				demo.ticker.start();
 			});
@@ -47,12 +74,12 @@
 
 		function listener(ev) {
 			if (ev.type === 'next') {
-				currentI = (currentI + 1) % examples.length;
-				load(examples[currentI]);
+				currentI = (currentI + 1) % demos.length;
+				load(demos[currentI]);
 			}
 			else if (ev.type === 'prev') {
-				currentI = (currentI - 1) % examples.length;
-				load(examples[currentI]);
+				currentI = (currentI - 1) % demos.length;
+				load(demos[currentI]);
 			}
 			else if (ev.type === 'scale') {
 				demo.stage.autoSize.scale(ev.scale);
@@ -63,8 +90,21 @@
 			// more
 		}
 
+		window.addEventListener('popstate', function (e) {
+			hash = urlUtil.parseHash(window.location.hash);
+			if (hash.demo && hasDemo(hash.demo)) {
+				if (demos[currentI] !== hash.demo) {
+					currentI = getDemoI(hash.demo);
+					load(hash.demo);
+				}
+			}
+		});
+
 		runner.init(config, listener, function () {
-			load(examples[currentI]);
+			if (hash.demo && hasDemo(hash.demo)) {
+				currentI = getDemoI(hash.demo);
+			}
+			load(demos[currentI]);
 		});
 	});
 </script>
