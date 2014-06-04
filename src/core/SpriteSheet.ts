@@ -8,21 +8,21 @@ import Bitmap = require('../core/Bitmap');
 
 class SpriteSheet {
 
-	public images: Bitmap[] = [];
+	private sprites: Bitmap[] = [];
 
 	constructor() {
 
 	}
 
 	getSprite(index: number): Bitmap {
-		if (this.images.length === 0) {
+		if (this.sprites.length === 0) {
 			throw new Error('sheet has zero images');
 		}
-		return this.images[index % this.images.length];
+		return this.sprites[index % this.sprites.length];
 	}
 
 	addSprite(bitmap: Bitmap): void {
-		this.images.push(bitmap);
+		this.sprites.push(bitmap);
 	}
 }
 

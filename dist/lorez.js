@@ -325,7 +325,7 @@ var Bitmap = (function () {
 module.exports = Bitmap;
 //# sourceMappingURL=Bitmap.js.map
 
-},{"../font/micro":16,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
+},{"../font/micro":15,"./RGBA":6,"./util":13}],2:[function(_dereq_,module,exports){
 'use strict';
 var Char = (function () {
     function Char(char, map) {
@@ -463,6 +463,28 @@ module.exports = RGBA;
 
 },{}],7:[function(_dereq_,module,exports){
 'use strict';
+var SpriteSheet = (function () {
+    function SpriteSheet() {
+        this.sprites = [];
+    }
+    SpriteSheet.prototype.getSprite = function (index) {
+        if (this.sprites.length === 0) {
+            throw new Error('sheet has zero images');
+        }
+        return this.sprites[index % this.sprites.length];
+    };
+
+    SpriteSheet.prototype.addSprite = function (bitmap) {
+        this.sprites.push(bitmap);
+    };
+    return SpriteSheet;
+})();
+
+module.exports = SpriteSheet;
+//# sourceMappingURL=SpriteSheet.js.map
+
+},{}],8:[function(_dereq_,module,exports){
+'use strict';
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -531,7 +553,7 @@ var Stage = (function (_super) {
 module.exports = Stage;
 //# sourceMappingURL=Stage.js.map
 
-},{"./../render/CanvasRenderer":18,"./../render/WebGLRenderer":19,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
+},{"./../render/CanvasRenderer":24,"./../render/WebGLRenderer":25,"./Bitmap":1,"./autosize":9}],9:[function(_dereq_,module,exports){
 'use strict';
 var browser = _dereq_('./browser');
 
@@ -658,7 +680,7 @@ var AutoSize = (function () {
 exports.AutoSize = AutoSize;
 //# sourceMappingURL=autosize.js.map
 
-},{"./browser":9}],9:[function(_dereq_,module,exports){
+},{"./browser":10}],10:[function(_dereq_,module,exports){
 'use strict';
 function getViewport() {
     var e = window;
@@ -672,7 +694,7 @@ function getViewport() {
 exports.getViewport = getViewport;
 //# sourceMappingURL=browser.js.map
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 'use strict';
 var RGBA = _dereq_('./RGBA');
 var HSV = _dereq_('./HSV');
@@ -776,7 +798,7 @@ function rgb2hsv(rgb) {
 exports.rgb2hsv = rgb2hsv;
 //# sourceMappingURL=color.js.map
 
-},{"./HSV":5,"./RGBA":6}],11:[function(_dereq_,module,exports){
+},{"./HSV":5,"./RGBA":6}],12:[function(_dereq_,module,exports){
 'use strict';
 function interval(callback, fps) {
     var intervalID = 0;
@@ -855,7 +877,7 @@ function request(callback) {
 exports.request = request;
 //# sourceMappingURL=ticker.js.map
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 'use strict';
 function rand(max) {
     return Math.floor(Math.random() * max);
@@ -874,90 +896,7 @@ function clamp(value, min, max) {
 exports.clamp = clamp;
 //# sourceMappingURL=util.js.map
 
-},{}],13:[function(_dereq_,module,exports){
-'use strict';
-var Bitmap = _dereq_('../core/Bitmap');
-var ImageDataLoader = _dereq_('./ImageDataLoader');
-
-var BitmapLoader = (function () {
-    function BitmapLoader(url, useAlpha) {
-        if (typeof useAlpha === "undefined") { useAlpha = false; }
-        this.url = url;
-        this.useAlpha = useAlpha;
-    }
-    BitmapLoader.prototype.load = function (callback) {
-        var _this = this;
-        new ImageDataLoader(this.url).load(function (err, image) {
-            if (err) {
-                callback(err, null);
-                return;
-            }
-
-            if (_this.useAlpha) {
-                callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
-            } else {
-                var bitmap = new Bitmap(image.width, image.height, false);
-                var data = image.data;
-                var width = image.width;
-
-                for (var iy = 0; iy < image.height; iy++) {
-                    for (var ix = 0; ix < width; ix++) {
-                        var read = (iy * width + ix) * 4;
-                        var write = (iy * width + ix) * 3;
-
-                        bitmap.data[write] = data[read];
-                        bitmap.data[write + 1] = data[read + 1];
-                        bitmap.data[write + 2] = data[read + 2];
-                    }
-                }
-                callback(null, bitmap);
-            }
-        });
-    };
-    return BitmapLoader;
-})();
-
-module.exports = BitmapLoader;
-//# sourceMappingURL=BitmapLoader.js.map
-
-},{"../core/Bitmap":1,"./ImageDataLoader":14}],14:[function(_dereq_,module,exports){
-'use strict';
-var ImageDataLoader = (function () {
-    function ImageDataLoader(url) {
-        this.url = url;
-    }
-    ImageDataLoader.prototype.load = function (callback) {
-        var _this = this;
-        var image = document.createElement('img');
-        image.onload = function () {
-            var canvas = document.createElement('canvas');
-            canvas.width = image.width;
-            canvas.height = image.height;
-
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(image, 0, 0);
-
-            callback(null, ctx.getImageData(0, 0, image.width, image.height));
-
-            image.onload = null;
-            image.onerror = null;
-        };
-        image.onerror = function () {
-            callback(new Error('cannot load ' + _this.url), null);
-
-            image.onload = null;
-            image.onerror = null;
-        };
-
-        image.src = this.url;
-    };
-    return ImageDataLoader;
-})();
-
-module.exports = ImageDataLoader;
-//# sourceMappingURL=ImageDataLoader.js.map
-
-},{}],15:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var PerlinNoise = (function () {
     function PerlinNoise() {
         this.permutation = [
@@ -1029,7 +968,7 @@ var PerlinNoise = (function () {
 module.exports = PerlinNoise;
 //# sourceMappingURL=PerlinNoise.js.map
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 'use strict';
 var Font = _dereq_('../core/Font');
 
@@ -1387,7 +1326,7 @@ var font = new Font('micro', 4, {
 module.exports = font;
 //# sourceMappingURL=micro.js.map
 
-},{"../core/Font":4}],17:[function(_dereq_,module,exports){
+},{"../core/Font":4}],16:[function(_dereq_,module,exports){
 'use strict';
 var Stage = _dereq_('./core/Stage');
 exports.Stage = Stage;
@@ -1400,10 +1339,11 @@ exports.FPS = FPS;
 var RGBA = _dereq_('./core/RGBA');
 var HSV = _dereq_('./core/HSV');
 
-var BitmapLoader = _dereq_('./extra/BitmapLoader');
-exports.BitmapLoader = BitmapLoader;
 var PerlinNoise = _dereq_('./extra/PerlinNoise');
 exports.PerlinNoise = PerlinNoise;
+
+var loader = _dereq_('./loaders/loader');
+exports.loader = loader;
 
 var _util = _dereq_('./core/util');
 var rand = _util.rand;
@@ -1433,7 +1373,7 @@ function hsv(h, s, v) {
 exports.hsv = hsv;
 
 [
-    exports.BitmapLoader,
+    exports.loader,
     exports.PerlinNoise,
     _util,
     _color,
@@ -1446,7 +1386,257 @@ exports.hsv = hsv;
 ];
 //# sourceMappingURL=index.js.map
 
-},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12,"./extra/BitmapLoader":13,"./extra/PerlinNoise":15}],18:[function(_dereq_,module,exports){
+},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":8,"./core/color":11,"./core/ticker":12,"./core/util":13,"./extra/PerlinNoise":14,"./loaders/loader":23}],17:[function(_dereq_,module,exports){
+'use strict';
+var Bitmap = _dereq_('../core/Bitmap');
+var ImageDataLoader = _dereq_('./ImageDataLoader');
+
+var BitmapLoader = (function () {
+    function BitmapLoader(url, useAlpha) {
+        if (typeof useAlpha === "undefined") { useAlpha = false; }
+        this.url = url;
+        this.useAlpha = useAlpha;
+    }
+    BitmapLoader.prototype.load = function (callback) {
+        var _this = this;
+        new ImageDataLoader(this.url).load(function (err, image) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+
+            if (_this.useAlpha) {
+                callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
+            } else {
+                var bitmap = new Bitmap(image.width, image.height, false);
+                var data = image.data;
+                var width = image.width;
+
+                for (var iy = 0; iy < image.height; iy++) {
+                    for (var ix = 0; ix < width; ix++) {
+                        var read = (iy * width + ix) * 4;
+                        var write = (iy * width + ix) * 3;
+
+                        bitmap.data[write] = data[read];
+                        bitmap.data[write + 1] = data[read + 1];
+                        bitmap.data[write + 2] = data[read + 2];
+                    }
+                }
+                callback(null, bitmap);
+            }
+        });
+    };
+    return BitmapLoader;
+})();
+
+module.exports = BitmapLoader;
+//# sourceMappingURL=BitmapLoader.js.map
+
+},{"../core/Bitmap":1,"./ImageDataLoader":18}],18:[function(_dereq_,module,exports){
+'use strict';
+var ImageDataLoader = (function () {
+    function ImageDataLoader(url) {
+        this.url = url;
+    }
+    ImageDataLoader.prototype.load = function (callback) {
+        var _this = this;
+        var image = document.createElement('img');
+        image.onload = function () {
+            var canvas = document.createElement('canvas');
+            canvas.width = image.width;
+            canvas.height = image.height;
+
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0);
+
+            callback(null, ctx.getImageData(0, 0, image.width, image.height));
+
+            image.onload = null;
+            image.onerror = null;
+        };
+        image.onerror = function () {
+            callback(new Error('cannot load ' + _this.url), null);
+
+            image.onload = null;
+            image.onerror = null;
+        };
+
+        image.src = this.url;
+    };
+    return ImageDataLoader;
+})();
+
+module.exports = ImageDataLoader;
+//# sourceMappingURL=ImageDataLoader.js.map
+
+},{}],19:[function(_dereq_,module,exports){
+'use strict';
+var TextLoader = _dereq_('./TextLoader');
+
+var JSONLoader = (function () {
+    function JSONLoader(url) {
+        this.url = url;
+    }
+    JSONLoader.prototype.load = function (callback) {
+        new TextLoader(this.url).load(function (err, text) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            try  {
+                var obj = JSON.parse(text);
+            } catch (e) {
+                callback(e, null);
+            }
+            callback(null, obj);
+        });
+    };
+    return JSONLoader;
+})();
+
+module.exports = JSONLoader;
+//# sourceMappingURL=JSONLoader.js.map
+
+},{"./TextLoader":22}],20:[function(_dereq_,module,exports){
+'use strict';
+var JSONLoader = _dereq_('./JSONLoader');
+var SpriteSheetLoader = _dereq_('./SpriteSheetLoader');
+
+var urlExp = /^(.*?)(\/?)([^\/]+?)$/;
+
+function getURL(main, append) {
+    urlExp.lastIndex = 0;
+    var match = urlExp.exec(main);
+    return match[1] + match[2] + append;
+}
+
+var SpriteSheetJSONLoader = (function () {
+    function SpriteSheetJSONLoader(url, opts, useAlpha) {
+        if (typeof useAlpha === "undefined") { useAlpha = false; }
+        this.url = url;
+        this.opts = opts;
+        this.useAlpha = useAlpha;
+    }
+    SpriteSheetJSONLoader.prototype.load = function (callback) {
+        var _this = this;
+        new JSONLoader(this.url).load(function (err, json) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            console.log(json);
+            new SpriteSheetLoader(getURL(_this.url, json.image), json).load(callback);
+        });
+    };
+    return SpriteSheetJSONLoader;
+})();
+
+module.exports = SpriteSheetJSONLoader;
+//# sourceMappingURL=SpriteSheetJSONLoader.js.map
+
+},{"./JSONLoader":19,"./SpriteSheetLoader":21}],21:[function(_dereq_,module,exports){
+'use strict';
+var SpriteSheet = _dereq_('../core/SpriteSheet');
+var ImageDataLoader = _dereq_('./ImageDataLoader');
+
+var SpriteSheetLoader = (function () {
+    function SpriteSheetLoader(url, opts, useAlpha) {
+        if (typeof useAlpha === "undefined") { useAlpha = false; }
+        this.url = url;
+        this.opts = opts;
+        this.useAlpha = useAlpha;
+    }
+    SpriteSheetLoader.prototype.load = function (callback) {
+        new ImageDataLoader(this.url).load(function (err, image) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+
+            var sheet = new SpriteSheet();
+
+            callback(null, sheet);
+        });
+    };
+    return SpriteSheetLoader;
+})();
+
+module.exports = SpriteSheetLoader;
+//# sourceMappingURL=SpriteSheetLoader.js.map
+
+},{"../core/SpriteSheet":7,"./ImageDataLoader":18}],22:[function(_dereq_,module,exports){
+'use strict';
+function getXHR() {
+    if (XMLHttpRequest) {
+        return new XMLHttpRequest();
+    }
+    try  {
+        return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+    } catch (e) {
+    }
+    try  {
+        return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+    } catch (e) {
+    }
+    try  {
+        return new ActiveXObject('Microsoft.XMLHTTP');
+    } catch (e) {
+    }
+    throw new Error('This browser does not support XMLHttpRequest.');
+}
+
+var TextLoader = (function () {
+    function TextLoader(url) {
+        this.url = url;
+    }
+    TextLoader.prototype.load = function (callback) {
+        try  {
+            var xhr = getXHR();
+        } catch (e) {
+            callback(e, null);
+            return;
+        }
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                callback(null, xhr.responseText);
+            }
+        };
+
+        xhr.open('GET', this.url, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send(null);
+    };
+    return TextLoader;
+})();
+
+module.exports = TextLoader;
+//# sourceMappingURL=TextLoader.js.map
+
+},{}],23:[function(_dereq_,module,exports){
+var ImageData = _dereq_('./ImageDataLoader');
+exports.ImageData = ImageData;
+var Bitmap = _dereq_('./BitmapLoader');
+exports.Bitmap = Bitmap;
+var Text = _dereq_('./TextLoader');
+exports.Text = Text;
+var JSON = _dereq_('./JSONLoader');
+exports.JSON = JSON;
+var SpriteSheet = _dereq_('./SpriteSheetLoader');
+exports.SpriteSheet = SpriteSheet;
+var SpriteSheetJSON = _dereq_('./SpriteSheetJSONLoader');
+exports.SpriteSheetJSON = SpriteSheetJSON;
+
+[
+    exports.ImageData,
+    exports.Bitmap,
+    exports.Text,
+    exports.JSON,
+    exports.SpriteSheet,
+    exports.SpriteSheetJSON
+];
+//# sourceMappingURL=loader.js.map
+
+},{"./BitmapLoader":17,"./ImageDataLoader":18,"./JSONLoader":19,"./SpriteSheetJSONLoader":20,"./SpriteSheetLoader":21,"./TextLoader":22}],24:[function(_dereq_,module,exports){
 'use strict';
 function clearAlpha(data) {
     var lim = data.length;
@@ -1515,7 +1705,7 @@ var CanvasRender = (function () {
 module.exports = CanvasRender;
 //# sourceMappingURL=CanvasRenderer.js.map
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 'use strict';
 var vertexShaderSource = [
     'attribute vec2 a_position;',
@@ -1651,9 +1841,9 @@ var WebGLRender = (function () {
 module.exports = WebGLRender;
 //# sourceMappingURL=WebGLRenderer.js.map
 
-},{}]},{},[17])
+},{}]},{},[16])
 
-(17)
+(16)
 });
 
 //# sourceMappingURL=lorez.js.map

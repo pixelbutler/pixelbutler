@@ -22,7 +22,7 @@ var alpha = new RGBA(0, 0, 0, 0);
 var black = new RGBA(0, 0, 0);
 var magenta = new RGBA(255, 0, 255);
 
-// TODO split to alpha and non-alpha version
+// TODO properly implement alpha and non-alpha
 
 // TODO profile element access
 // TODO profile loop order

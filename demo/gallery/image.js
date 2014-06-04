@@ -20,17 +20,12 @@ define(['lorez'], function (lorez) {
 
 		var fps = new lorez.FPS();
 
-		var alpha = new lorez.Bitmap(4, 4, true);
-		alpha.setPixel(0, 0, blue);
-		alpha.setPixel(0, 1, blue);
-		alpha.setPixel(1, 0, blue);
-
+		var doge = new lorez.Bitmap(1, 1, true);
 		var char = new lorez.Bitmap(1, 1, true);
 		char.clear(blue);
 
 		var radial = new lorez.Bitmap(1, 1, true);
-
-		new lorez.BitmapLoader('assets/trollop.png', true).load(function(err, bitmap) {
+		new lorez.loader.Bitmap('assets/trollop.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;
@@ -38,7 +33,15 @@ define(['lorez'], function (lorez) {
 			char = bitmap;
 		});
 
-		new lorez.BitmapLoader('assets/radial.png', true).load(function(err, bitmap) {
+		new lorez.loader.Bitmap('assets/doge.jpg', false).load(function(err, bitmap) {
+			if (err) {
+				console.error(err);
+				return;
+			}
+			doge = bitmap;
+		});
+
+		new lorez.loader.Bitmap('assets/radial.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;
@@ -46,14 +49,13 @@ define(['lorez'], function (lorez) {
 			radial = bitmap;
 		});
 
-
 		function render(frame, delta) {
 			fps.begin();
 			$fb.clear(grey);
 
+			$fb.blit(doge, 0, 0);
 			$fb.blit(char, 1, 1);
-			$fb.blit(radial, 16, 16);
-			$fb.blit(alpha, 32, 32);
+			$fb.blit(radial, 20, 12);
 
 			// $fb.text(5, 5, fps.fps, white);
 
