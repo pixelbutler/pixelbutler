@@ -10,6 +10,8 @@ export import FPS = require('./core/FPS');
 import RGBA = require('./core/RGBA');
 import HSV = require('./core/HSV');
 
+export import PerlinNoise = require('./extra/PerlinNoise');
+
 import _util = require('./core/util');
 export import rand = _util.rand;
 
@@ -33,6 +35,7 @@ export function hsv(h: number, s: number, v: number): RGBA {
 
 // fake stuff for compiler bug (borked unused-imports-optimiser faulty removes exports)
 [
+	PerlinNoise,
 	_util,
 	_color,
 	ticker,

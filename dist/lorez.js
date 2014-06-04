@@ -279,7 +279,7 @@ var Bitmap = (function () {
 module.exports = Bitmap;
 //# sourceMappingURL=Bitmap.js.map
 
-},{"../font/micro":13,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
+},{"../font/micro":14,"./RGBA":6,"./util":12}],2:[function(_dereq_,module,exports){
 'use strict';
 var Char = (function () {
     function Char(char, map) {
@@ -485,7 +485,7 @@ var Stage = (function (_super) {
 module.exports = Stage;
 //# sourceMappingURL=Stage.js.map
 
-},{"./../render/CanvasRenderer":15,"./../render/WebGLRenderer":16,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
+},{"./../render/CanvasRenderer":16,"./../render/WebGLRenderer":17,"./Bitmap":1,"./autosize":8}],8:[function(_dereq_,module,exports){
 'use strict';
 var browser = _dereq_('./browser');
 
@@ -829,6 +829,78 @@ exports.clamp = clamp;
 //# sourceMappingURL=util.js.map
 
 },{}],13:[function(_dereq_,module,exports){
+var PerlinNoise = (function () {
+    function PerlinNoise() {
+        this.permutation = [
+            151, 160, 137, 91, 90, 15,
+            131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23,
+            190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33,
+            88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166,
+            77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244,
+            102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196,
+            135, 130, 116, 188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123,
+            5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189, 28, 42,
+            223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9,
+            129, 22, 39, 253, 19, 98, 108, 110, 79, 113, 224, 232, 178, 185, 112, 104, 218, 246, 97, 228,
+            251, 34, 242, 193, 238, 210, 144, 12, 191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239, 107,
+            49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
+            138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
+        ];
+        this.p = new Array(512);
+
+        for (var i = 0; i < 256; i++) {
+            this.p[256 + i] = this.p[i] = this.permutation[i];
+        }
+    }
+    PerlinNoise.prototype.noise = function (x, y, z) {
+        var X = Math.floor(x) & 255;
+        var Y = Math.floor(y) & 255;
+        var Z = Math.floor(z) & 255;
+
+        x -= Math.floor(x);
+        y -= Math.floor(y);
+        z -= Math.floor(z);
+
+        var u = this.fade(x);
+        var v = this.fade(y);
+        var w = this.fade(z);
+
+        var A = this.p[X] + Y;
+        var AA = this.p[A] + Z;
+        var AB = this.p[A + 1] + Z;
+
+        var B = this.p[X + 1] + Y;
+        var BA = this.p[B] + Z;
+        var BB = this.p[B + 1] + Z;
+
+        return this.scale(this.lerp(w, this.lerp(v, this.lerp(u, this.grad(this.p[AA], x, y, z), this.grad(this.p[BA], x - 1, y, z)), this.lerp(u, this.grad(this.p[AB], x, y - 1, z), this.grad(this.p[BB], x - 1, y - 1, z))), this.lerp(v, this.lerp(u, this.grad(this.p[AA + 1], x, y, z - 1), this.grad(this.p[BA + 1], x - 1, y, z - 1)), this.lerp(u, this.grad(this.p[AB + 1], x, y - 1, z - 1), this.grad(this.p[BB + 1], x - 1, y - 1, z - 1)))));
+    };
+
+    PerlinNoise.prototype.fade = function (t) {
+        return t * t * t * (t * (t * 6 - 15) + 10);
+    };
+
+    PerlinNoise.prototype.lerp = function (t, a, b) {
+        return a + t * (b - a);
+    };
+
+    PerlinNoise.prototype.grad = function (hash, x, y, z) {
+        var h = hash & 15;
+        var u = h < 8 ? x : y;
+        var v = h < 4 ? y : h == 12 || h == 14 ? x : z;
+        return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
+    };
+
+    PerlinNoise.prototype.scale = function (n) {
+        return (1 + n) / 2;
+    };
+    return PerlinNoise;
+})();
+
+module.exports = PerlinNoise;
+//# sourceMappingURL=PerlinNoise.js.map
+
+},{}],14:[function(_dereq_,module,exports){
 'use strict';
 var Font = _dereq_('../core/Font');
 
@@ -1186,7 +1258,7 @@ var font = new Font('micro', 4, {
 module.exports = font;
 //# sourceMappingURL=micro.js.map
 
-},{"../core/Font":4}],14:[function(_dereq_,module,exports){
+},{"../core/Font":4}],15:[function(_dereq_,module,exports){
 'use strict';
 var Stage = _dereq_('./core/Stage');
 exports.Stage = Stage;
@@ -1198,6 +1270,9 @@ exports.FPS = FPS;
 
 var RGBA = _dereq_('./core/RGBA');
 var HSV = _dereq_('./core/HSV');
+
+var PerlinNoise = _dereq_('./extra/PerlinNoise');
+exports.PerlinNoise = PerlinNoise;
 
 var _util = _dereq_('./core/util');
 var rand = _util.rand;
@@ -1227,6 +1302,7 @@ function hsv(h, s, v) {
 exports.hsv = hsv;
 
 [
+    exports.PerlinNoise,
     _util,
     _color,
     exports.ticker,
@@ -1238,7 +1314,7 @@ exports.hsv = hsv;
 ];
 //# sourceMappingURL=index.js.map
 
-},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12}],15:[function(_dereq_,module,exports){
+},{"./core/Bitmap":1,"./core/FPS":3,"./core/HSV":5,"./core/RGBA":6,"./core/Stage":7,"./core/color":10,"./core/ticker":11,"./core/util":12,"./extra/PerlinNoise":13}],16:[function(_dereq_,module,exports){
 'use strict';
 function clearAlpha(data) {
     var lim = data.length;
@@ -1307,7 +1383,7 @@ var CanvasRender = (function () {
 module.exports = CanvasRender;
 //# sourceMappingURL=CanvasRenderer.js.map
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 'use strict';
 var vertexShaderSource = [
     'attribute vec2 a_position;',
@@ -1443,9 +1519,9 @@ var WebGLRender = (function () {
 module.exports = WebGLRender;
 //# sourceMappingURL=WebGLRenderer.js.map
 
-},{}]},{},[14])
+},{}]},{},[15])
 
-(14)
+(15)
 });
 
 //# sourceMappingURL=lorez.js.map
