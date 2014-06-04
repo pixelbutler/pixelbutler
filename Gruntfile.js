@@ -13,12 +13,31 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-connect');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-gh-pages');
 	grunt.loadNpmTasks('grunt-tslint');
 	grunt.loadNpmTasks('grunt-ts');
 
+	// get a formatted commit message to review changes from the commit log
+	// github will turn some of these into clickable links
+	function getDeployMessage() {
+		var ret = '\n\n';
+		if (process.env.TRAVIS !== 'true') {
+			ret += 'missing env vars for travis-ci';
+			return ret;
+		}
+		ret += 'branch: ' + process.env.TRAVIS_BRANCH + '\n';
+		ret += 'SHA: ' + process.env.TRAVIS_COMMIT + '\n';
+		ret += 'range SHA: ' + process.env.TRAVIS_COMMIT_RANGE + '\n';
+		ret += 'build id: ' + process.env.TRAVIS_BUILD_ID + '\n';
+		ret += 'build number: ' + process.env.TRAVIS_BUILD_NUMBER + '\n';
+		return ret;
+	}
+
 	// list the files for reference (and verification)
 	var dist = {
-		basic: './dist/lorez.js'
+		basic: './dist/lorez.js',
+		demo: './demo/js/lorez.js',
 	};
 
 	grunt.initConfig({
@@ -57,6 +76,39 @@ module.exports = function (grunt) {
 				options: {
 					keepalive: true
 				}
+			}
+		},
+		copy: {
+			lorez: {
+				files: [
+					{expand: true, cwd: 'dist/', src: ['lorez.js'], dest: 'demo/js/'},
+					{expand: true, cwd: '.', src: ['README.md'], dest: 'demo/'}
+				]
+			}
+		},
+		'gh-pages': {
+			options: {
+				branch: 'gh-pages',
+				base: 'demo'
+			},
+			publish: {
+				options: {
+					repo: 'https://github.com/Bartvds/lorez.git',
+					message: 'publish gh-pages (cli)'
+				},
+				src: ['**/*']
+			},
+			deploy: {
+				options: {
+					user: {
+						name: 'Bart van der Schoor',
+						email: 'bartvanderschoor@gmail.com'
+					},
+					repo: 'https://' + process.env.GH_TOKEN + '@github.com/Bartvds/lorez.git',
+					message: 'publish gh-pages (auto)' + getDeployMessage(),
+					silent: true
+				},
+				src: ['**/*']
 			}
 		},
 		watch: {
@@ -106,7 +158,8 @@ module.exports = function (grunt) {
 		'ts:index',
 		// 'tslint:src',
 		'bundle:index',
-		// 'verify'
+		// 'verify',
+		'copy:lorez'
 	]);
 
 	grunt.registerTask('test', [
@@ -128,6 +181,16 @@ module.exports = function (grunt) {
 	grunt.registerTask('dev', [
 		'prep',
 		'bundle:suite'
+	]);
+
+	grunt.registerTask('publish', 'Publish from CLI', [
+		'build',
+		'gh-pages:publish'
+	]);
+
+	grunt.registerTask('deploy', 'Publish from Travis', [
+		'build',
+		'check-deploy'
 	]);
 
 	// check if we have all the important files
@@ -199,4 +262,18 @@ module.exports = function (grunt) {
 		stream.pipe(fs.createWriteStream(bundleFile));
 	});
 
+	grunt.registerTask('check-deploy', function() {
+		// need this
+		this.requires(['build']);
+
+		// only deploy under these conditions
+		if (process.env.TRAVIS === 'true' && process.env.TRAVIS_SECURE_ENV_VARS === 'true' && process.env.TRAVIS_PULL_REQUEST === 'false') {
+			grunt.log.writeln('executing deployment');
+			// queue deploy
+			grunt.task.run('gh-pages:deploy');
+		}
+		else {
+			grunt.log.writeln('skipped deployment');
+		}
+	});
 };

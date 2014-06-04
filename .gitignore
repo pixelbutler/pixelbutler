@@ -3,5 +3,10 @@
 /node_modules
 /*.tgz
 
+*.psd
+
 /build
 /dist/*.js.map
+
+/demo/js/lorez.*
+/demo/README.md
