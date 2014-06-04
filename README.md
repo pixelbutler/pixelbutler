@@ -1,14 +1,16 @@
 # lorez
 
-Bitmap rendering system for low-res pixel games.
+Bitmap rendering system for low-res pixel rendering on big screens.
 
-The canvas rendering is specialised for up-scaling with 100% crispy pixels and in modern browsers the optional WebGL renderer can easily run at 60 frames-per-second in HD resolution. 
+The canvas rendering ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily at 60 frames-per-second in high resolutions. This works great on modern mobile devices. 
 
-lorez is especially suited for 32x32 pixel micro games on large screens.
-
-With ♣ by [@bartvds](http://github.com/bartvds)
+lorez is especially suited for 32x32 pixel micro games on large screens or class 320x240 gaming.
 
 Original code forked from [framebufferJS](https://github.com/noffle/framebufferJS) by [@noffle](http://www.twitter.com/noffle)
+
+Refactored and expanded in [TypeScript](http://www.typescriptlang.org/) with ♥ by [@bartvds](http://github.com/bartvds)
+
+Work-in-progress :sunglasses:
 
 ## Get the code
 
@@ -63,7 +65,7 @@ $ npm install
 $ grunt build
 ````
 
-6) Watch tasks to auto-build during development:
+6) ~~Watch tasks to auto-build during development:~~
 
 ````bash
 $ grunt watch
