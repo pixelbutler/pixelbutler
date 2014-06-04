@@ -249,7 +249,7 @@ class Bitmap {
 		w = (w ? Math.floor(w) : sprite.width);
 		h = (h ? Math.floor(h) : sprite.height);
 		sx = (sx ? Math.floor(sx) : 0);
-		sy = (sy ?  Math.floor(sy) : 0);
+		sy = (sy ? Math.floor(sy) : 0);
 
 		// TODO optimise clipping
 		var iy: number;
@@ -345,6 +345,48 @@ class Bitmap {
 		for (var i = 3; i < lim; i += 4) {
 			this.data[i] = alpha;
 		}
+	}
+
+	/* tslint:disable: max-line-length */
+	static clipFromData(inputData: INumberArray, inputWidth: number, inputHeight: number, inputChannels: number, x: number, y: number, width: number, height: number, useAlpha: boolean): Bitmap {
+
+		var channels = useAlpha ? 4 : 3;
+		var data = new Uint8Array(height * width * channels);
+
+		var iy: number;
+		var ix: number;
+		var read: number;
+		var write: number;
+
+		// TODO add alpha path
+
+		if (useAlpha) {
+			for (iy = 0; iy < height; iy++) {
+				for (ix = 0; ix < width; ix++) {
+					read = (ix + x + (iy + y) * inputWidth) * inputChannels;
+					write = (ix + iy * width) * channels;
+
+					data[write] = inputData[read];
+					data[write + 1] = inputData[read + 1];
+					data[write + 2] = inputData[read + 2];
+					data[write + 3] = inputData[read + 3];
+				}
+			}
+		}
+		else {
+			for (iy = 0; iy < height; iy++) {
+				for (ix = 0; ix < width; ix++) {
+					read = (ix + x + (iy + y) * inputWidth) * inputChannels;
+					write = (ix + iy * width) * channels;
+
+					data[write] = inputData[read];
+					data[write + 1] = inputData[read + 1];
+					data[write + 2] = inputData[read + 2];
+				}
+			}
+		}
+
+		return new Bitmap(width, height, useAlpha, data);
 	}
 }
 

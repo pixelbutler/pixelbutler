@@ -1,16 +1,16 @@
-export import ImageData = require('./ImageDataLoader');
-export import Bitmap = require('./BitmapLoader');
-export import Text = require('./TextLoader');
-export import JSON = require('./JSONLoader');
-export import SpriteSheet = require('./SpriteSheetLoader');
-export import SpriteSheetJSON = require('./SpriteSheetJSONLoader');
+export import ImageDataLoader = require('./ImageDataLoader');
+export import BitmapLoader = require('./BitmapLoader');
+export import TextLoader = require('./TextLoader');
+export import JSONLoader = require('./JSONLoader');
+export import SpriteSheetLoader = require('./SpriteSheetLoader');
+export import SpriteSheetJSONLoader = require('./SpriteSheetJSONLoader');
 
 // bugs
 [
-	ImageData,
-	Bitmap,
-	Text,
-	JSON,
-	SpriteSheet,
-	SpriteSheetJSON
+	ImageDataLoader,
+	BitmapLoader,
+	TextLoader,
+	JSONLoader,
+	SpriteSheetLoader,
+	SpriteSheetJSONLoader
 ];

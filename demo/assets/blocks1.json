@@ -1,0 +1,9 @@
+{
+	"image": "blocks1.png",
+	"sizeX": 16,
+	"sizeY": 16,
+	"spritesX": 18,
+	"spritesY": 11,
+	"outerMargin": 1,
+	"innerMargin": 1
+}

@@ -319,6 +319,43 @@ var Bitmap = (function () {
             this.data[i] = alpha;
         }
     };
+
+    Bitmap.clipFromData = function (inputData, inputWidth, inputHeight, inputChannels, x, y, width, height, useAlpha) {
+        var channels = useAlpha ? 4 : 3;
+        var data = new Uint8Array(height * width * channels);
+
+        var iy;
+        var ix;
+        var read;
+        var write;
+
+        if (useAlpha) {
+            for (iy = 0; iy < height; iy++) {
+                for (ix = 0; ix < width; ix++) {
+                    read = (ix + x + (iy + y) * inputWidth) * inputChannels;
+                    write = (ix + iy * width) * channels;
+
+                    data[write] = inputData[read];
+                    data[write + 1] = inputData[read + 1];
+                    data[write + 2] = inputData[read + 2];
+                    data[write + 3] = inputData[read + 3];
+                }
+            }
+        } else {
+            for (iy = 0; iy < height; iy++) {
+                for (ix = 0; ix < width; ix++) {
+                    read = (ix + x + (iy + y) * inputWidth) * inputChannels;
+                    write = (ix + iy * width) * channels;
+
+                    data[write] = inputData[read];
+                    data[write + 1] = inputData[read + 1];
+                    data[write + 2] = inputData[read + 2];
+                }
+            }
+        }
+
+        return new Bitmap(width, height, useAlpha, data);
+    };
     return Bitmap;
 })();
 
@@ -464,10 +501,16 @@ module.exports = RGBA;
 },{}],7:[function(_dereq_,module,exports){
 'use strict';
 var SpriteSheet = (function () {
-    function SpriteSheet() {
+    function SpriteSheet(width, height) {
         this.sprites = [];
+        this.width = width;
+        this.height = height;
     }
-    SpriteSheet.prototype.getSprite = function (index) {
+    SpriteSheet.prototype.getSprite = function (x, y) {
+        return this.getSpriteAt(y * this.width + x);
+    };
+
+    SpriteSheet.prototype.getSpriteAt = function (index) {
         if (this.sprites.length === 0) {
             throw new Error('sheet has zero images');
         }
@@ -1511,10 +1554,9 @@ function getURL(main, append) {
 }
 
 var SpriteSheetJSONLoader = (function () {
-    function SpriteSheetJSONLoader(url, opts, useAlpha) {
+    function SpriteSheetJSONLoader(url, useAlpha) {
         if (typeof useAlpha === "undefined") { useAlpha = false; }
         this.url = url;
-        this.opts = opts;
         this.useAlpha = useAlpha;
     }
     SpriteSheetJSONLoader.prototype.load = function (callback) {
@@ -1525,7 +1567,7 @@ var SpriteSheetJSONLoader = (function () {
                 return;
             }
             console.log(json);
-            new SpriteSheetLoader(getURL(_this.url, json.image), json).load(callback);
+            new SpriteSheetLoader(getURL(_this.url, json.image), json, _this.useAlpha).load(callback);
         });
     };
     return SpriteSheetJSONLoader;
@@ -1536,6 +1578,7 @@ module.exports = SpriteSheetJSONLoader;
 
 },{"./JSONLoader":19,"./SpriteSheetLoader":21}],21:[function(_dereq_,module,exports){
 'use strict';
+var Bitmap = _dereq_('../core/Bitmap');
 var SpriteSheet = _dereq_('../core/SpriteSheet');
 var ImageDataLoader = _dereq_('./ImageDataLoader');
 
@@ -1547,14 +1590,25 @@ var SpriteSheetLoader = (function () {
         this.useAlpha = useAlpha;
     }
     SpriteSheetLoader.prototype.load = function (callback) {
+        var _this = this;
         new ImageDataLoader(this.url).load(function (err, image) {
             if (err) {
                 callback(err, null);
                 return;
             }
 
-            var sheet = new SpriteSheet();
+            var outerMargin = (_this.opts.outerMargin || 0);
+            var innerMargin = (_this.opts.innerMargin || 0);
 
+            var sheet = new SpriteSheet(_this.opts.spritesX, _this.opts.spritesY);
+
+            for (var iy = 0; iy < _this.opts.spritesY; iy++) {
+                for (var ix = 0; ix < _this.opts.spritesX; ix++) {
+                    var x = outerMargin + ix * (_this.opts.sizeX + innerMargin);
+                    var y = outerMargin + iy * (_this.opts.sizeY + innerMargin);
+                    sheet.addSprite(Bitmap.clipFromData(image.data, image.width, image.height, 4, x, y, _this.opts.sizeX, _this.opts.sizeY, _this.useAlpha));
+                }
+            }
             callback(null, sheet);
         });
     };
@@ -1564,7 +1618,7 @@ var SpriteSheetLoader = (function () {
 module.exports = SpriteSheetLoader;
 //# sourceMappingURL=SpriteSheetLoader.js.map
 
-},{"../core/SpriteSheet":7,"./ImageDataLoader":18}],22:[function(_dereq_,module,exports){
+},{"../core/Bitmap":1,"../core/SpriteSheet":7,"./ImageDataLoader":18}],22:[function(_dereq_,module,exports){
 'use strict';
 function getXHR() {
     if (XMLHttpRequest) {
@@ -1613,26 +1667,26 @@ module.exports = TextLoader;
 //# sourceMappingURL=TextLoader.js.map
 
 },{}],23:[function(_dereq_,module,exports){
-var ImageData = _dereq_('./ImageDataLoader');
-exports.ImageData = ImageData;
-var Bitmap = _dereq_('./BitmapLoader');
-exports.Bitmap = Bitmap;
-var Text = _dereq_('./TextLoader');
-exports.Text = Text;
-var JSON = _dereq_('./JSONLoader');
-exports.JSON = JSON;
-var SpriteSheet = _dereq_('./SpriteSheetLoader');
-exports.SpriteSheet = SpriteSheet;
-var SpriteSheetJSON = _dereq_('./SpriteSheetJSONLoader');
-exports.SpriteSheetJSON = SpriteSheetJSON;
+var ImageDataLoader = _dereq_('./ImageDataLoader');
+exports.ImageDataLoader = ImageDataLoader;
+var BitmapLoader = _dereq_('./BitmapLoader');
+exports.BitmapLoader = BitmapLoader;
+var TextLoader = _dereq_('./TextLoader');
+exports.TextLoader = TextLoader;
+var JSONLoader = _dereq_('./JSONLoader');
+exports.JSONLoader = JSONLoader;
+var SpriteSheetLoader = _dereq_('./SpriteSheetLoader');
+exports.SpriteSheetLoader = SpriteSheetLoader;
+var SpriteSheetJSONLoader = _dereq_('./SpriteSheetJSONLoader');
+exports.SpriteSheetJSONLoader = SpriteSheetJSONLoader;
 
 [
-    exports.ImageData,
-    exports.Bitmap,
-    exports.Text,
-    exports.JSON,
-    exports.SpriteSheet,
-    exports.SpriteSheetJSON
+    exports.ImageDataLoader,
+    exports.BitmapLoader,
+    exports.TextLoader,
+    exports.JSONLoader,
+    exports.SpriteSheetLoader,
+    exports.SpriteSheetJSONLoader
 ];
 //# sourceMappingURL=loader.js.map
 

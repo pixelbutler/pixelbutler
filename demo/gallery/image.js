@@ -25,7 +25,7 @@ define(['lorez'], function (lorez) {
 		char.clear(blue);
 
 		var radial = new lorez.Bitmap(1, 1, true);
-		new lorez.loader.Bitmap('assets/trollop.png', true).load(function(err, bitmap) {
+		new lorez.loader.BitmapLoader('assets/trollop.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;
@@ -33,7 +33,7 @@ define(['lorez'], function (lorez) {
 			char = bitmap;
 		});
 
-		new lorez.loader.Bitmap('assets/doge.jpg', false).load(function(err, bitmap) {
+		new lorez.loader.BitmapLoader('assets/doge.jpg', false).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;
@@ -41,7 +41,7 @@ define(['lorez'], function (lorez) {
 			doge = bitmap;
 		});
 
-		new lorez.loader.Bitmap('assets/radial.png', true).load(function(err, bitmap) {
+		new lorez.loader.BitmapLoader('assets/radial.png', true).load(function(err, bitmap) {
 			if (err) {
 				console.error(err);
 				return;

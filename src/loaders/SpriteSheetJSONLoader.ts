@@ -23,20 +23,19 @@ class SpriteSheetJSONLoader {
 	public opts: ISpriteSheetOpts;
 
 	// TODO assert line width
-	constructor(url: string, opts: ISpriteSheetOpts, useAlpha: boolean = false) {
+	constructor(url: string, useAlpha: boolean = false) {
 		this.url = url;
-		this.opts = opts;
 		this.useAlpha = useAlpha;
 	}
 
 	load(callback: (err: Error, sheet: SpriteSheet) => void): void {
-		new JSONLoader(this.url).load((err, json) => {
+		new JSONLoader(this.url).load((err, json: ISpriteSheetOpts) => {
 			if (err) {
 				callback(err, null);
 				return;
 			}
 			console.log(json);
-			new SpriteSheetLoader(getURL(this.url, json.image), json).load(callback);
+			new SpriteSheetLoader(getURL(this.url, json.image), json, this.useAlpha).load(callback);
 		});
 	}
 }

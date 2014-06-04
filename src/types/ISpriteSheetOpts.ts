@@ -1,10 +1,13 @@
 interface ISpriteSheetOpts {
-	spriteWidth: number;
-	spriteHeight: number;
-	spritesX?: number;
-	spritesY?: number;
-	margin?: number;
-	padding?: number;
-}
+	image?: string;
 
+	sizeX: number;
+	sizeY: number;
+
+	spritesX: number;
+	spritesY: number;
+
+	outerMargin?: number;
+	innerMargin?: number;
+}
 export = ISpriteSheetOpts;

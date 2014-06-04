@@ -9,12 +9,19 @@ import Bitmap = require('../core/Bitmap');
 class SpriteSheet {
 
 	private sprites: Bitmap[] = [];
+	private width: number;
+	private height: number;
 
-	constructor() {
-
+	constructor(width: number, height: number) {
+		this.width = width;
+		this.height = height;
 	}
 
-	getSprite(index: number): Bitmap {
+	getSprite(x: number, y: number): Bitmap {
+		return this.getSpriteAt(y * this.width + x);
+	}
+
+	getSpriteAt(index: number): Bitmap {
 		if (this.sprites.length === 0) {
 			throw new Error('sheet has zero images');
 		}
