@@ -11,24 +11,7 @@ import Font = require('../core/Font');
  *
  * Expanded with numerals and special characters by @bartvds
  */
-/*	[
-		'00',
-		'00',
-		'00',
-		'00'
-	]
-	[
-		'000',
-		'000',
-		'000',
-		'000'
-	]
-	[
-		'0000',
-		'0000',
-		'0000',
-		'0000'
-	]*/
+
 var font = new Font('micro', 4, {
 	'0': [
 		'111',

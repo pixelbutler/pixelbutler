@@ -5,8 +5,8 @@ define(['lorez'], function (lorez) {
 	// return factory
 	return function (config) {
 		var $fb = new lorez.Stage({
-			width: 128,
-			height: 128,
+			width: 64,
+			height: 64,
 			scale: 'fit',
 			center: true,
 			canvas: config.canvas

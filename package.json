@@ -44,6 +44,7 @@
     "grunt-gh-pages": "^0.9.1",
     "grunt-ts": "^1.11.2",
     "grunt-tslint": "^0.4.1",
+    "minifyify": "^3.0.7",
     "tslint-path-formatter": "^0.1.1",
     "typescript": "^1.0.1"
   }

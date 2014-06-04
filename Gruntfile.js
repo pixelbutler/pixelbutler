@@ -258,6 +258,10 @@ module.exports = function (grunt) {
 		var bundle = new browserify();
 		bundle.add(mainFile);
 
+		/*bundle.plugin('minifyify', {
+			map: mapFile
+		});*/
+
 		var stream = bundle.bundle(options, function (err) {
 			if (err) {
 				grunt.log.error(mainFile);
@@ -271,7 +275,7 @@ module.exports = function (grunt) {
 			}
 		});
 		// split source-map to own file
-		stream = stream.pipe(exorcist(mapFile));
+		// stream = stream.pipe(exorcist(mapFile));
 		stream.pipe(fs.createWriteStream(bundleFile));
 	});
 };

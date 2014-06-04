@@ -164,6 +164,8 @@ class Bitmap {
 		y = Math.floor(y);
 		r = Math.floor(r);
 
+		//TODO optimise fillCircle
+
 		for (var iy = -r; iy <= r; iy++) {
 			for (var ix = -r; ix <= r; ix++) {
 				if (x + ix < 0 || y + iy < 0 || x + ix >= this.width || y + iy >= this.height) {
@@ -183,6 +185,9 @@ class Bitmap {
 		x = Math.floor(x);
 		y = Math.floor(y);
 		r = Math.floor(r);
+
+		//TODO optimise drawCircle
+
 		for (var i = 0; i < 360; i++) {
 			var cx = Math.round(Math.cos(i * (Math.PI / 180)) * r) + x;
 			var cy = Math.round(Math.sin(i * (Math.PI / 180)) * r) + y;
@@ -198,12 +203,12 @@ class Bitmap {
 	}
 
 	shader(f: IShader): void {
-		var rgb = new RGBA();
-
 		var iy: number;
 		var ix: number;
 		var p: number;
 		var col: IRGBA;
+
+		var rgb = new RGBA();
 
 		for (iy = 0; iy < this.height; iy++) {
 			for (ix = 0; ix < this.width; ix++) {
@@ -223,6 +228,7 @@ class Bitmap {
 
 	text(x: number, y: number, txt: string, col: IRGB): void {
 		txt = String(txt);
+
 		for (var i = 0; i < txt.length; i++) {
 			x += this.drawChar(x, y, txt.charAt(i), col) + 1;
 		}
@@ -233,6 +239,7 @@ class Bitmap {
 		if (!char) {
 			return 0;
 		}
+
 		for (var iy = 0; iy < microFont.height; iy++) {
 			for (var ix = 0; ix < char.width; ix++) {
 				if (char.map[iy * char.width + ix]) {
@@ -328,28 +335,6 @@ class Bitmap {
 		}
 	}
 
-	clearDisco(): void {
-		var lim: number;
-		var i: number;
-
-		if (this.useAlpha) {
-			lim = this.width * this.height * 4;
-			for (i = 0; i < lim; i += 4) {
-				this.data[i] = rand(256);
-				this.data[i + 1] = rand(256);
-				this.data[i + 2] = rand(256);
-				this.data[i + 3] = 255;
-			}
-		} else {
-			lim = this.width * this.height * 3;
-			for (i = 0; i < lim; i += 3) {
-				this.data[i] = rand(256);
-				this.data[i + 1] = rand(256);
-				this.data[i + 2] = rand(256);
-			}
-		}
-	}
-
 	clearAlpha(alpha: number = 0): void {
 		if (!this.useAlpha) {
 			return;
@@ -370,8 +355,6 @@ class Bitmap {
 		var ix: number;
 		var read: number;
 		var write: number;
-
-		// TODO add alpha path
 
 		if (useAlpha) {
 			for (iy = 0; iy < height; iy++) {

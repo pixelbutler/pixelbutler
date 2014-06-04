@@ -71,7 +71,7 @@ define(['lorez', 'text!../partial/ui.html!strip'], function (lorez, uiHtml) {
 					notify('source');
 					break;
 				default:
-					console.log()
+					console.log(ev.target.id);
 					break;
 			}
 		});
