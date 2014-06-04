@@ -164,7 +164,7 @@ class Bitmap {
 		y = Math.floor(y);
 		r = Math.floor(r);
 
-		//TODO optimise fillCircle
+		// TODO optimise fillCircle
 
 		for (var iy = -r; iy <= r; iy++) {
 			for (var ix = -r; ix <= r; ix++) {
@@ -186,7 +186,7 @@ class Bitmap {
 		y = Math.floor(y);
 		r = Math.floor(r);
 
-		//TODO optimise drawCircle
+		// TODO optimise drawCircle
 
 		for (var i = 0; i < 360; i++) {
 			var cx = Math.round(Math.cos(i * (Math.PI / 180)) * r) + x;

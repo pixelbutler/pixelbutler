@@ -8,7 +8,6 @@ import ILoader = require('./ILoader');
 class ImageDataLoader implements ILoader {
 	public url: string;
 
-	// TODO assert line width
 	constructor(url: string) {
 		this.url = url;
 	}

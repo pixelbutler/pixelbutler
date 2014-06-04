@@ -11,7 +11,6 @@ class BitmapLoader implements ILoader {
 	public url: string;
 	public useAlpha: boolean;
 
-	// TODO assert line width
 	constructor(url: string, useAlpha: boolean = false) {
 		this.url = url;
 		this.useAlpha = useAlpha;

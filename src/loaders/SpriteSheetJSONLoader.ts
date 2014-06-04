@@ -23,7 +23,6 @@ class SpriteSheetJSONLoader implements ILoader {
 	public useAlpha: boolean;
 	public opts: ISpriteSheetOpts;
 
-	// TODO assert line width
 	constructor(url: string, useAlpha: boolean = false) {
 		this.url = url;
 		this.useAlpha = useAlpha;

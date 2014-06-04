@@ -7,7 +7,6 @@ import ILoader = require('./ILoader');
 class MultiLoader {
 	private queued: ILoader[] = [];
 
-	// TODO assert line width
 	constructor(loaders?: ILoader[]) {
 		if (loaders) {
 			loaders.forEach((loader) => {

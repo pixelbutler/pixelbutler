@@ -1,6 +1,6 @@
 # lorez
 
-[![Build Status](https://secure.travis-ci.org/Bartvds/lorez.svg?branch=master)](http://travis-ci.org/Bartvds/lorez) [![NPM version](https://badge.fury.io/js/lorez.png)](http://badge.fury.io/js/lorez) [![Dependency Status](https://david-dm.org/Bartvds/lorez.png)](https://david-dm.org/Bartvds/lorez) [![devDependency Status](https://david-dm.org/Bartvds/lorez/dev-status.png)](https://david-dm.org/Bartvds/lorez#info=devDependencies)
+[![Build Status](https://secure.travis-ci.org/Bartvds/lorez.svg?branch=master)](http://travis-ci.org/Bartvds/lorez) [![NPM version](https://badge.fury.io/js/lorez.svg)](http://badge.fury.io/js/lorez) [![Dependency Status](https://david-dm.org/Bartvds/lorez.svg)](https://david-dm.org/Bartvds/lorez) [![devDependency Status](https://david-dm.org/Bartvds/lorez/dev-status.svg)](https://david-dm.org/Bartvds/lorez#info=devDependencies)
 
 Bitmap rendering system for low-res pixel rendering on big screens.
 

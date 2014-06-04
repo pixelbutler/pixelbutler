@@ -14,7 +14,6 @@ class SpriteSheetLoader implements ILoader {
 	public useAlpha: boolean;
 	public opts: ISpriteSheetOpts;
 
-	// TODO assert line width
 	constructor(url: string, opts: ISpriteSheetOpts, useAlpha: boolean = false) {
 		this.url = url;
 		this.opts = opts;

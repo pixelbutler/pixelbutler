@@ -8,7 +8,6 @@ import TextLoader = require('./TextLoader');
 class JSONLoader implements ILoader {
 	public url: string;
 
-	// TODO assert line width
 	constructor(url: string) {
 		this.url = url;
 	}
