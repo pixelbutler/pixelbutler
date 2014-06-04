@@ -104,13 +104,15 @@ module.exports = function (grunt) {
 	grunt.registerTask('build', [
 		'prep',
 		'ts:index',
-		'tslint:src',
+		// 'tslint:src',
 		'bundle:index',
-		'verify'
+		// 'verify'
 	]);
 
 	grunt.registerTask('test', [
-		'build'
+		'build',
+		'tslint:src',
+		'verify'
 		// more!
 	]);
 

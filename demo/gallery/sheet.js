@@ -36,20 +36,20 @@ define(['lorez'], function (lorez) {
 				}
 
 				function renderContent(frame) {
+					$fb.blit(sheet.getSprite(6, 5), -8, -8);
+					$fb.blit(sheet.getSprite(7, 5), 8, -8);
 
-					$fb.blit(sheet.getSprite(7, 5), 0, 0);
-
-					$fb.blit(sheet.getSprite(8, 5), 16, 16);
-					$fb.blit(sheet.getSprite(9, 5), 32, 16);
-					$fb.blit(sheet.getSprite(10, 5), 48, 16);
+					$fb.blit(sheet.getSprite(8, 5), 24, 8);
+					$fb.blit(sheet.getSprite(9, 5), 40, 8);
+					$fb.blit(sheet.getSprite(10, 5), 56, 8);
 
 					$fb.blit(sheet.getSprite(5, 1), 0, 48);
 					$fb.blit(sheet.getSprite(6, 1), 16, 48);
 					$fb.blit(sheet.getSprite(7, 1), 32, 48);
 					$fb.blit(sheet.getSprite(10, 1), 48, 48);
 
-					// $fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), (Math.floor(frame / 2) % 255) - 64, 12);
-					$fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), 32, 12);
+					$fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), (Math.floor(frame / 3) % 100) - 32, 12);
+					// $fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), 32, 12);
 				}
 
 				// ugly swop

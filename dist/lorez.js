@@ -217,27 +217,43 @@ var Bitmap = (function () {
         return char.width;
     };
 
-    Bitmap.prototype.blit = function (sprite, x, y, w, h, sx, sy) {
+    Bitmap.prototype.blit = function (sprite, x, y) {
         x = (x ? Math.floor(x) : 0);
         y = (y ? Math.floor(y) : 0);
-        w = (w ? Math.floor(w) : sprite.width);
-        h = (h ? Math.floor(h) : sprite.height);
-        sx = (sx ? Math.floor(sx) : 0);
-        sy = (sy ? Math.floor(sy) : 0);
 
         var iy;
         var ix;
         var read;
         var write;
 
+        if (x >= this.width || y >= this.height || x + sprite.width < 0 || y + sprite.height < 0) {
+            return;
+        }
+
+        var left = x;
+        var right = x + sprite.width;
+        var top = y;
+        var bottom = y + sprite.height;
+
+        if (left < 0) {
+            left = 0;
+        }
+        if (top < 0) {
+            top = 0;
+        }
+
+        if (right >= this.width) {
+            right = this.width;
+        }
+        if (bottom >= this.height) {
+            bottom = this.height;
+        }
+
         if (sprite.useAlpha) {
-            for (iy = sy; iy < sy + h; iy++) {
-                for (ix = sx; ix < sx + w; ix++) {
-                    if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
-                        continue;
-                    }
-                    read = (ix + iy * sprite.width) * sprite.channels;
-                    write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
+            for (iy = top; iy < bottom; iy++) {
+                for (ix = left; ix < right; ix++) {
+                    read = (ix - x + (iy - y) * sprite.width) * sprite.channels;
+                    write = (ix + iy * this.width) * this.channels;
 
                     var alpha = sprite.data[read + 3] / 255;
                     var inv = 1 - alpha;
@@ -247,13 +263,10 @@ var Bitmap = (function () {
                 }
             }
         } else {
-            for (iy = sy; iy < sy + h; iy++) {
-                for (ix = sx; ix < sx + w; ix++) {
-                    if (ix < 0 || iy < 0 || ix >= sprite.width || iy >= sprite.height) {
-                        continue;
-                    }
-                    read = (ix + iy * sprite.width) * sprite.channels;
-                    write = (x + ix - sx + (y + iy - sy) * this.width) * this.channels;
+            for (iy = top; iy < bottom; iy++) {
+                for (ix = left; ix < right; ix++) {
+                    read = (ix - x + (iy - y) * sprite.width) * sprite.channels;
+                    write = (ix + iy * this.width) * this.channels;
 
                     this.data[write] = sprite.data[read];
                     this.data[write + 1] = sprite.data[read + 1];
