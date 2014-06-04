@@ -116,9 +116,9 @@ var Bitmap = (function () {
         height = Math.floor(height);
 
         this.drawLineH(x, y, width, col);
-        this.drawLineH(x, y + height, width, col);
+        this.drawLineH(x, y + height - 1, width, col);
         this.drawLineV(x, y, height, col);
-        this.drawLineV(x + width, y, height, col);
+        this.drawLineV(x + width - 1, y, height, col);
     };
 
     Bitmap.prototype.fillCircle = function (x, y, r, col) {
@@ -832,10 +832,10 @@ var font = new Font('micro', 4, {
         '001'
     ],
     'A': [
-        '1111',
-        '1001',
-        '1111',
-        '1001'
+        '111',
+        '101',
+        '111',
+        '101'
     ],
     'B': [
         '100',
@@ -844,16 +844,16 @@ var font = new Font('micro', 4, {
         '111'
     ],
     'C': [
-        '1111',
-        '1000',
-        '1000',
-        '1111'
+        '111',
+        '100',
+        '100',
+        '111'
     ],
     'D': [
-        '1110',
-        '1001',
-        '1001',
-        '1110'
+        '110',
+        '101',
+        '101',
+        '110'
     ],
     'E': [
         '111',
@@ -910,7 +910,7 @@ var font = new Font('micro', 4, {
         '10001'
     ],
     'N': [
-        '1101',
+        '1001',
         '1101',
         '1011',
         '1001'
@@ -928,10 +928,10 @@ var font = new Font('micro', 4, {
         '100'
     ],
     'Q': [
-        '1110',
-        '1010',
-        '1110',
-        '0001'
+        '111',
+        '101',
+        '111',
+        '001'
     ],
     'R': [
         '111',
@@ -972,7 +972,7 @@ var font = new Font('micro', 4, {
     'X': [
         '101',
         '010',
-        '101',
+        '010',
         '101'
     ],
     'Y': [
@@ -1094,6 +1094,12 @@ var font = new Font('micro', 4, {
         '01',
         '00',
         '00'
+    ],
+    '*': [
+        '000',
+        '111',
+        '010',
+        '101'
     ],
     '~': [
         '000',

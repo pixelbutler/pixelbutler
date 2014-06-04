@@ -89,10 +89,6 @@
 
 			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv2rgb({h: frame % 360, s: 100, v: 100}));
 
-			$fb.text(5, 10, '0123456789', white);
-			$fb.text(5, 15, '+-_.,!?\\/', white);
-			$fb.text(5, 20, '<>[]()\'/"\\`~', white);
-
 			$fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, frame / 5), lorez.hsv2rgb({h: 220, s: lorez.rand(100), v: lorez.rand(100)}));
 
 			for (var i = 0; i < 15; i++) {

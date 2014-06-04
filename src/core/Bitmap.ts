@@ -140,9 +140,9 @@ class Bitmap {
 		height = Math.floor(height);
 
 		this.drawLineH(x, y, width, col);
-		this.drawLineH(x, y + height, width, col);
+		this.drawLineH(x, y + height - 1, width, col);
 		this.drawLineV(x, y, height, col);
-		this.drawLineV(x + width, y, height, col);
+		this.drawLineV(x + width - 1, y, height, col);
 	}
 
 	fillCircle(x: number, y: number, r: number, col: IRGB): void {
