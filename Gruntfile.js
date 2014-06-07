@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-gh-pages');
+	grunt.loadNpmTasks('grunt-githooks');
 	grunt.loadNpmTasks('grunt-tslint');
 	grunt.loadNpmTasks('grunt-typedoc');
 	grunt.loadNpmTasks('grunt-ts');
@@ -67,6 +68,11 @@ module.exports = function (grunt) {
 			docs: [
 				'docs/'
 			]
+		},
+		githooks: {
+			all: {
+				'pre-commit': 'jshint tslint:src verify'
+			}
 		},
 		connect: {
 			options: {
