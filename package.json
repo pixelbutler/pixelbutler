@@ -26,7 +26,7 @@
     "url": "https://raw.github.com/Bartvds/lorez/master/LICENSE-MIT"
   },
   "engines": {
-    "node": ">= 0.10.0 < 0.11.0"
+    "node": ">= 0.10.0"
   },
   "main": "./dist/lorez.js",
   "scripts": {
@@ -40,7 +40,6 @@
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-gh-pages": "^0.9.1",
-    "grunt-githooks": "^0.3.1",
     "grunt-ts": "^1.11.2",
     "grunt-tslint": "^0.4.1",
     "grunt-typedoc": "^0.1.0",

@@ -13,9 +13,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-gh-pages');
-	grunt.loadNpmTasks('grunt-githooks');
 	grunt.loadNpmTasks('grunt-tslint');
-	grunt.loadNpmTasks('grunt-typedoc');
 	grunt.loadNpmTasks('grunt-ts');
 	grunt.loadNpmTasks('grunt-webpack');
 
@@ -50,7 +48,7 @@ module.exports = function (grunt) {
 				configuration: grunt.file.readJSON('tslint.json'),
 				formatter: 'tslint-path-formatter'
 			},
-			src: ['src/**/*.ts']
+			source: ['src/**/*.ts']
 		},
 		clean: {
 			dist: [
@@ -68,11 +66,6 @@ module.exports = function (grunt) {
 			docs: [
 				'docs/'
 			]
-		},
-		githooks: {
-			all: {
-				'pre-commit': 'jshint tslint:src verify'
-			}
 		},
 		connect: {
 			options: {
@@ -101,19 +94,7 @@ module.exports = function (grunt) {
 			publish: {
 				options: {
 					repo: 'https://github.com/Bartvds/lorez.git',
-					message: 'publish gh-pages (cli)'
-				},
-				src: ['**/*']
-			},
-			deploy: {
-				options: {
-					user: {
-						name: 'Bart van der Schoor',
-						email: 'bartvanderschoor@gmail.com'
-					},
-					repo: 'https://' + process.env.GH_TOKEN + '@github.com/Bartvds/lorez.git',
-					message: 'publish gh-pages (auto)' + getDeployMessage(),
-					silent: true
+					message: 'publish gh-pages (cli)' + getDeployMessage()
 				},
 				src: ['**/*']
 			}
@@ -220,29 +201,18 @@ module.exports = function (grunt) {
 		'clean:tmp',
 		'clean:dist',
 		'clean:build',
-		'clean:demo',
-		'jshint:support'
+		'clean:demo'
+	]);
+
+	grunt.registerTask('compile', [
+		'prep',
+		'ts:index'
 	]);
 
 	grunt.registerTask('build', [
-		'prep',
-		'ts:index',
-		'tslint:src'
-	]);
-
-	grunt.registerTask('test', [
-		'build',
-		// more!
-	]);
-
-	grunt.registerTask('dev', [
-		'build',
-		'webpack:demo',
-		'verify:demo'
-	]);
-
-	grunt.registerTask('dist', [
-		'build',
+		'jshint:support',
+		'compile',
+		'tslint:source',
 		'webpack:demo',
 		'webpack:dist',
 		'webpack:min',
@@ -250,41 +220,29 @@ module.exports = function (grunt) {
 		'verify:dist'
 	]);
 
+	grunt.registerTask('test', [
+		'build'
+		// more!
+	]);
+
+	grunt.registerTask('dev', [
+		'compile',
+		'webpack:demo',
+		'verify:demo'
+	]);
+
 	grunt.registerTask('server', [
-		'connect:server',
+		'connect:server'
 	]);
 
 	grunt.registerTask('onwatch', [
 		'dev'
 	]);
 
-	grunt.registerTask('docs', [
-		'clean:docs',
-		'typedoc:docs'
-	]);
-
 	grunt.registerTask('publish', 'Publish from CLI', [
-		'dist',
+		'build',
 		'gh-pages:publish'
 	]);
-
-	grunt.registerTask('deploy', 'Publish from Travis', function () {
-		if (process.env.TRAVIS !== 'true' || process.env.TRAVIS_BRANCH !== 'master') {
-			grunt.log.writeln('not travis master');
-			return;
-		}
-
-		// only deploy under these conditions
-		if (process.env.TRAVIS_SECURE_ENV_VARS === 'true' && process.env.TRAVIS_PULL_REQUEST === 'false') {
-			grunt.log.writeln('executing deployment');
-			// queue bul & deploy
-			grunt.task.run('dist');
-			grunt.task.run('gh-pages:deploy');
-		}
-		else {
-			grunt.log.writeln('skipped deployment');
-		}
-	});
 
 	// check if we have all the important files
 	grunt.registerMultiTask('verify', function () {
