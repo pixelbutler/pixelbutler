@@ -28,6 +28,7 @@ define(['lorez'], function (lorez) {
 		}
 
 		function render(frame) {
+			var tmp = lorez.rgb();
 			var total = lorez.rgb();
 			for (var i = 0; i < $fb.width; i++) {
 				for (var j = 0; j < $fb.height - 1; j++) {
@@ -35,22 +36,20 @@ define(['lorez'], function (lorez) {
 					total.g = 0;
 					total.b = 0;
 
-					var tmp;
-
 					// Left.
-					tmp = $fb.getPixel(i === 0 ? $fb.width - 1 : i - 1, j);
+					$fb.getPixel(i === 0 ? $fb.width - 1 : i - 1, j, tmp);
 					total.r += tmp.r;
 					total.g += tmp.g;
 					total.b += tmp.b;
 
 					// Right.
-					tmp = $fb.getPixel(i === $fb.width - 1 ? 0 : i + 1, j);
+					$fb.getPixel(i === $fb.width - 1 ? 0 : i + 1, j, tmp);
 					total.r += tmp.r;
 					total.g += tmp.g;
 					total.b += tmp.b;
 
 					// Below.
-					tmp = $fb.getPixel(i, j + 1);
+					$fb.getPixel(i, j + 1, tmp);
 					total.r += tmp.r;
 					total.g += tmp.g;
 					total.b += tmp.b;
