@@ -178,6 +178,7 @@ module.exports = function (grunt) {
 			dist: {
 				entry: './build/index.js',
 				output: {
+					sourcePrefix: '    ',
 					library: 'lorez',
 					libraryTarget: 'umd',
 					path: './dist/',
