@@ -51,7 +51,8 @@
 		}
 
 		function getDemoURL(name) {
-			return window.location.origin + '/demo/gallery/' + name + '.js';
+			var base = window.location.pathname.replace(/\/[^\/]*$/, '');
+			return window.location.origin + base + '/gallery/' + name + '.js';
 		}
 
 		function getDemoI(name) {
