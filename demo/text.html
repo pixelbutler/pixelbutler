@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>text - lorez</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
+</head>
+<body>
+<canvas id="gameScreen" width="640" height="480">
+	What, no canvas support? D:
+</canvas>
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+<script type="text/javascript">
+
+	require(['js/lorez'], function (lorez) {
+
+		var $fb = new lorez.Stage({
+			width: 160,
+			height: 120,
+			canvas: 'gameScreen',
+			center: true,
+			scale: 'max'
+		});
+
+		var white = lorez.rgb(255, 255, 255);
+		var black = lorez.rgb(0, 0, 0);
+		var red = lorez.rgb(255, 0, 0);
+		var green = lorez.rgb(0, 255, 0);
+		var blue = lorez.rgb(0, 0, 255);
+		var yellow = lorez.rgb(255, 255);
+
+		function step(frame, delta) {
+
+			$fb.clear(black);
+			$fb.drawRect(1, 1, $fb.width - 2, $fb.height - 2, red);
+
+			$fb.text(5, 5, 'abcdefghijklm', white);
+			$fb.text(5, 10, 'nopqrstuvwxyz', white);
+			$fb.text(5, 15, '0123456789', white);
+			$fb.text(5, 20, '+-*/_\\.,!?', white);
+			$fb.text(5, 25, '<>()[]\'/"\\`~', white);
+
+			$fb.render();
+		}
+
+		lorez.ticker.request(step).start();
+
+	});
+</script>
+</html>

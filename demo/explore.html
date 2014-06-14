@@ -1,0 +1,127 @@
+<!doctype html>
+<html class="dark">
+<head>
+	<meta charset="UTF-8">
+	<title>explore demos - lorez</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
+</head>
+<body>
+<div id="screen-wrap">
+	<canvas id="gameScreen" width="480" height="480">
+		What, no canvas support? D:
+	</canvas>
+</div>
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+<script type="text/javascript">
+
+	requirejs.config({
+		paths: {
+			'lorez': 'js/lorez',
+			'text': '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text.min'
+		}
+	});
+
+	require(['./js/runner', './js/urlUtil'], function (runner, urlUtil) {
+		'use strict';
+
+		var hash = urlUtil.parseHash(window.location.hash);
+
+		var config = {
+			canvas: 'gameScreen',
+			renderer: 'webgl',
+			center: true,
+			scale: 'max'
+		};
+
+		var demos = [
+			'frame32',
+			'fire',
+			'movers',
+			'noise',
+			'image',
+			'sheet'
+		];
+
+		var currentI = 0;
+		var demo = null;
+
+		function makeDemoPath(name) {
+			return './gallery/' + name;
+		}
+
+		function getDemoURL(name) {
+			var base = window.location.pathname.replace(/\/[^\/]*$/, '');
+			return window.location.origin + base + '/gallery/' + name + '.js';
+		}
+
+		function getDemoI(name) {
+			return demos.indexOf(name);
+		}
+
+		function hasDemo(name) {
+			return demos.indexOf(name) > -1;
+		}
+
+		function load(name, history) {
+			if (history) {
+				if (hash.demo !== name) {
+					hash.demo = name;
+					var str = urlUtil.makeHash(hash);
+					window.history.pushState(null, null, window.location.origin + window.location.pathname + str);
+				}
+			}
+			window.document.title = name + ' - lorez';
+
+			runner.load(makeDemoPath(name), function (_demo) {
+				demo = _demo;
+				demo.ticker.start();
+			});
+		}
+
+		function listener(ev) {
+			switch (ev.type) {
+				case 'next':
+					currentI = (currentI + 1) % demos.length;
+					load(demos[currentI], true);
+					break;
+				case 'prev':
+					currentI = (currentI - 1) % demos.length;
+					load(demos[currentI], true);
+					break;
+				case 'scale':
+					demo.stage.autoSize.scale(ev.scale);
+					break;
+				case 'source':
+					window.open(getDemoURL(demos[currentI], '_blank'));
+					break;
+				default:
+					console.log(ev);
+					break;
+			}
+			// more
+		}
+
+		window.addEventListener('popstate', function (e) {
+			hash = urlUtil.parseHash(window.location.hash);
+			if (hash.demo && hasDemo(hash.demo)) {
+				if (demos[currentI] !== hash.demo) {
+					currentI = getDemoI(hash.demo);
+					load(hash.demo);
+				}
+			}
+			else {
+				currentI = 0;
+				load(demos[currentI]);
+			}
+		});
+
+		runner.init(config, listener, function () {
+			if (hash.demo && hasDemo(hash.demo)) {
+				currentI = getDemoI(hash.demo);
+			}
+			load(demos[currentI]);
+		});
+	});
+</script>
+</html>

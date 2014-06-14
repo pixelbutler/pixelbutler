@@ -1,3 +1,14 @@
 /.idea
 /tmp
 /node_modules
+/*.tgz
+/.grunt
+/tscommand*
+*.psd
+
+/docs
+/build
+/dist/*.js.map
+
+/demo/js/lorez.*
+/demo/README.md

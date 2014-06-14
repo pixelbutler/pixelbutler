@@ -1,154 +1,102 @@
-framebufferJS
-=============
-framebufferJS is a framebuffer abstraction build on top of Canvas. It provides simple access to a raw framebuffer (big 'ol array of RGB values), as well as a collection of helper functions for graphical effects.
+# lorez
 
-It takes care to handle annoying details for you: all RGB values are automatically [0,255] capped, writes that go outside the framebuffer are silently ignored, and all arguments get properly `floor`ed for you to pixel boundaries.
+[![Build Status](https://secure.travis-ci.org/Bartvds/lorez.svg?branch=master)](http://travis-ci.org/Bartvds/lorez) [![NPM version](https://badge.fury.io/js/lorez.svg)](http://badge.fury.io/js/lorez) [![Dependency Status](https://david-dm.org/Bartvds/lorez.svg)](https://david-dm.org/Bartvds/lorez) [![devDependency Status](https://david-dm.org/Bartvds/lorez/dev-status.svg)](https://david-dm.org/Bartvds/lorez#info=devDependencies)
 
-Coded with ♥ by [@noffle](http://www.twitter.com/noffle) for the [2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014).
+Bitmap rendering system for low-res pixel rendering on big screens.
 
-<p align="center">
-  <img src="https://github.com/noffle/lowrez-js/raw/master/screenshot.png"/>
-</p>
+The canvas rendering ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily at 60 frames-per-second in high resolutions. This works great on modern mobile devices. 
 
-Example Usage
--------------
-````javascript
-<html>
-  <body>
-    <!-- 1. Create a canvas element. -->
-    <canvas id="gameScreen" width="640" height="480">
-      What, no canvas support? D:
-    </canvas>
-  </body>
+lorez is especially suited for 32x32 pixel micro games on large screens or class 320x240 gaming.
 
-  <!-- 2. Include framebufferJS -->
-  <script src="fb.js"></script>
+Originally forked from [framebufferJS](https://github.com/noffle/framebufferJS) by [@noffle](http://www.twitter.com/noffle)
 
-  <!-- 3. <your awesomeness here> -->
-  <script type="text/javascript">
-    var $fb = new Framebuffer({
-      width: 160,
-      height: 120,
-      canvasId: "gameScreen"
-    });
-    $fb.clear([0,0,0]);
-    $fb.fillcircle(80, 60, 48, [93,27,175]);
-    $fb.render();
-  </script>
-</html>
+Refactored and expanded in [TypeScript](http://www.typescriptlang.org/) with ♥ by [@bartvds](http://github.com/bartvds)
+
+Work-in-progress :sunglasses:
+
+## Demo
+
+Usage examples and demo gallery can be found on [bartvds.github.io/lorez](https://bartvds.github.io/lorez/)
+
+## Get the code
+
+### npm
+
+~~The modules are also available as [npm](https://www.npmjs.org/) package for use with CommonJS enabled build systems like [browserify](https://github.com/substack/node-browserify).~~
+
+:warning: This is queued for release.
+
+````bash
+$ npm install lorez
 ````
 
-#### Little Demo
-[Wee little demo in action.](http://rawgit.com/noffle/framebufferJS/master/demo.html)
+### bower
 
-Colours
--------
-Colours throughout framebufferJS are specified as an array of size 3, with Red Green Blue values ranging from 0 to 255.
+~~Alternately install via [bower](https://github.com/twitter/bower) ans use a browser global or AMD module~~
 
-```
-var brightGreen = [0, 255, 0];
+:warning: This is queued for release.
 
-$fb.clear(brightGreen);
-```
+````bash
+$ bower install lorez
+````
 
-Basics
-------
-#### `$fb = framebuffer(width, height, canvasId)`
-Creates a new framebuffer object with the given `width` and `height`. This assumes you already have a canvas element in your DOM with id `canvasId`. The framebuffer will stretch to fill the canvas, so selecting the correct aspect ratio is left up to the user. The resulting framebuffer object supports the following operations:
 
-#### `$fb.clear(rgb)`
-Sets all framebuffer pixels to the colour `rgb`.
+## Development
 
-#### `$fb.render()`
-Draws the state of the framebuffer to the screen.
+The project is written in JavaScript using CommonJS module pattern, and build for browsers using [grunt](http://gruntjs.com) and [browserify](https://github.com/substack/node-browserify). Development tools run on [node.js](http://nodejs.org/) and are pulled from [npm](https://www.npmjs.org/).
 
-#### `$fb.pixel(x, y, rgb)`
-Safely (ignoring any out-of-bounds coordinates for you) draws a single pixel at coordinates `x`,`y` of colour `rgb`.
+The generated bundles support UMD and work as browser global, CommonJS and AMD module. Browserify users can also use the npm package directly.
 
-Shapes
-------
-#### `$fb.rect(x, y, width, height, rgb)`
-#### `$fb.fillrect(x, y, width, height, rgb)`
-Draws a filled or unfilled rectangle at `x`,`y` with the given `width`, `height` and colour `rgb`.
+To regenerate the bundles use the following steps:
 
-#### `$fb.circle(x, y, radius, rgb)`
-#### `$fb.fillcircle(x, y, radius, rgb)`
-Draws a filled or unfilled circle at `x`,`y` with the given `radius` and colour `rgb`.
+1) Clone the git repos to you local machine.
 
-Text
-----
-#### `$fb.text(x, y, txt, rgb)`
-framebufferJS has a built-in low res 4x4(-ish) font that's ready to be used out of the box!
+2) Make sure you have the global grunt command:
 
-```
-$fb.text(7, 3, "Hello Warld.", [255,128,64]);
-```
-Sprites
--------
-#### `$fb.makesprite(width, height)`
-Allocates a `width`x`height` offscreen buffer, suitable for populating with RGB sprite pixel data that your game may have generated/loaded.
+````bash
+$ npm install grunt-cli -g
+```` 
 
-#### `$fb.blit(sprite, x, y, width, height, sourceX, sourceY)`
-Draws a sprite (allocated with `$fb.makesprite()` to the framebuffer at the given `x`,`y` coordinates.
+3) Navigate your shell/terminal to the checkout directory.
 
-`width` and `height` are used if present, but default to the full size of the sprite.
+4) Install development dependencies from npm:
 
-`sourceX` and `sourceY` refer to where within the source sprite the blit begins, where `(0,0)` is the top left of the image.
+````bash
+$ npm install
+````
 
-Shaders
--------
-framebufferJS supports software shaders!
+5) Rebuild bundles using grunt:
 
-#### `$fb.shader(func)`
-This runs an arbitrary function across all of the framebuffer's pixels, modifying the framebuffer immediately.
+````bash
+$ grunt build
+````
 
-The function provided should have the form `function(x, y, rgb)`. Its return value is the final colour the pixel at `x`,`y` will take.
+6) ~~Watch tasks to auto-build during development:~~
 
-e.g. a grayscale shader
-```javascript
-$fb.shader(function(x, y, rgb) {
-  var hsv = rgb2hsv(rgb);
-  return hsv2rgb(hsv[0], 0, hsv[2]);
-});
-$fb.render();
-```
+````bash
+$ grunt watch
+````
 
-Shaders can also be chained, creating shader pipelines.
+7) Run a local test server for the demos and tests:
 
-```javascript
-var invert = function(x, y, rgb) {
-  return [255-rgb[0], 255-rgb[1], 255-rgb[2]];
-};
+````bash
+$ grunt server
+````
 
-var halfBrightness = function(x, y, rgb) {
-  var hsv = rgb2hsv(rgb);
-  return hsv2rgb(hsv[0], hsv[1], hsv[2]/2);
-}
+See the `Gruntfile.js` and `$ grunt --help` for additional commands.
 
-var pipeline = function(x, y, rgb) {
-  return halfBrightness(x, y, invert(x, y, rgb));
-};
 
-$fb.shader(pipeline);
-$fb.render();
-```
-Utilities
----------
-framebufferJS also (callously) injects a few helper methods into your global namespace.
+## Contributions
 
-#### `rand(n)`
-Generates a random integer between `0` and `n`.
+They are very welcome.
 
-#### `rgb2hsv(rgb)`
-Converts a `[r,g,b]` value to an `[h,s,v]` value.
+## License
 
-#### `hsv2rgb(hsv)`
-Converts an `[h,s,v]` value to an `[r,g,b]` value.
+Copyright (c) 2014 [Bart van der Schoor](https://github.com/Bartvds)
 
-Contributions
--------------
-They are very welcome. More primitives (lines, polygons), stock shader effects (gradients, dithering), or running shaders on sprite blits, for example, would be great!
+Licensed under the MIT license.
 
-License
--------
-MIT
+Forked from [framebufferJS](https://github.com/noffle/framebufferJS) under MIT licence
+
+Copyright (c) 2014 [Stephen Whitmore](https://github.com/noffle)
+
