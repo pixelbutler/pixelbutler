@@ -127,10 +127,10 @@ return /******/ (function(modules) { // webpackBootstrap
     };
     var Bitmap = __webpack_require__(2);
 
-    var CanvasRenderer = __webpack_require__(19);
-    var WebGLRenderer = __webpack_require__(20);
+    var CanvasRenderer = __webpack_require__(20);
+    var WebGLRenderer = __webpack_require__(21);
 
-    var autosize = __webpack_require__(11);
+    var autosize = __webpack_require__(18);
 
     var Stage = (function (_super) {
         __extends(Stage, _super);
@@ -195,7 +195,7 @@ return /******/ (function(modules) { // webpackBootstrap
     'use strict';
     var RGBA = __webpack_require__(4);
 
-    var microFont = __webpack_require__(21);
+    var microFont = __webpack_require__(19);
 
     var util = __webpack_require__(6);
 
@@ -950,19 +950,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-    var ImageDataLoader = __webpack_require__(12);
+    var ImageDataLoader = __webpack_require__(11);
     exports.ImageDataLoader = ImageDataLoader;
-    var BitmapLoader = __webpack_require__(13);
+    var BitmapLoader = __webpack_require__(12);
     exports.BitmapLoader = BitmapLoader;
-    var TextLoader = __webpack_require__(14);
+    var TextLoader = __webpack_require__(13);
     exports.TextLoader = TextLoader;
-    var JSONLoader = __webpack_require__(15);
+    var JSONLoader = __webpack_require__(14);
     exports.JSONLoader = JSONLoader;
-    var SpriteSheetLoader = __webpack_require__(16);
+    var SpriteSheetLoader = __webpack_require__(15);
     exports.SpriteSheetLoader = SpriteSheetLoader;
-    var SpriteSheetJSONLoader = __webpack_require__(17);
+    var SpriteSheetJSONLoader = __webpack_require__(16);
     exports.SpriteSheetJSONLoader = SpriteSheetJSONLoader;
-    var MultiLoader = __webpack_require__(18);
+    var MultiLoader = __webpack_require__(17);
     exports.MultiLoader = MultiLoader;
 
     [
@@ -982,7 +982,321 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
-    var browser = __webpack_require__(22);
+    var ImageDataLoader = (function () {
+        function ImageDataLoader(url) {
+            this.url = url;
+        }
+        ImageDataLoader.prototype.load = function (callback) {
+            var _this = this;
+            var image = document.createElement('img');
+            image.onload = function () {
+                var canvas = document.createElement('canvas');
+                canvas.width = image.width;
+                canvas.height = image.height;
+
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(image, 0, 0);
+
+                callback(null, ctx.getImageData(0, 0, image.width, image.height));
+
+                image.onload = null;
+                image.onerror = null;
+            };
+            image.onerror = function () {
+                callback(new Error('cannot load ' + _this.url), null);
+
+                image.onload = null;
+                image.onerror = null;
+            };
+
+            image.src = this.url;
+        };
+        return ImageDataLoader;
+    })();
+
+    module.exports = ImageDataLoader;
+    //# sourceMappingURL=ImageDataLoader.js.map
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var Bitmap = __webpack_require__(2);
+
+    var ImageDataLoader = __webpack_require__(11);
+
+    var BitmapLoader = (function () {
+        function BitmapLoader(url, useAlpha) {
+            if (typeof useAlpha === "undefined") { useAlpha = false; }
+            this.url = url;
+            this.useAlpha = useAlpha;
+        }
+        BitmapLoader.prototype.load = function (callback) {
+            var _this = this;
+            new ImageDataLoader(this.url).load(function (err, image) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+
+                if (_this.useAlpha) {
+                    callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
+                } else {
+                    var bitmap = new Bitmap(image.width, image.height, false);
+                    var data = image.data;
+                    var width = image.width;
+
+                    for (var iy = 0; iy < image.height; iy++) {
+                        for (var ix = 0; ix < width; ix++) {
+                            var read = (iy * width + ix) * 4;
+                            var write = (iy * width + ix) * 3;
+
+                            bitmap.data[write] = data[read];
+                            bitmap.data[write + 1] = data[read + 1];
+                            bitmap.data[write + 2] = data[read + 2];
+                        }
+                    }
+                    callback(null, bitmap);
+                }
+            });
+        };
+        return BitmapLoader;
+    })();
+
+    module.exports = BitmapLoader;
+    //# sourceMappingURL=BitmapLoader.js.map
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    function getXHR() {
+        if (XMLHttpRequest) {
+            return new XMLHttpRequest();
+        }
+        try  {
+            return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+        } catch (e) {
+        }
+        try  {
+            return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+        } catch (e) {
+        }
+        try  {
+            return new ActiveXObject('Microsoft.XMLHTTP');
+        } catch (e) {
+        }
+        throw new Error('This browser does not support XMLHttpRequest.');
+    }
+
+    var TextLoader = (function () {
+        function TextLoader(url) {
+            this.url = url;
+        }
+        TextLoader.prototype.load = function (callback) {
+            try  {
+                var xhr = getXHR();
+            } catch (e) {
+                callback(e, null);
+                return;
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    callback(null, xhr.responseText);
+                }
+            };
+
+            xhr.open('GET', this.url, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send(null);
+        };
+        return TextLoader;
+    })();
+
+    module.exports = TextLoader;
+    //# sourceMappingURL=TextLoader.js.map
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var TextLoader = __webpack_require__(13);
+
+    var JSONLoader = (function () {
+        function JSONLoader(url) {
+            this.url = url;
+        }
+        JSONLoader.prototype.load = function (callback) {
+            new TextLoader(this.url).load(function (err, text) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+                try  {
+                    var obj = JSON.parse(text);
+                } catch (e) {
+                    callback(e, null);
+                }
+                callback(null, obj);
+            });
+        };
+        return JSONLoader;
+    })();
+
+    module.exports = JSONLoader;
+    //# sourceMappingURL=JSONLoader.js.map
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var Bitmap = __webpack_require__(2);
+    var SpriteSheet = __webpack_require__(22);
+
+    var ImageDataLoader = __webpack_require__(11);
+
+    var SpriteSheetLoader = (function () {
+        function SpriteSheetLoader(url, opts, useAlpha) {
+            if (typeof useAlpha === "undefined") { useAlpha = false; }
+            this.url = url;
+            this.opts = opts;
+            this.useAlpha = useAlpha;
+        }
+        SpriteSheetLoader.prototype.load = function (callback) {
+            var _this = this;
+            new ImageDataLoader(this.url).load(function (err, image) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+
+                var outerMargin = (_this.opts.outerMargin || 0);
+                var innerMargin = (_this.opts.innerMargin || 0);
+
+                var sheet = new SpriteSheet(_this.opts.spritesX, _this.opts.spritesY);
+
+                for (var iy = 0; iy < _this.opts.spritesY; iy++) {
+                    for (var ix = 0; ix < _this.opts.spritesX; ix++) {
+                        var x = outerMargin + ix * (_this.opts.sizeX + innerMargin);
+                        var y = outerMargin + iy * (_this.opts.sizeY + innerMargin);
+                        sheet.addSprite(Bitmap.clipFromData(image.data, image.width, image.height, 4, x, y, _this.opts.sizeX, _this.opts.sizeY, _this.useAlpha));
+                    }
+                }
+                callback(null, sheet);
+            });
+        };
+        return SpriteSheetLoader;
+    })();
+
+    module.exports = SpriteSheetLoader;
+    //# sourceMappingURL=SpriteSheetLoader.js.map
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var JSONLoader = __webpack_require__(14);
+    var SpriteSheetLoader = __webpack_require__(15);
+
+    var urlExp = /^(.*?)(\/?)([^\/]+?)$/;
+
+    function getURL(main, append) {
+        urlExp.lastIndex = 0;
+        var match = urlExp.exec(main);
+        return match[1] + match[2] + append;
+    }
+
+    var SpriteSheetJSONLoader = (function () {
+        function SpriteSheetJSONLoader(url, useAlpha) {
+            if (typeof useAlpha === "undefined") { useAlpha = false; }
+            this.url = url;
+            this.useAlpha = useAlpha;
+        }
+        SpriteSheetJSONLoader.prototype.load = function (callback) {
+            var _this = this;
+            new JSONLoader(this.url).load(function (err, json) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+                console.log(json);
+                new SpriteSheetLoader(getURL(_this.url, json.image), json, _this.useAlpha).load(callback);
+            });
+        };
+        return SpriteSheetJSONLoader;
+    })();
+
+    module.exports = SpriteSheetJSONLoader;
+    //# sourceMappingURL=SpriteSheetJSONLoader.js.map
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var MultiLoader = (function () {
+        function MultiLoader(loaders) {
+            var _this = this;
+            this.queued = [];
+            if (loaders) {
+                loaders.forEach(function (loader) {
+                    _this.queued.push(loader);
+                });
+            }
+        }
+        MultiLoader.prototype.load = function (callback) {
+            var _this = this;
+            var errored = false;
+            var results = new Array(this.queued.length);
+
+            this.queued.forEach(function (loader, index) {
+                loader.load(function (err, res) {
+                    if (errored) {
+                        return;
+                    }
+                    if (err) {
+                        console.log(loader.url);
+                        console.error(err);
+                        callback(err, null);
+                        errored = true;
+                        return;
+                    }
+                    results[index] = res;
+                    _this.queued[index] = null;
+
+                    if (_this.queued.every(function (loader) {
+                        return !loader;
+                    })) {
+                        callback(err, results);
+                        _this.queued = null;
+                    }
+                });
+            });
+        };
+        return MultiLoader;
+    })();
+
+    module.exports = MultiLoader;
+    //# sourceMappingURL=MultiLoader.js.map
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var browser = __webpack_require__(23);
 
     function assertMode(scaleMode) {
         if ((typeof scaleMode === 'number' && scaleMode > 0) || scaleMode === 'max' || scaleMode === 'fit' || scaleMode === 'none') {
@@ -1109,534 +1423,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var ImageDataLoader = (function () {
-        function ImageDataLoader(url) {
-            this.url = url;
-        }
-        ImageDataLoader.prototype.load = function (callback) {
-            var _this = this;
-            var image = document.createElement('img');
-            image.onload = function () {
-                var canvas = document.createElement('canvas');
-                canvas.width = image.width;
-                canvas.height = image.height;
-
-                var ctx = canvas.getContext('2d');
-                ctx.drawImage(image, 0, 0);
-
-                callback(null, ctx.getImageData(0, 0, image.width, image.height));
-
-                image.onload = null;
-                image.onerror = null;
-            };
-            image.onerror = function () {
-                callback(new Error('cannot load ' + _this.url), null);
-
-                image.onload = null;
-                image.onerror = null;
-            };
-
-            image.src = this.url;
-        };
-        return ImageDataLoader;
-    })();
-
-    module.exports = ImageDataLoader;
-    //# sourceMappingURL=ImageDataLoader.js.map
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var Bitmap = __webpack_require__(2);
-
-    var ImageDataLoader = __webpack_require__(12);
-
-    var BitmapLoader = (function () {
-        function BitmapLoader(url, useAlpha) {
-            if (typeof useAlpha === "undefined") { useAlpha = false; }
-            this.url = url;
-            this.useAlpha = useAlpha;
-        }
-        BitmapLoader.prototype.load = function (callback) {
-            var _this = this;
-            new ImageDataLoader(this.url).load(function (err, image) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-
-                if (_this.useAlpha) {
-                    callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
-                } else {
-                    var bitmap = new Bitmap(image.width, image.height, false);
-                    var data = image.data;
-                    var width = image.width;
-
-                    for (var iy = 0; iy < image.height; iy++) {
-                        for (var ix = 0; ix < width; ix++) {
-                            var read = (iy * width + ix) * 4;
-                            var write = (iy * width + ix) * 3;
-
-                            bitmap.data[write] = data[read];
-                            bitmap.data[write + 1] = data[read + 1];
-                            bitmap.data[write + 2] = data[read + 2];
-                        }
-                    }
-                    callback(null, bitmap);
-                }
-            });
-        };
-        return BitmapLoader;
-    })();
-
-    module.exports = BitmapLoader;
-    //# sourceMappingURL=BitmapLoader.js.map
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    function getXHR() {
-        if (XMLHttpRequest) {
-            return new XMLHttpRequest();
-        }
-        try  {
-            return new ActiveXObject('Msxml2.XMLHTTP.6.0');
-        } catch (e) {
-        }
-        try  {
-            return new ActiveXObject('Msxml2.XMLHTTP.3.0');
-        } catch (e) {
-        }
-        try  {
-            return new ActiveXObject('Microsoft.XMLHTTP');
-        } catch (e) {
-        }
-        throw new Error('This browser does not support XMLHttpRequest.');
-    }
-
-    var TextLoader = (function () {
-        function TextLoader(url) {
-            this.url = url;
-        }
-        TextLoader.prototype.load = function (callback) {
-            try  {
-                var xhr = getXHR();
-            } catch (e) {
-                callback(e, null);
-                return;
-            }
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    callback(null, xhr.responseText);
-                }
-            };
-
-            xhr.open('GET', this.url, true);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhr.send(null);
-        };
-        return TextLoader;
-    })();
-
-    module.exports = TextLoader;
-    //# sourceMappingURL=TextLoader.js.map
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var TextLoader = __webpack_require__(14);
-
-    var JSONLoader = (function () {
-        function JSONLoader(url) {
-            this.url = url;
-        }
-        JSONLoader.prototype.load = function (callback) {
-            new TextLoader(this.url).load(function (err, text) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-                try  {
-                    var obj = JSON.parse(text);
-                } catch (e) {
-                    callback(e, null);
-                }
-                callback(null, obj);
-            });
-        };
-        return JSONLoader;
-    })();
-
-    module.exports = JSONLoader;
-    //# sourceMappingURL=JSONLoader.js.map
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var Bitmap = __webpack_require__(2);
-    var SpriteSheet = __webpack_require__(23);
-
-    var ImageDataLoader = __webpack_require__(12);
-
-    var SpriteSheetLoader = (function () {
-        function SpriteSheetLoader(url, opts, useAlpha) {
-            if (typeof useAlpha === "undefined") { useAlpha = false; }
-            this.url = url;
-            this.opts = opts;
-            this.useAlpha = useAlpha;
-        }
-        SpriteSheetLoader.prototype.load = function (callback) {
-            var _this = this;
-            new ImageDataLoader(this.url).load(function (err, image) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-
-                var outerMargin = (_this.opts.outerMargin || 0);
-                var innerMargin = (_this.opts.innerMargin || 0);
-
-                var sheet = new SpriteSheet(_this.opts.spritesX, _this.opts.spritesY);
-
-                for (var iy = 0; iy < _this.opts.spritesY; iy++) {
-                    for (var ix = 0; ix < _this.opts.spritesX; ix++) {
-                        var x = outerMargin + ix * (_this.opts.sizeX + innerMargin);
-                        var y = outerMargin + iy * (_this.opts.sizeY + innerMargin);
-                        sheet.addSprite(Bitmap.clipFromData(image.data, image.width, image.height, 4, x, y, _this.opts.sizeX, _this.opts.sizeY, _this.useAlpha));
-                    }
-                }
-                callback(null, sheet);
-            });
-        };
-        return SpriteSheetLoader;
-    })();
-
-    module.exports = SpriteSheetLoader;
-    //# sourceMappingURL=SpriteSheetLoader.js.map
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var JSONLoader = __webpack_require__(15);
-    var SpriteSheetLoader = __webpack_require__(16);
-
-    var urlExp = /^(.*?)(\/?)([^\/]+?)$/;
-
-    function getURL(main, append) {
-        urlExp.lastIndex = 0;
-        var match = urlExp.exec(main);
-        return match[1] + match[2] + append;
-    }
-
-    var SpriteSheetJSONLoader = (function () {
-        function SpriteSheetJSONLoader(url, useAlpha) {
-            if (typeof useAlpha === "undefined") { useAlpha = false; }
-            this.url = url;
-            this.useAlpha = useAlpha;
-        }
-        SpriteSheetJSONLoader.prototype.load = function (callback) {
-            var _this = this;
-            new JSONLoader(this.url).load(function (err, json) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-                console.log(json);
-                new SpriteSheetLoader(getURL(_this.url, json.image), json, _this.useAlpha).load(callback);
-            });
-        };
-        return SpriteSheetJSONLoader;
-    })();
-
-    module.exports = SpriteSheetJSONLoader;
-    //# sourceMappingURL=SpriteSheetJSONLoader.js.map
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var MultiLoader = (function () {
-        function MultiLoader(loaders) {
-            var _this = this;
-            this.queued = [];
-            if (loaders) {
-                loaders.forEach(function (loader) {
-                    _this.queued.push(loader);
-                });
-            }
-        }
-        MultiLoader.prototype.load = function (callback) {
-            var _this = this;
-            var errored = false;
-            var results = new Array(this.queued.length);
-
-            this.queued.forEach(function (loader, index) {
-                loader.load(function (err, res) {
-                    if (errored) {
-                        return;
-                    }
-                    if (err) {
-                        console.log(loader.url);
-                        console.error(err);
-                        callback(err, null);
-                        errored = true;
-                        return;
-                    }
-                    results[index] = res;
-                    _this.queued[index] = null;
-
-                    if (_this.queued.every(function (loader) {
-                        return !loader;
-                    })) {
-                        callback(err, results);
-                        _this.queued = null;
-                    }
-                });
-            });
-        };
-        return MultiLoader;
-    })();
-
-    module.exports = MultiLoader;
-    //# sourceMappingURL=MultiLoader.js.map
-
-
-/***/ },
 /* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    function clearAlpha(data) {
-        var lim = data.length;
-        for (var i = 3; i < lim; i++) {
-            data[i] = 255;
-        }
-    }
-
-    var CanvasRender = (function () {
-        function CanvasRender(bitmap, canvas) {
-            this.canvas = canvas;
-
-            this.px = bitmap.data;
-            this.width = bitmap.width;
-            this.height = bitmap.height;
-            this.channels = bitmap.useAlpha ? 4 : 3;
-
-            this.ctx = this.canvas.getContext('2d');
-
-            this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
-
-            clearAlpha(this.output.data);
-
-            this.ctx.putImageData(this.output, 0, 0);
-        }
-        CanvasRender.prototype.resize = function () {
-            if (this.output.width !== this.canvas.width || this.output.height !== this.canvas.height) {
-                this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
-
-                clearAlpha(this.output.data);
-            }
-        };
-
-        CanvasRender.prototype.update = function () {
-            var data = this.output.data;
-            var width = this.output.width;
-            var height = this.output.height;
-
-            var fx = this.width / width;
-            var fy = this.height / height;
-
-            for (var iy = 0; iy < height; iy++) {
-                for (var ix = 0; ix < width; ix++) {
-                    var x = Math.floor(ix * fx);
-                    var y = Math.floor(iy * fy);
-                    var read = (x + y * this.width) * this.channels;
-                    var write = (ix + iy * width) * 4;
-
-                    data[write] = this.px[read];
-                    data[write + 1] = this.px[read + 1];
-                    data[write + 2] = this.px[read + 2];
-                }
-            }
-            this.ctx.putImageData(this.output, 0, 0);
-        };
-
-        CanvasRender.prototype.destruct = function () {
-            this.px = null;
-            this.ctx = null;
-            this.canvas = null;
-            this.output = null;
-        };
-        return CanvasRender;
-    })();
-
-    module.exports = CanvasRender;
-    //# sourceMappingURL=CanvasRenderer.js.map
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var vertexShaderSource = [
-        'attribute vec2 a_position;',
-        'attribute vec2 a_texCoord;',
-        'varying vec2 v_texCoord;',
-        'void main() {',
-        '    gl_Position = vec4(a_position, 0, 1);',
-        '    v_texCoord = a_texCoord;',
-        '}'
-    ].join('\n');
-
-    var fragmentShaderSource = [
-        'precision mediump float;',
-        'uniform sampler2D u_image;',
-        'varying vec2 v_texCoord;',
-        'void main() {',
-        '    gl_FragColor = texture2D(u_image, v_texCoord);',
-        '}'
-    ].join('\n');
-
-    function loadShader(gl, shaderSource, shaderType) {
-        var shader = gl.createShader(shaderType);
-        gl.shaderSource(shader, shaderSource);
-        gl.compileShader(shader);
-
-        var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-        if (!compiled) {
-            throw new Error('error compiling shader "' + shader + '":' + gl.getShaderInfoLog(shader));
-        }
-        return shader;
-    }
-
-    var WebGLRender = (function () {
-        function WebGLRender(bitmap, canvas) {
-            this.canvas = canvas;
-            this.width = bitmap.width;
-            this.height = bitmap.height;
-
-            this.px = new Uint8Array(bitmap.buffer);
-
-            if (!window.WebGLRenderingContext) {
-                throw new Error('browser does not support WegGL');
-            }
-
-            var glOpts = { alpha: false };
-
-            var gl = this.gl = this.canvas.getContext('webgl', glOpts) || this.canvas.getContext('experimental-webgl', glOpts);
-            if (!gl) {
-                throw new Error('could not create WebGL context');
-            }
-
-            var program = gl.createProgram();
-
-            gl.attachShader(program, loadShader(gl, vertexShaderSource, gl.VERTEX_SHADER));
-            gl.attachShader(program, loadShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER));
-            gl.linkProgram(program);
-
-            var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
-            if (!linked) {
-                throw new Error(('error in program linking:' + gl.getProgramInfoLog(program)));
-            }
-            gl.useProgram(program);
-
-            this.positionLocation = gl.getAttribLocation(program, 'a_position');
-            this.texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
-
-            this.positionBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-
-            gl.enableVertexAttribArray(this.positionLocation);
-            gl.vertexAttribPointer(this.positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                -1.0, -1.0,
-                1.0, -1.0,
-                -1.0, 1.0,
-                -1.0, 1.0,
-                1.0, -1.0,
-                1.0, 1.0
-            ]), gl.STATIC_DRAW);
-
-            this.texCoordBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-
-            gl.enableVertexAttribArray(this.texCoordLocation);
-            gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                0.0, 1.0,
-                1.0, 1.0,
-                0.0, 0.0,
-                0.0, 0.0,
-                1.0, 1.0,
-                1.0, 0.0
-            ]), gl.STATIC_DRAW);
-
-            this.texture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, this.texture);
-
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-            gl.clearColor(0, 0, 0, 1);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-
-            gl.colorMask(true, true, true, false);
-
-            gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        }
-        WebGLRender.prototype.resize = function () {
-            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        };
-
-        WebGLRender.prototype.update = function () {
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, this.width, this.height, 0, this.gl.RGB, this.gl.UNSIGNED_BYTE, this.px);
-
-            this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
-        };
-
-        WebGLRender.prototype.destruct = function () {
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-
-            this.gl = null;
-            this.px = null;
-            this.canvas = null;
-        };
-        return WebGLRender;
-    })();
-
-    module.exports = WebGLRender;
-    //# sourceMappingURL=WebGLRenderer.js.map
-
-
-/***/ },
-/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
@@ -1998,25 +1785,220 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
-    function getViewport() {
-        var e = window;
-        var a = 'inner';
-        if (!('innerWidth' in window)) {
-            a = 'client';
-            e = document.documentElement || document.body;
+    function clearAlpha(data) {
+        var lim = data.length;
+        for (var i = 3; i < lim; i++) {
+            data[i] = 255;
         }
-        return { width: e[a + 'Width'], height: e[a + 'Height'] };
     }
-    exports.getViewport = getViewport;
-    //# sourceMappingURL=browser.js.map
+
+    var CanvasRender = (function () {
+        function CanvasRender(bitmap, canvas) {
+            this.canvas = canvas;
+
+            this.px = bitmap.data;
+            this.width = bitmap.width;
+            this.height = bitmap.height;
+            this.channels = bitmap.useAlpha ? 4 : 3;
+
+            this.ctx = this.canvas.getContext('2d');
+
+            this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+
+            clearAlpha(this.output.data);
+
+            this.ctx.putImageData(this.output, 0, 0);
+        }
+        CanvasRender.prototype.resize = function () {
+            if (this.output.width !== this.canvas.width || this.output.height !== this.canvas.height) {
+                this.output = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+
+                clearAlpha(this.output.data);
+            }
+        };
+
+        CanvasRender.prototype.update = function () {
+            var data = this.output.data;
+            var width = this.output.width;
+            var height = this.output.height;
+
+            var fx = this.width / width;
+            var fy = this.height / height;
+
+            for (var iy = 0; iy < height; iy++) {
+                for (var ix = 0; ix < width; ix++) {
+                    var x = Math.floor(ix * fx);
+                    var y = Math.floor(iy * fy);
+                    var read = (x + y * this.width) * this.channels;
+                    var write = (ix + iy * width) * 4;
+
+                    data[write] = this.px[read];
+                    data[write + 1] = this.px[read + 1];
+                    data[write + 2] = this.px[read + 2];
+                }
+            }
+            this.ctx.putImageData(this.output, 0, 0);
+        };
+
+        CanvasRender.prototype.destruct = function () {
+            this.px = null;
+            this.ctx = null;
+            this.canvas = null;
+            this.output = null;
+        };
+        return CanvasRender;
+    })();
+
+    module.exports = CanvasRender;
+    //# sourceMappingURL=CanvasRenderer.js.map
 
 
 /***/ },
-/* 23 */
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var vertexShaderSource = [
+        'attribute vec2 a_position;',
+        'attribute vec2 a_texCoord;',
+        'varying vec2 v_texCoord;',
+        'void main() {',
+        '    gl_Position = vec4(a_position, 0, 1);',
+        '    v_texCoord = a_texCoord;',
+        '}'
+    ].join('\n');
+
+    var fragmentShaderSource = [
+        'precision mediump float;',
+        'uniform sampler2D u_image;',
+        'varying vec2 v_texCoord;',
+        'void main() {',
+        '    gl_FragColor = texture2D(u_image, v_texCoord);',
+        '}'
+    ].join('\n');
+
+    function loadShader(gl, shaderSource, shaderType) {
+        var shader = gl.createShader(shaderType);
+        gl.shaderSource(shader, shaderSource);
+        gl.compileShader(shader);
+
+        var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+        if (!compiled) {
+            throw new Error('error compiling shader "' + shader + '":' + gl.getShaderInfoLog(shader));
+        }
+        return shader;
+    }
+
+    var WebGLRender = (function () {
+        function WebGLRender(bitmap, canvas) {
+            this.canvas = canvas;
+            this.width = bitmap.width;
+            this.height = bitmap.height;
+
+            this.px = new Uint8Array(bitmap.buffer);
+
+            if (!window.WebGLRenderingContext) {
+                throw new Error('browser does not support WegGL');
+            }
+
+            var glOpts = { alpha: false };
+
+            var gl = this.gl = this.canvas.getContext('webgl', glOpts) || this.canvas.getContext('experimental-webgl', glOpts);
+            if (!gl) {
+                throw new Error('could not create WebGL context');
+            }
+
+            var program = gl.createProgram();
+
+            gl.attachShader(program, loadShader(gl, vertexShaderSource, gl.VERTEX_SHADER));
+            gl.attachShader(program, loadShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER));
+            gl.linkProgram(program);
+
+            var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
+            if (!linked) {
+                throw new Error(('error in program linking:' + gl.getProgramInfoLog(program)));
+            }
+            gl.useProgram(program);
+
+            this.positionLocation = gl.getAttribLocation(program, 'a_position');
+            this.texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
+
+            this.positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+
+            gl.enableVertexAttribArray(this.positionLocation);
+            gl.vertexAttribPointer(this.positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                -1.0, -1.0,
+                1.0, -1.0,
+                -1.0, 1.0,
+                -1.0, 1.0,
+                1.0, -1.0,
+                1.0, 1.0
+            ]), gl.STATIC_DRAW);
+
+            this.texCoordBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
+
+            gl.enableVertexAttribArray(this.texCoordLocation);
+            gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                0.0, 1.0,
+                1.0, 1.0,
+                0.0, 0.0,
+                0.0, 0.0,
+                1.0, 1.0,
+                1.0, 0.0
+            ]), gl.STATIC_DRAW);
+
+            this.texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+            gl.clearColor(0, 0, 0, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.colorMask(true, true, true, false);
+
+            gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        }
+        WebGLRender.prototype.resize = function () {
+            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        };
+
+        WebGLRender.prototype.update = function () {
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, this.width, this.height, 0, this.gl.RGB, this.gl.UNSIGNED_BYTE, this.px);
+
+            this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+        };
+
+        WebGLRender.prototype.destruct = function () {
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+
+            this.gl = null;
+            this.px = null;
+            this.canvas = null;
+        };
+        return WebGLRender;
+    })();
+
+    module.exports = WebGLRender;
+    //# sourceMappingURL=WebGLRenderer.js.map
+
+
+/***/ },
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
@@ -2045,6 +2027,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
     module.exports = SpriteSheet;
     //# sourceMappingURL=SpriteSheet.js.map
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    function getViewport() {
+        var e = window;
+        var a = 'inner';
+        if (!('innerWidth' in window)) {
+            a = 'client';
+            e = document.documentElement || document.body;
+        }
+        return { width: e[a + 'Width'], height: e[a + 'Height'] };
+    }
+    exports.getViewport = getViewport;
+    //# sourceMappingURL=browser.js.map
 
 
 /***/ },

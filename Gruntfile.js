@@ -86,19 +86,20 @@ module.exports = function (grunt) {
 				]
 			}
 		},
-		'gh-pages': {
-			options: {
-				branch: 'gh-pages',
-				base: 'demo'
-			},
-			publish: {
-				options: {
-					repo: 'https://github.com/Bartvds/lorez.git',
-					message: 'publish gh-pages (cli)' + getDeployMessage()
-				},
-				src: ['**/*']
-			}
-		},
+// disabled until move to org
+//		'gh-pages': {
+//			options: {
+//				branch: 'gh-pages',
+//				base: 'demo'
+//			},
+//			publish: {
+//				options: {
+//					repo: 'https://github.com/Bartvds/lorez.git',
+//					message: 'publish gh-pages (cli)' + getDeployMessage()
+//				},
+//				src: ['**/*']
+//			}
+//		},
 		watch: {
 			all: {
 				options: {
@@ -241,7 +242,7 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('publish', 'Publish from CLI', [
 		'build',
-		'gh-pages:publish'
+		// 'gh-pages:publish' // disabled until move to org
 	]);
 
 	// check if we have all the important files

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "lorez",
+  "name": "framebufferJS",
   "version": "0.0.1",
   "description": "Low-res bitmap render engine",
   "keywords": [
@@ -9,21 +9,27 @@
     "low-res",
     "gamejam"
   ],
-  "homepage": "https://github.com/Bartvds/lorez",
+  "homepage": "https://github.com/noffle/framebufferJS",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Bartvds/lorez.git"
+    "url": "https://github.com/noffle/framebufferJS.git"
   },
-  "author": {
-    "name": "Bart van der Schoor",
-    "url": "https://github.com/Bartvds"
-  },
+  "authors": [
+    {
+      "name": "Stephen Whitmore",
+      "url": "https://github.com/noffle"
+    },
+    {
+      "name": "Bart van der Schoor",
+      "url": "https://github.com/Bartvds"
+    }
+  ],
   "bugs": {
-    "url": "https://github.com/Bartvds/lorez/issues"
+    "url": "https://github.com/noffle/framebufferJS/issues"
   },
   "license": {
     "type": "MIT",
-    "url": "https://raw.github.com/Bartvds/lorez/master/LICENSE-MIT"
+    "url": "https://raw.github.com/noffle/framebufferJS/master/LICENSE-MIT"
   },
   "engines": {
     "node": ">= 0.10.0"
