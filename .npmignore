@@ -1,0 +1,17 @@
+/.idea
+/node_modules
+/dist
+/test
+/demo
+
+/*.tgz
+.jshintrc
+.editorconfig
+.travis.yml
+,gitignore
+.npmignore
+/npm-log*
+
+bower.json
+Gruntfile.js
+/*.jpg

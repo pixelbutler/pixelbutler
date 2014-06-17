@@ -25,7 +25,7 @@
     "evil"          : false,
     "expr"          : false,
     "funcscope"     : false,
-    "globalstrict"  : false,
+    "globalstrict"  : true,
     "iterator"      : false,
     "lastsemic"     : false,
     "laxbreak"      : false,
@@ -44,11 +44,11 @@
 
     "browser"       : true,
     "couch"         : false,
-    "devel"         : false,
+    "devel"         : true,
     "dojo"          : false,
     "jquery"        : false,
     "mootools"      : false,
-    "node"          : false,
+    "node"          : true,
     "nonstandard"   : false,
     "prototypejs"   : false,
     "rhino"         : false,
@@ -61,8 +61,11 @@
 
     "maxerr"        : 100,
     "predef"        : [
-        "module",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+        "performance",
         "console",
+        "module",
         "require",
         "define"
     ],

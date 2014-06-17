@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>fast - lorez</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
+</head>
+<body>
+<canvas id="gameScreen" width="640" height="480">
+	What, no canvas support? D:
+</canvas>
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+<script type="text/javascript">
+
+	require(['js/lorez'], function (lorez) {
+
+		var $fb = new lorez.Stage({
+			width: 160,
+			height: 120,
+			canvas: 'gameScreen'
+		});
+
+		var p1 = {r: 48, g: 48, b: 200};
+		var p2 = {r: 48, g: 48, b: 255};
+		var p3 = {r: 64, g: 64, b: 255};
+		var circleC = {r: 93, g: 27, b: 175};
+
+		var frame = 0;
+
+		function step() {
+			frame++;
+
+			$fb.clear();
+			$fb.fillCircle(80, 60, 48, circleC);
+
+			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv(frame % 360, 100, 100));
+
+			$fb.text(5, 80, "Woooooaaaaah! Lorez FramebufferJS!".substring(0, frame / 5), lorez.hsv(220, lorez.rand(100),lorez.rand(100)));
+
+			for (var i = 0; i < 15; i++) {
+				var x = (i ^ (i << 12)) % 160;
+				var y = ((i ^ (i << 7)) + frame * 4) % 120;
+				$fb.setPixel(x, y, p1);
+				$fb.setPixel(x, y + 1, p2);
+				$fb.setPixel(x, y + 2, p3);
+			}
+
+			$fb.render();
+
+			window.requestAnimationFrame(step);
+		}
+
+		window.requestAnimationFrame(step);
+	});
+</script>
+</html>
