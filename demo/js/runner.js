@@ -4,7 +4,7 @@
  *  hacky code to manage ui and load gallery demos
  **/
 // load raw html parts (strip to body content)
-define(['lorez', 'text!../partial/ui.html!strip'], function (lorez, uiHtml) {
+define(['pixelbutler', 'text!../partial/ui.html!strip'], function (pixelbutler, uiHtml) {
 
 	// define demo defaults
 	var config = null;
@@ -125,10 +125,10 @@ define(['lorez', 'text!../partial/ui.html!strip'], function (lorez, uiHtml) {
 			if (!demo.ticker) {
 				var render = demo.render;
 				if (config.ticker === 'interval') {
-					demo.ticker = lorez.ticker.interval(render, (config.fps || 32));
+					demo.ticker = pixelbutler.ticker.interval(render, (config.fps || 32));
 				}
 				else {//if (config.ticker === 'request') {
-					demo.ticker = lorez.ticker.request(render);
+					demo.ticker = pixelbutler.ticker.request(render);
 				}
 			}
 

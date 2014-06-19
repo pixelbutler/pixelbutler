@@ -1,10 +1,10 @@
 'use strict';
 
-define(['lorez'], function (lorez) {
+define(['pixelbutler'], function (pixelbutler) {
 
 	// return factory
 	return function (config) {
-		var $fb = new lorez.Stage({
+		var $pb = new pixelbutler.Stage({
 			width: 160,
 			height: 120,
 			scale: 4,
@@ -13,7 +13,7 @@ define(['lorez'], function (lorez) {
 		});
 
 		// Clear the screen.
-		$fb.clear([0, 0, 0]);
+		$pb.clear([0, 0, 0]);
 
 // Fire effect.
 		var firePalette = [
@@ -22,34 +22,34 @@ define(['lorez'], function (lorez) {
 			[200, 200, 200],
 		];
 
-		for (var i = 0; i < $fb.width; i++) {
-			var col = firePalette[lorez.rand(3)];
-			$fb.setPixel(i, $fb.height - 1, lorez.rgb(col[0] + lorez.rand(30) - 15, col[1] + lorez.rand(30) - 15, col[2] + lorez.rand(30) - 15));
+		for (var i = 0; i < $pb.width; i++) {
+			var col = firePalette[pixelbutler.rand(3)];
+			$pb.setPixel(i, $pb.height - 1, pixelbutler.rgb(col[0] + pixelbutler.rand(30) - 15, col[1] + pixelbutler.rand(30) - 15, col[2] + pixelbutler.rand(30) - 15));
 		}
 
 		function render(frame) {
-			var tmp = lorez.rgb();
-			var total = lorez.rgb();
-			for (var i = 0; i < $fb.width; i++) {
-				for (var j = 0; j < $fb.height - 1; j++) {
+			var tmp = pixelbutler.rgb();
+			var total = pixelbutler.rgb();
+			for (var i = 0; i < $pb.width; i++) {
+				for (var j = 0; j < $pb.height - 1; j++) {
 					total.r = 0;
 					total.g = 0;
 					total.b = 0;
 
 					// Left.
-					$fb.getPixel(i === 0 ? $fb.width - 1 : i - 1, j, tmp);
+					$pb.getPixel(i === 0 ? $pb.width - 1 : i - 1, j, tmp);
 					total.r += tmp.r;
 					total.g += tmp.g;
 					total.b += tmp.b;
 
 					// Right.
-					$fb.getPixel(i === $fb.width - 1 ? 0 : i + 1, j, tmp);
+					$pb.getPixel(i === $pb.width - 1 ? 0 : i + 1, j, tmp);
 					total.r += tmp.r;
 					total.g += tmp.g;
 					total.b += tmp.b;
 
 					// Below.
-					$fb.getPixel(i, j + 1, tmp);
+					$pb.getPixel(i, j + 1, tmp);
 					total.r += tmp.r;
 					total.g += tmp.g;
 					total.b += tmp.b;
@@ -69,32 +69,32 @@ define(['lorez'], function (lorez) {
 						total.b -= intensity;
 					}
 
-					$fb.setPixel(i, j, total);
+					$pb.setPixel(i, j, total);
 				}
 			}
-			$fb.render();
+			$pb.render();
 
 			if (frame % 5 === 0) {
-				// for(var i=1; i < $fb.width; i++) {
-				//   var col = firePalette[lorez.rand(3)];
-				//   $fb.setPixel(i-1, $fb.height-1, $fb.getPixel(i, $fb.height-1));
+				// for(var i=1; i < $pb.width; i++) {
+				//   var col = firePalette[pixelbutler.rand(3)];
+				//   $pb.setPixel(i-1, $pb.height-1, $pb.getPixel(i, $pb.height-1));
 				// }
-				// var col = firePalette[lorez.rand(3)];
-				// $fb.setPixel($fb.width-1, $fb.height-1, lorez.rgb(col[0] + lorez.rand(30) - 15, col[1] + lorez.rand(30) - 15, col[2] + lorez.rand(30) - 15));
-				for (var i = 0; i < $fb.width; i++) {
-					var col = firePalette[lorez.rand(3)];
-					$fb.setPixel(i, $fb.height - 1, lorez.rgb(col[0] + lorez.rand(30) - 15, col[1] + lorez.rand(30) - 15, col[2] + lorez.rand(30) - 15));
+				// var col = firePalette[pixelbutler.rand(3)];
+				// $pb.setPixel($pb.width-1, $pb.height-1, pixelbutler.rgb(col[0] + pixelbutler.rand(30) - 15, col[1] + pixelbutler.rand(30) - 15, col[2] + pixelbutler.rand(30) - 15));
+				for (var i = 0; i < $pb.width; i++) {
+					var col = firePalette[pixelbutler.rand(3)];
+					$pb.setPixel(i, $pb.height - 1, pixelbutler.rgb(col[0] + pixelbutler.rand(30) - 15, col[1] + pixelbutler.rand(30) - 15, col[2] + pixelbutler.rand(30) - 15));
 				}
 			}
 		}
 
 		function destruct() {
-			$fb.destruct();
+			$pb.destruct();
 		}
 
 		// return a handle
 		return {
-			stage: $fb,
+			stage: $pb,
 			destruct: destruct,
 			render: render
 		};

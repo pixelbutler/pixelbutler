@@ -2,7 +2,7 @@
 <html class="dark">
 <head>
 	<meta charset="UTF-8">
-	<title>explore demos - lorez</title>
+	<title>explore demos - pixelbutler</title>
 	<link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
 
 	requirejs.config({
 		paths: {
-			'lorez': 'js/lorez',
+			'pixelbutler': 'js/pixelbutler',
 			'text': '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text.min'
 		}
 	});
@@ -71,7 +71,7 @@
 					window.history.pushState(null, null, window.location.origin + window.location.pathname + str);
 				}
 			}
-			window.document.title = name + ' - lorez';
+			window.document.title = name + ' - pixelbutler';
 
 			runner.load(makeDemoPath(name), function (_demo) {
 				demo = _demo;

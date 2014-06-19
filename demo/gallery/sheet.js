@@ -1,10 +1,10 @@
 'use strict';
 
-define(['lorez'], function (lorez) {
+define(['pixelbutler'], function (pixelbutler) {
 
 	// return factory
 	return function (config) {
-		var $fb = new lorez.Stage({
+		var $pb = new pixelbutler.Stage({
 			width: 64,
 			height: 64,
 			scale: 8,
@@ -12,17 +12,17 @@ define(['lorez'], function (lorez) {
 			canvas: config.canvas
 		});
 
-		var red = lorez.rgb(255, 0, 0);
-		var blue = lorez.rgb(64, 128, 255);
-		var grey = lorez.rgb(127, 127, 127);
-		var white = lorez.rgb(255, 255, 255);
-		var black = lorez.rgb(0, 0, 0);
+		var red = pixelbutler.rgb(255, 0, 0);
+		var blue = pixelbutler.rgb(64, 128, 255);
+		var grey = pixelbutler.rgb(127, 127, 127);
+		var white = pixelbutler.rgb(255, 255, 255);
+		var black = pixelbutler.rgb(0, 0, 0);
 
-		var fps = new lorez.FPS();
+		var fps = new pixelbutler.FPS();
 
-		new lorez.loader.MultiLoader([
-			new lorez.loader.SpriteSheetJSONLoader('assets/blocks1.json', true),
-			new lorez.loader.SpriteSheetJSONLoader('assets/runner.json', true)
+		new pixelbutler.loader.MultiLoader([
+			new pixelbutler.loader.SpriteSheetJSONLoader('assets/blocks1.json', true),
+			new pixelbutler.loader.SpriteSheetJSONLoader('assets/runner.json', true)
 		]).load(function (err, results) {
 			if (err) {
 				console.error(err);
@@ -32,20 +32,20 @@ define(['lorez'], function (lorez) {
 			var runner = results[1];
 
 			function renderContent(frame) {
-				$fb.blit(sheet.getSprite(6, 5), -8, -8);
-				$fb.blit(sheet.getSprite(7, 5), 8, -8);
+				$pb.blit(sheet.getSprite(6, 5), -8, -8);
+				$pb.blit(sheet.getSprite(7, 5), 8, -8);
 
-				$fb.blit(sheet.getSprite(8, 5), 24, 8);
-				$fb.blit(sheet.getSprite(9, 5), 40, 8);
-				$fb.blit(sheet.getSprite(10, 5), 56, 8);
+				$pb.blit(sheet.getSprite(8, 5), 24, 8);
+				$pb.blit(sheet.getSprite(9, 5), 40, 8);
+				$pb.blit(sheet.getSprite(10, 5), 56, 8);
 
-				$fb.blit(sheet.getSprite(5, 1), 0, 48);
-				$fb.blit(sheet.getSprite(6, 1), 16, 48);
-				$fb.blit(sheet.getSprite(7, 1), 32, 48);
-				$fb.blit(sheet.getSprite(10, 1), 48, 48);
+				$pb.blit(sheet.getSprite(5, 1), 0, 48);
+				$pb.blit(sheet.getSprite(6, 1), 16, 48);
+				$pb.blit(sheet.getSprite(7, 1), 32, 48);
+				$pb.blit(sheet.getSprite(10, 1), 48, 48);
 
-				$fb.blit(runner.getSpriteAt(Math.floor(frame / 10) % 7), (Math.floor(frame / 3) % 100) - 32, 12);
-				// $fb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), 32, 12);
+				$pb.blit(runner.getSpriteAt(Math.floor(frame / 10) % 7), (Math.floor(frame / 3) % 100) - 32, 12);
+				// $pb.blit(runner.getSpriteAt(Math.floor(frame / 15) % 7), 32, 12);
 			}
 
 			// ugly swop
@@ -57,22 +57,22 @@ define(['lorez'], function (lorez) {
 
 		function render(frame, delta) {
 			fps.begin();
-			$fb.clear(blue);
+			$pb.clear(blue);
 
 			renderFunc(frame);
 
-			$fb.render();
+			$pb.render();
 		}
 
 		function destruct() {
-			$fb.destruct();
+			$pb.destruct();
 		}
 
 		render(0);
 
 		// return a handle
 		return {
-			stage: $fb,
+			stage: $pb,
 			destruct: destruct,
 			render: render
 		};

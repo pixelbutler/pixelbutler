@@ -1,10 +1,10 @@
 'use strict';
 
-define(['lorez'], function (lorez) {
+define(['pixelbutler'], function (pixelbutler) {
 
 	// return factory
 	return function (config) {
-		var $fb = new lorez.Stage({
+		var $pb = new pixelbutler.Stage({
 			width: 32,
 			height: 32,
 			scale: 8,
@@ -12,23 +12,23 @@ define(['lorez'], function (lorez) {
 			canvas: config.canvas
 		});
 
-		var red = lorez.rgb(255, 0, 0);
-		var white = lorez.rgb(255, 255, 255);
-		var black = lorez.rgb(0, 0, 0);
+		var red = pixelbutler.rgb(255, 0, 0);
+		var white = pixelbutler.rgb(255, 255, 255);
+		var black = pixelbutler.rgb(0, 0, 0);
 
-		var sprite = new lorez.Bitmap(3, 3);
+		var sprite = new pixelbutler.Bitmap(3, 3);
 		sprite.setPixel(0, 0, red);
 		sprite.setPixel(2, 0, red);
 		sprite.setPixel(0, 2, red);
 		sprite.setPixel(2, 2, red);
 		sprite.setPixel(1, 1, white);
 
-		var bellish = lorez.rgb(32, 32, 64);
-		var purrrpl = lorez.rgb(64, 32, 64);
+		var bellish = pixelbutler.rgb(32, 32, 64);
+		var purrrpl = pixelbutler.rgb(64, 32, 64);
 
-		var pix0 = lorez.rgb(32, 32, 64);
-		var pix1 = lorez.rgb(48, 48, 164);
-		var pix2 = lorez.rgb(72, 72, 200);
+		var pix0 = pixelbutler.rgb(32, 32, 64);
+		var pix1 = pixelbutler.rgb(48, 48, 164);
+		var pix2 = pixelbutler.rgb(72, 72, 200);
 
 		var blackSize = 16;
 		var purSize = 16;
@@ -36,54 +36,54 @@ define(['lorez'], function (lorez) {
 		var mp2 = Math.PI * 2;
 
 		function render(frame) {
-			$fb.clear(black);
+			$pb.clear(black);
 
 			var factor = Math.sin(frame / 60 * mp2) * 0.5 + 1;
 
-			$fb.fillCircle(0, 0, purSize * factor, purrrpl);
-			$fb.fillCircle($fb.width, $fb.height, purSize * factor, purrrpl);
+			$pb.fillCircle(0, 0, purSize * factor, purrrpl);
+			$pb.fillCircle($pb.width, $pb.height, purSize * factor, purrrpl);
 
-			$fb.fillCircle($fb.width, 0, blackSize, black);
-			$fb.drawCircle($fb.width, 0, blackSize, bellish);
+			$pb.fillCircle($pb.width, 0, blackSize, black);
+			$pb.drawCircle($pb.width, 0, blackSize, bellish);
 
-			$fb.fillCircle(0, $fb.height, blackSize, black);
-			$fb.drawCircle(0, $fb.height, blackSize, bellish);
+			$pb.fillCircle(0, $pb.height, blackSize, black);
+			$pb.drawCircle(0, $pb.height, blackSize, bellish);
 
 			var amount = 12;
 			for (var i = 0; i < amount; i++) {
-				var x = (i * 7) % $fb.width;
-				//var y = (i * 10 + t) % $fb.height;
-				var y = ((i ^ (i << 7)) + frame * 4) % $fb.height;
-				$fb.setPixel(x, y, pix0);
-				$fb.setPixel(x, y + 1, pix1);
-				$fb.setPixel(x, y + 2, pix2);
+				var x = (i * 7) % $pb.width;
+				//var y = (i * 10 + t) % $pb.height;
+				var y = ((i ^ (i << 7)) + frame * 4) % $pb.height;
+				$pb.setPixel(x, y, pix0);
+				$pb.setPixel(x, y + 1, pix1);
+				$pb.setPixel(x, y + 2, pix2);
 			}
 
 			for (var i = 0; i < 2; i++) {
-				$fb.blit(sprite, Math.random() * $fb.width, Math.random() * $fb.height);
+				$pb.blit(sprite, Math.random() * $pb.width, Math.random() * $pb.height);
 			}
 
-			var col = lorez.hsv(220, lorez.rand(100), 50 + lorez.rand(50));
-			$fb.text(5, 5, 'frame'.substring(0, (frame % 80 / 5)), col);
-			$fb.text(5, 23, 'buffer'.substring(0, (frame % 80 / 5)), col);
+			var col = pixelbutler.hsv(220, pixelbutler.rand(100), 50 + pixelbutler.rand(50));
+			$pb.text(5, 5, 'frame'.substring(0, (frame % 80 / 5)), col);
+			$pb.text(5, 23, 'buffer'.substring(0, (frame % 80 / 5)), col);
 
-			$fb.drawRect(2, 2, $fb.width - 4, $fb.height - 4, lorez.hsv(220, lorez.rand(100), lorez.rand(100)));
+			$pb.drawRect(2, 2, $pb.width - 4, $pb.height - 4, pixelbutler.hsv(220, pixelbutler.rand(100), pixelbutler.rand(100)));
 
-			$fb.blit(sprite, 1, 1);
-			$fb.blit(sprite, $fb.width - 4, 1);
-			$fb.blit(sprite, $fb.width - 4, $fb.height - 4);
-			$fb.blit(sprite, 1, $fb.height - 4);
+			$pb.blit(sprite, 1, 1);
+			$pb.blit(sprite, $pb.width - 4, 1);
+			$pb.blit(sprite, $pb.width - 4, $pb.height - 4);
+			$pb.blit(sprite, 1, $pb.height - 4);
 
-			$fb.render();
+			$pb.render();
 		}
 
 		function destruct() {
-			$fb.destruct();
+			$pb.destruct();
 		}
 
 		// return a handle
 		return {
-			stage: $fb,
+			stage: $pb,
 			destruct: destruct,
 			render: render
 		};

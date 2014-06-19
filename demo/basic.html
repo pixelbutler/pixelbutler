@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>basic - lorez</title>
+	<title>basic - pixelbutler</title>
 	<link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <body>
@@ -10,10 +10,10 @@
 	What, no canvas support? D:
 </canvas>
 </body>
-<script src="js/lorez.js"></script>
+<script src="js/pixelbutler.js"></script>
 <script type="text/javascript">
 
-	var $fb = new lorez.Stage({
+	var $pb = new pixelbutler.Stage({
 		width: 160,
 		height: 120,
 		canvas: 'gameScreen',
@@ -30,22 +30,22 @@
 	setInterval(function () {
 		frame++;
 
-		$fb.clear();
-		$fb.fillCircle(80, 60, 48, circleC);
+		$pb.clear();
+		$pb.fillCircle(80, 60, 48, circleC);
 
-		$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv(frame % 360, 100, 100));
+		$pb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", pixelbutler.hsv(frame % 360, 100, 100));
 
-		$fb.text(5, 80, "Woooooaaaaah! Lorez FramebufferJS!".substring(0, frame / 5), lorez.hsv(220, lorez.rand(100), lorez.rand(100)));
+		$pb.text(5, 80, "Woooooaaaaah! Lorez FramebufferJS!".substring(0, frame / 5), pixelbutler.hsv(220, pixelbutler.rand(100), pixelbutler.rand(100)));
 
 		for (var i = 0; i < 15; i++) {
 			var x = (i ^ (i << 12)) % 160;
 			var y = ((i ^ (i << 7)) + frame * 4) % 120;
-			$fb.setPixel(x, y, p1);
-			$fb.setPixel(x, y + 1, p2);
-			$fb.setPixel(x, y + 2, p3);
+			$pb.setPixel(x, y, p1);
+			$pb.setPixel(x, y + 1, p2);
+			$pb.setPixel(x, y + 2, p3);
 		}
 
-		$fb.render();
+		$pb.render();
 
 	}, 30);
 

@@ -10,5 +10,5 @@
 /build
 /dist/*.js.map
 
-/demo/js/lorez.*
+/demo/js/pixelbutler.*
 /demo/README.md

@@ -58,7 +58,7 @@ module.exports = function (grunt) {
 				'build/**/*'
 			],
 			demo: [
-				'demo/js/lorez*'
+				'demo/js/pixelbutler*'
 			],
 			tmp: [
 				'tmp/**/*'
@@ -80,7 +80,7 @@ module.exports = function (grunt) {
 			}
 		},
 		copy: {
-			lorez: {
+			pixelbutler: {
 				files: [
 					{expand: true, cwd: '.', src: ['README.md'], dest: 'demo/'}
 				]
@@ -94,7 +94,7 @@ module.exports = function (grunt) {
 //			},
 //			publish: {
 //				options: {
-//					repo: 'https://github.com/Bartvds/lorez.git',
+//					repo: 'https://github.com/Bartvds/pixelbutler.git',
 //					message: 'publish gh-pages (cli)' + getDeployMessage()
 //				},
 //				src: ['**/*']
@@ -150,21 +150,21 @@ module.exports = function (grunt) {
 					]
 				},
 				output: {
-					library: 'lorez',
+					library: 'pixelbutler',
 					libraryTarget: 'umd',
 					path: './demo/js/',
-					sourceMapFilename: 'lorez.js.map',
-					filename: 'lorez.js'
+					sourceMapFilename: 'pixelbutler.js.map',
+					filename: 'pixelbutler.js'
 				}
 			},
 			dist: {
 				entry: './build/index.js',
 				output: {
 					sourcePrefix: '    ',
-					library: 'lorez',
+					library: 'pixelbutler',
 					libraryTarget: 'umd',
 					path: './dist/',
-					filename: 'lorez.js'
+					filename: 'pixelbutler.js'
 				}
 			},
 			min: {
@@ -173,23 +173,23 @@ module.exports = function (grunt) {
 					new webpack.optimize.UglifyJsPlugin()
 				],
 				output: {
-					library: 'lorez',
+					library: 'pixelbutler',
 					libraryTarget: 'umd',
 					path: './dist/',
-					filename: 'lorez.min.js'
+					filename: 'pixelbutler.min.js'
 				}
 			}
 		},
 		verify: {
 			demo: {
 				list: [
-					'./demo/js/lorez.js'
+					'./demo/js/pixelbutler.js'
 				]
 			},
 			dist: {
 				list: [
-					'./dist/lorez.js',
-					'./dist/lorez.min.js'
+					'./dist/pixelbutler.js',
+					'./dist/pixelbutler.min.js'
 				]
 			}
 		}

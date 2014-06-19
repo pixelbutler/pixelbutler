@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>fancy - lorez</title>
+	<title>fancy - pixelbutler</title>
 	<link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <body>
@@ -13,9 +13,9 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
 <script type="text/javascript">
 
-	require(['js/lorez'], function (lorez) {
+	require(['js/pixelbutler'], function (pixelbutler) {
 
-		var $fb = new lorez.Stage({
+		var $pb = new pixelbutler.Stage({
 			width: 160,
 			height: 120,
 			canvas: 'gameScreen',
@@ -26,11 +26,11 @@
 		var shaderFactor = 0;
 		var shaderFrame = 0;
 
-		var fps = new lorez.FPS(60, 10);
+		var fps = new pixelbutler.FPS(60, 10);
 
 		var discoShader = function (x, y, col) {
-			var xa = (x + shaderFrame) % $fb.width / $fb.width;
-			var ya = (y + shaderFrame) * 2 % $fb.height / $fb.height;
+			var xa = (x + shaderFrame) % $pb.width / $pb.width;
+			var ya = (y + shaderFrame) * 2 % $pb.height / $pb.height;
 
 			col.r *= (shaderFactor * xa);
 			col.g *= (shaderFactor * ya);
@@ -38,17 +38,17 @@
 			return col;
 		};
 
-		var white = lorez.rgb(255, 255, 255);
-		var black = lorez.rgb(0, 0, 0);
-		var red = lorez.rgb(255, 0, 0);
-		var green = lorez.rgb(0, 255, 0);
-		var blue = lorez.rgb(0, 0, 255);
-		var yellow = lorez.rgb(255, 255);
+		var white = pixelbutler.rgb(255, 255, 255);
+		var black = pixelbutler.rgb(0, 0, 0);
+		var red = pixelbutler.rgb(255, 0, 0);
+		var green = pixelbutler.rgb(0, 255, 0);
+		var blue = pixelbutler.rgb(0, 0, 255);
+		var yellow = pixelbutler.rgb(255, 255);
 
 		var sprites = [];
 
 		function makeSprite(color, size) {
-			var sprite = new lorez.Bitmap(size, size);
+			var sprite = new pixelbutler.Bitmap(size, size);
 			for (var i = 0; i < size * size; i++) {
 				sprite.setPixel(i % size, Math.floor(i / size), color);
 			}
@@ -65,16 +65,16 @@
 
 		var mp2 = Math.PI * 2;
 
-		var pix0 = lorez.rgb(64, 64, 200);
-		var pix1 = lorez.rgb(64, 64, 200);
-		var pix2 = lorez.rgb(64, 64, 255);
+		var pix0 = pixelbutler.rgb(64, 64, 200);
+		var pix1 = pixelbutler.rgb(64, 64, 200);
+		var pix2 = pixelbutler.rgb(64, 64, 255);
 
-		var circle1 = lorez.rgb(93, 27, 175);
-		var circle2 = lorez.rgb(175, 93, 27);
-		var circle3 = lorez.rgb(27, 175, 93)
-		var circle4 = lorez.rgb(255, 200, 175);
-		var circle5 = lorez.rgb(200, 150, 50);
-		var rectC = lorez.rgb(172, 172, 172);
+		var circle1 = pixelbutler.rgb(93, 27, 175);
+		var circle2 = pixelbutler.rgb(175, 93, 27);
+		var circle3 = pixelbutler.rgb(27, 175, 93)
+		var circle4 = pixelbutler.rgb(255, 200, 175);
+		var circle5 = pixelbutler.rgb(200, 150, 50);
+		var rectC = pixelbutler.rgb(172, 172, 172);
 
 		function step(frame, delta) {
 			fps.begin();
@@ -82,49 +82,49 @@
 			shaderFactor = Math.sin(frame / 60 * mp2) * .5 + 1;
 			shaderFrame = frame;
 
-			$fb.clear(black);
+			$pb.clear(black);
 
-			$fb.fillCircle(80, 60, 48, circle1);
-			$fb.fillCircle(80, 60, 32, circle2);
-			$fb.fillCircle(80, 60, 16, circle3);
-			$fb.fillCircle(80, 60, 8, circle4);
-			$fb.drawCircle(80, 60, 48, circle5);
-			$fb.drawRect(2, 2, $fb.width - 4, $fb.height - 4, rectC);
+			$pb.fillCircle(80, 60, 48, circle1);
+			$pb.fillCircle(80, 60, 32, circle2);
+			$pb.fillCircle(80, 60, 16, circle3);
+			$pb.fillCircle(80, 60, 8, circle4);
+			$pb.drawCircle(80, 60, 48, circle5);
+			$pb.drawRect(2, 2, $pb.width - 4, $pb.height - 4, rectC);
 
-			$fb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", lorez.hsv(frame % 360, 100, 100));
+			$pb.text(50 + Math.sin(frame / 13) * 50, 5, "Hello Warld!", pixelbutler.hsv(frame % 360, 100, 100));
 
-			$fb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, frame / 5), lorez.hsv(220, lorez.rand(100), lorez.rand(100)));
+			$pb.text(25, 80, "Woooooaaaaah! FramebufferJS!".substring(0, frame / 5), pixelbutler.hsv(220, pixelbutler.rand(100), pixelbutler.rand(100)));
 
 			for (var i = 0; i < 15; i++) {
 				var x = (i ^ (i << 12)) % 160;
 				var y = ((i ^ (i << 7)) + frame * 4) % 120;
-				$fb.setPixel(x, y, pix0);
-				$fb.setPixel(x, y + 1, pix1);
-				$fb.setPixel(x, y + 2, pix2);
+				$pb.setPixel(x, y, pix0);
+				$pb.setPixel(x, y + 1, pix1);
+				$pb.setPixel(x, y + 2, pix2);
 			}
 
-			$fb.blit(corner, 1, 1);
-			$fb.blit(corner, $fb.width - 4, 1);
-			$fb.blit(corner, $fb.width - 4, $fb.height - 4);
-			$fb.blit(corner, 1, $fb.height - 4);
+			$pb.blit(corner, 1, 1);
+			$pb.blit(corner, $pb.width - 4, 1);
+			$pb.blit(corner, $pb.width - 4, $pb.height - 4);
+			$pb.blit(corner, 1, $pb.height - 4);
 
 			for (var i = 0; i < 10; i++) {
-				$fb.blit(sprites[frame % sprites.length], Math.random() * $fb.width, Math.random() * $fb.height);
+				$pb.blit(sprites[frame % sprites.length], Math.random() * $pb.width, Math.random() * $pb.height);
 			}
 
-			$fb.text(5, 10, 'fps: ' + fps.fps, white);
-			$fb.text(5, 15, 'ms: ' + fps.redraw, white);
-			$fb.text(5, 20, 'frame: ' + frame, white);
-			$fb.text(5, 25, 'delta: ' + delta, white);
+			$pb.text(5, 10, 'fps: ' + fps.fps, white);
+			$pb.text(5, 15, 'ms: ' + fps.redraw, white);
+			$pb.text(5, 20, 'frame: ' + frame, white);
+			$pb.text(5, 25, 'delta: ' + delta, white);
 
-			$fb.shader(discoShader);
+			$pb.shader(discoShader);
 
-			$fb.render();
+			$pb.render();
 
 			fps.end();
 		}
 
-		lorez.ticker.request(step).start();
+		pixelbutler.ticker.request(step).start();
 
 	});
 </script>

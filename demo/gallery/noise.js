@@ -1,10 +1,10 @@
 'use strict';
 
-define(['lorez'], function (lorez) {
+define(['pixelbutler'], function (pixelbutler) {
 
 	// return factory
 	return function (config) {
-		var $fb = new lorez.Stage({
+		var $pb = new pixelbutler.Stage({
 			width: 64,
 			height: 64,
 			scale: 'fit',
@@ -12,15 +12,15 @@ define(['lorez'], function (lorez) {
 			canvas: config.canvas
 		});
 
-		var red = lorez.rgb(255, 0, 0);
-		var grey = lorez.rgb(127, 127, 127);
-		var white = lorez.rgb(255, 255, 255);
-		var black = lorez.rgb(0, 0, 0);
+		var red = pixelbutler.rgb(255, 0, 0);
+		var grey = pixelbutler.rgb(127, 127, 127);
+		var white = pixelbutler.rgb(255, 255, 255);
+		var black = pixelbutler.rgb(0, 0, 0);
 
-		var tmp = lorez.rgb(0, 0, 0);
+		var tmp = pixelbutler.rgb(0, 0, 0);
 
-		var fps = new lorez.FPS();
-		var noiseGen = new lorez.PerlinNoise();
+		var fps = new pixelbutler.FPS();
+		var noiseGen = new pixelbutler.PerlinNoise();
 
 		var shaderX = 0;
 		var shaderY = 0;
@@ -38,29 +38,29 @@ define(['lorez'], function (lorez) {
 
 		function render(frame, delta) {
 			fps.begin();
-			$fb.clear(grey);
+			$pb.clear(grey);
 
 			shaderX += .01;
 			shaderY += .02;
 			var fac = ((Math.sin(frame / 60) + 1) * .5);
 			shaderArb = fac * .4 + .3;
 
-			$fb.shader(noiseShader);
+			$pb.shader(noiseShader);
 
-			// $fb.text(5, 5, fps.fps, white);
+			// $pb.text(5, 5, fps.fps, white);
 
-			$fb.render();
+			$pb.render();
 		}
 
 		function destruct() {
-			$fb.destruct();
+			$pb.destruct();
 		}
 
 		render(0);
 
 		// return a handle
 		return {
-			stage: $fb,
+			stage: $pb,
 			destruct: destruct,
 			render: render
 		};

@@ -1,22 +1,19 @@
-# lorez
+# pixelbutler
 
-[![Build Status](https://secure.travis-ci.org/Bartvds/lorez.svg?branch=master)](http://travis-ci.org/Bartvds/lorez) [![NPM version](https://badge.fury.io/js/lorez.svg)](http://badge.fury.io/js/lorez) [![Dependency Status](https://david-dm.org/Bartvds/lorez.svg)](https://david-dm.org/Bartvds/lorez) [![devDependency Status](https://david-dm.org/Bartvds/lorez/dev-status.svg)](https://david-dm.org/Bartvds/lorez#info=devDependencies)
+[![Build Status](https://secure.travis-ci.org/pixelbutler/pixelbutler.svg?branch=master)](http://travis-ci.org/pixelbutler/pixelbutler) [![NPM version](https://badge.fury.io/js/pixelbutler.svg)](http://badge.fury.io/js/pixelbutler) [![Dependency Status](https://david-dm.org/pixelbutler/pixelbutler.svg)](https://david-dm.org/pixelbutler/pixelbutler) [![devDependency Status](https://david-dm.org/pixelbutler/pixelbutler/dev-status.svg)](https://david-dm.org/pixelbutler/pixelbutler#info=devDependencies)
 
 Bitmap rendering system for low-res pixel rendering on big screens.
 
 The canvas rendering ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily at 60 frames-per-second in high resolutions. This works great on modern mobile devices. 
 
-lorez is especially suited for 32x32 pixel micro games on large screens or class 320x240 gaming.
+pixelbutler is especially suited for 32x32 pixel micro games on large screens or classic 320x240 gaming.
 
-Originally forked from [framebufferJS](https://github.com/noffle/framebufferJS) by [@noffle](http://www.twitter.com/noffle)
-
-Refactored and expanded in [TypeScript](http://www.typescriptlang.org/) with ♥ by [@bartvds](http://github.com/bartvds)
 
 Work-in-progress :sunglasses:
 
 ## Demo
 
-Usage examples and demo gallery can be found on [bartvds.github.io/lorez](https://bartvds.github.io/lorez/)
+Usage examples and demo gallery can be found on [pixelbutler.github.io/pixelbutler](https://pixelbutler.github.io/pixelbutler/)
 
 ## Get the code
 
@@ -27,7 +24,7 @@ Usage examples and demo gallery can be found on [bartvds.github.io/lorez](https:
 :warning: This is queued for release.
 
 ````bash
-$ npm install lorez
+$ npm install pixelbutler
 ````
 
 ### bower
@@ -37,7 +34,7 @@ $ npm install lorez
 :warning: This is queued for release.
 
 ````bash
-$ bower install lorez
+$ bower install pixelbutler
 ````
 
 
@@ -92,11 +89,7 @@ They are very welcome.
 
 ## License
 
-Copyright (c) 2014 [Bart van der Schoor](https://github.com/Bartvds)
+Copyright (c) 2014 [Stephen Whitmore](https://github.com/noffle) & [Bart van der Schoor](https://github.com/Bartvds)
 
 Licensed under the MIT license.
-
-Forked from [framebufferJS](https://github.com/noffle/framebufferJS) under MIT licence
-
-Copyright (c) 2014 [Stephen Whitmore](https://github.com/noffle)
 

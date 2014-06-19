@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "framebufferJS",
+  "name": "pixelbutler",
   "version": "0.0.1",
   "description": "Low-res bitmap render engine",
   "keywords": [
@@ -9,10 +9,10 @@
     "low-res",
     "gamejam"
   ],
-  "homepage": "https://github.com/noffle/framebufferJS",
+  "homepage": "https://github.com/pixelbutler/pixelbutler",
   "repository": {
     "type": "git",
-    "url": "https://github.com/noffle/framebufferJS.git"
+    "url": "https://github.com/pixelbutler/pixelbutler.git"
   },
   "authors": [
     {
@@ -25,16 +25,16 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/noffle/framebufferJS/issues"
+    "url": "https://github.com/pixelbutler/pixelbutler/issues"
   },
   "license": {
     "type": "MIT",
-    "url": "https://raw.github.com/noffle/framebufferJS/master/LICENSE-MIT"
+    "url": "https://raw.github.com/pixelbutler/pixelbutler/master/LICENSE-MIT"
   },
   "engines": {
     "node": ">= 0.10.0"
   },
-  "main": "./dist/lorez.js",
+  "main": "./dist/pixelbutler.js",
   "scripts": {
     "test": "grunt test"
   },
