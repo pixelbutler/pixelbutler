@@ -17,22 +17,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-ts');
 	grunt.loadNpmTasks('grunt-webpack');
 
-	// get a formatted commit message to review changes from the commit log
-	// github will turn some of these into clickable links
-	function getDeployMessage() {
-		var ret = '\n\n';
-		if (process.env.TRAVIS !== 'true') {
-			ret += 'missing env vars for travis-ci';
-			return ret;
-		}
-		ret += 'branch: ' + process.env.TRAVIS_BRANCH + '\n';
-		ret += 'SHA: ' + process.env.TRAVIS_COMMIT + '\n';
-		ret += 'range SHA: ' + process.env.TRAVIS_COMMIT_RANGE + '\n';
-		ret += 'build id: ' + process.env.TRAVIS_BUILD_ID + '\n';
-		ret += 'build number: ' + process.env.TRAVIS_BUILD_NUMBER + '\n';
-		return ret;
-	}
-
 	var pkg = grunt.file.readJSON('package.json');
 
 	grunt.initConfig({
@@ -86,20 +70,19 @@ module.exports = function (grunt) {
 				]
 			}
 		},
-// disabled until move to org
-//		'gh-pages': {
-//			options: {
-//				branch: 'gh-pages',
-//				base: 'demo'
-//			},
-//			publish: {
-//				options: {
-//					repo: 'https://github.com/Bartvds/pixelbutler.git',
-//					message: 'publish gh-pages (cli)' + getDeployMessage()
-//				},
-//				src: ['**/*']
-//			}
-//		},
+		'gh-pages': {
+			options: {
+				branch: 'gh-pages',
+				base: 'demo'
+			},
+			publish: {
+				options: {
+					repo: 'https://github.com/pixelbutler/pixelbutler.git',
+					message: 'publish gh-pages (cli)'
+				},
+				src: ['**/*']
+			}
+		},
 		watch: {
 			all: {
 				options: {
@@ -242,7 +225,7 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('publish', 'Publish from CLI', [
 		'build',
-		// 'gh-pages:publish' // disabled until move to org
+		'gh-pages:publish'
 	]);
 
 	// check if we have all the important files

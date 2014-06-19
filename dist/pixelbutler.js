@@ -127,8 +127,8 @@ return /******/ (function(modules) { // webpackBootstrap
     };
     var Bitmap = __webpack_require__(2);
 
-    var CanvasRenderer = __webpack_require__(12);
-    var WebGLRenderer = __webpack_require__(13);
+    var CanvasRenderer = __webpack_require__(19);
+    var WebGLRenderer = __webpack_require__(20);
 
     var autosize = __webpack_require__(11);
 
@@ -195,7 +195,7 @@ return /******/ (function(modules) { // webpackBootstrap
     'use strict';
     var RGBA = __webpack_require__(4);
 
-    var microFont = __webpack_require__(14);
+    var microFont = __webpack_require__(21);
 
     var util = __webpack_require__(6);
 
@@ -950,19 +950,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-    var ImageDataLoader = __webpack_require__(15);
+    var ImageDataLoader = __webpack_require__(12);
     exports.ImageDataLoader = ImageDataLoader;
-    var BitmapLoader = __webpack_require__(16);
+    var BitmapLoader = __webpack_require__(13);
     exports.BitmapLoader = BitmapLoader;
-    var TextLoader = __webpack_require__(17);
+    var TextLoader = __webpack_require__(14);
     exports.TextLoader = TextLoader;
-    var JSONLoader = __webpack_require__(18);
+    var JSONLoader = __webpack_require__(15);
     exports.JSONLoader = JSONLoader;
-    var SpriteSheetLoader = __webpack_require__(19);
+    var SpriteSheetLoader = __webpack_require__(16);
     exports.SpriteSheetLoader = SpriteSheetLoader;
-    var SpriteSheetJSONLoader = __webpack_require__(20);
+    var SpriteSheetJSONLoader = __webpack_require__(17);
     exports.SpriteSheetJSONLoader = SpriteSheetJSONLoader;
-    var MultiLoader = __webpack_require__(21);
+    var MultiLoader = __webpack_require__(18);
     exports.MultiLoader = MultiLoader;
 
     [
@@ -1113,6 +1113,320 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
+    var ImageDataLoader = (function () {
+        function ImageDataLoader(url) {
+            this.url = url;
+        }
+        ImageDataLoader.prototype.load = function (callback) {
+            var _this = this;
+            var image = document.createElement('img');
+            image.onload = function () {
+                var canvas = document.createElement('canvas');
+                canvas.width = image.width;
+                canvas.height = image.height;
+
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(image, 0, 0);
+
+                callback(null, ctx.getImageData(0, 0, image.width, image.height));
+
+                image.onload = null;
+                image.onerror = null;
+            };
+            image.onerror = function () {
+                callback(new Error('cannot load ' + _this.url), null);
+
+                image.onload = null;
+                image.onerror = null;
+            };
+
+            image.src = this.url;
+        };
+        return ImageDataLoader;
+    })();
+
+    module.exports = ImageDataLoader;
+    //# sourceMappingURL=ImageDataLoader.js.map
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var Bitmap = __webpack_require__(2);
+
+    var ImageDataLoader = __webpack_require__(12);
+
+    var BitmapLoader = (function () {
+        function BitmapLoader(url, useAlpha) {
+            if (typeof useAlpha === "undefined") { useAlpha = false; }
+            this.url = url;
+            this.useAlpha = useAlpha;
+        }
+        BitmapLoader.prototype.load = function (callback) {
+            var _this = this;
+            new ImageDataLoader(this.url).load(function (err, image) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+
+                if (_this.useAlpha) {
+                    callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
+                } else {
+                    var bitmap = new Bitmap(image.width, image.height, false);
+                    var data = image.data;
+                    var width = image.width;
+
+                    for (var iy = 0; iy < image.height; iy++) {
+                        for (var ix = 0; ix < width; ix++) {
+                            var read = (iy * width + ix) * 4;
+                            var write = (iy * width + ix) * 3;
+
+                            bitmap.data[write] = data[read];
+                            bitmap.data[write + 1] = data[read + 1];
+                            bitmap.data[write + 2] = data[read + 2];
+                        }
+                    }
+                    callback(null, bitmap);
+                }
+            });
+        };
+        return BitmapLoader;
+    })();
+
+    module.exports = BitmapLoader;
+    //# sourceMappingURL=BitmapLoader.js.map
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    function getXHR() {
+        if (XMLHttpRequest) {
+            return new XMLHttpRequest();
+        }
+        try  {
+            return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+        } catch (e) {
+        }
+        try  {
+            return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+        } catch (e) {
+        }
+        try  {
+            return new ActiveXObject('Microsoft.XMLHTTP');
+        } catch (e) {
+        }
+        throw new Error('This browser does not support XMLHttpRequest.');
+    }
+
+    var TextLoader = (function () {
+        function TextLoader(url) {
+            this.url = url;
+        }
+        TextLoader.prototype.load = function (callback) {
+            try  {
+                var xhr = getXHR();
+            } catch (e) {
+                callback(e, null);
+                return;
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    callback(null, xhr.responseText);
+                }
+            };
+
+            xhr.open('GET', this.url, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send(null);
+        };
+        return TextLoader;
+    })();
+
+    module.exports = TextLoader;
+    //# sourceMappingURL=TextLoader.js.map
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var TextLoader = __webpack_require__(14);
+
+    var JSONLoader = (function () {
+        function JSONLoader(url) {
+            this.url = url;
+        }
+        JSONLoader.prototype.load = function (callback) {
+            new TextLoader(this.url).load(function (err, text) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+                try  {
+                    var obj = JSON.parse(text);
+                } catch (e) {
+                    callback(e, null);
+                }
+                callback(null, obj);
+            });
+        };
+        return JSONLoader;
+    })();
+
+    module.exports = JSONLoader;
+    //# sourceMappingURL=JSONLoader.js.map
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var Bitmap = __webpack_require__(2);
+    var SpriteSheet = __webpack_require__(23);
+
+    var ImageDataLoader = __webpack_require__(12);
+
+    var SpriteSheetLoader = (function () {
+        function SpriteSheetLoader(url, opts, useAlpha) {
+            if (typeof useAlpha === "undefined") { useAlpha = false; }
+            this.url = url;
+            this.opts = opts;
+            this.useAlpha = useAlpha;
+        }
+        SpriteSheetLoader.prototype.load = function (callback) {
+            var _this = this;
+            new ImageDataLoader(this.url).load(function (err, image) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+
+                var outerMargin = (_this.opts.outerMargin || 0);
+                var innerMargin = (_this.opts.innerMargin || 0);
+
+                var sheet = new SpriteSheet(_this.opts.spritesX, _this.opts.spritesY);
+
+                for (var iy = 0; iy < _this.opts.spritesY; iy++) {
+                    for (var ix = 0; ix < _this.opts.spritesX; ix++) {
+                        var x = outerMargin + ix * (_this.opts.sizeX + innerMargin);
+                        var y = outerMargin + iy * (_this.opts.sizeY + innerMargin);
+                        sheet.addSprite(Bitmap.clipFromData(image.data, image.width, image.height, 4, x, y, _this.opts.sizeX, _this.opts.sizeY, _this.useAlpha));
+                    }
+                }
+                callback(null, sheet);
+            });
+        };
+        return SpriteSheetLoader;
+    })();
+
+    module.exports = SpriteSheetLoader;
+    //# sourceMappingURL=SpriteSheetLoader.js.map
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var JSONLoader = __webpack_require__(15);
+    var SpriteSheetLoader = __webpack_require__(16);
+
+    var urlExp = /^(.*?)(\/?)([^\/]+?)$/;
+
+    function getURL(main, append) {
+        urlExp.lastIndex = 0;
+        var match = urlExp.exec(main);
+        return match[1] + match[2] + append;
+    }
+
+    var SpriteSheetJSONLoader = (function () {
+        function SpriteSheetJSONLoader(url, useAlpha) {
+            if (typeof useAlpha === "undefined") { useAlpha = false; }
+            this.url = url;
+            this.useAlpha = useAlpha;
+        }
+        SpriteSheetJSONLoader.prototype.load = function (callback) {
+            var _this = this;
+            new JSONLoader(this.url).load(function (err, json) {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+                console.log(json);
+                new SpriteSheetLoader(getURL(_this.url, json.image), json, _this.useAlpha).load(callback);
+            });
+        };
+        return SpriteSheetJSONLoader;
+    })();
+
+    module.exports = SpriteSheetJSONLoader;
+    //# sourceMappingURL=SpriteSheetJSONLoader.js.map
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var MultiLoader = (function () {
+        function MultiLoader(loaders) {
+            var _this = this;
+            this.queued = [];
+            if (loaders) {
+                loaders.forEach(function (loader) {
+                    _this.queued.push(loader);
+                });
+            }
+        }
+        MultiLoader.prototype.load = function (callback) {
+            var _this = this;
+            var errored = false;
+            var results = new Array(this.queued.length);
+
+            this.queued.forEach(function (loader, index) {
+                loader.load(function (err, res) {
+                    if (errored) {
+                        return;
+                    }
+                    if (err) {
+                        console.log(loader.url);
+                        console.error(err);
+                        callback(err, null);
+                        errored = true;
+                        return;
+                    }
+                    results[index] = res;
+                    _this.queued[index] = null;
+
+                    if (_this.queued.every(function (loader) {
+                        return !loader;
+                    })) {
+                        callback(err, results);
+                        _this.queued = null;
+                    }
+                });
+            });
+        };
+        return MultiLoader;
+    })();
+
+    module.exports = MultiLoader;
+    //# sourceMappingURL=MultiLoader.js.map
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
     function clearAlpha(data) {
         var lim = data.length;
         for (var i = 3; i < lim; i++) {
@@ -1182,7 +1496,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
@@ -1322,11 +1636,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
-    var Font = __webpack_require__(23);
+    var Font = __webpack_require__(24);
 
     var font = new Font('micro', 4, {
         '0': [
@@ -1684,320 +1998,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var ImageDataLoader = (function () {
-        function ImageDataLoader(url) {
-            this.url = url;
-        }
-        ImageDataLoader.prototype.load = function (callback) {
-            var _this = this;
-            var image = document.createElement('img');
-            image.onload = function () {
-                var canvas = document.createElement('canvas');
-                canvas.width = image.width;
-                canvas.height = image.height;
-
-                var ctx = canvas.getContext('2d');
-                ctx.drawImage(image, 0, 0);
-
-                callback(null, ctx.getImageData(0, 0, image.width, image.height));
-
-                image.onload = null;
-                image.onerror = null;
-            };
-            image.onerror = function () {
-                callback(new Error('cannot load ' + _this.url), null);
-
-                image.onload = null;
-                image.onerror = null;
-            };
-
-            image.src = this.url;
-        };
-        return ImageDataLoader;
-    })();
-
-    module.exports = ImageDataLoader;
-    //# sourceMappingURL=ImageDataLoader.js.map
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var Bitmap = __webpack_require__(2);
-
-    var ImageDataLoader = __webpack_require__(15);
-
-    var BitmapLoader = (function () {
-        function BitmapLoader(url, useAlpha) {
-            if (typeof useAlpha === "undefined") { useAlpha = false; }
-            this.url = url;
-            this.useAlpha = useAlpha;
-        }
-        BitmapLoader.prototype.load = function (callback) {
-            var _this = this;
-            new ImageDataLoader(this.url).load(function (err, image) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-
-                if (_this.useAlpha) {
-                    callback(null, new Bitmap(image.width, image.height, true, image.data.buffer));
-                } else {
-                    var bitmap = new Bitmap(image.width, image.height, false);
-                    var data = image.data;
-                    var width = image.width;
-
-                    for (var iy = 0; iy < image.height; iy++) {
-                        for (var ix = 0; ix < width; ix++) {
-                            var read = (iy * width + ix) * 4;
-                            var write = (iy * width + ix) * 3;
-
-                            bitmap.data[write] = data[read];
-                            bitmap.data[write + 1] = data[read + 1];
-                            bitmap.data[write + 2] = data[read + 2];
-                        }
-                    }
-                    callback(null, bitmap);
-                }
-            });
-        };
-        return BitmapLoader;
-    })();
-
-    module.exports = BitmapLoader;
-    //# sourceMappingURL=BitmapLoader.js.map
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    function getXHR() {
-        if (XMLHttpRequest) {
-            return new XMLHttpRequest();
-        }
-        try  {
-            return new ActiveXObject('Msxml2.XMLHTTP.6.0');
-        } catch (e) {
-        }
-        try  {
-            return new ActiveXObject('Msxml2.XMLHTTP.3.0');
-        } catch (e) {
-        }
-        try  {
-            return new ActiveXObject('Microsoft.XMLHTTP');
-        } catch (e) {
-        }
-        throw new Error('This browser does not support XMLHttpRequest.');
-    }
-
-    var TextLoader = (function () {
-        function TextLoader(url) {
-            this.url = url;
-        }
-        TextLoader.prototype.load = function (callback) {
-            try  {
-                var xhr = getXHR();
-            } catch (e) {
-                callback(e, null);
-                return;
-            }
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    callback(null, xhr.responseText);
-                }
-            };
-
-            xhr.open('GET', this.url, true);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhr.send(null);
-        };
-        return TextLoader;
-    })();
-
-    module.exports = TextLoader;
-    //# sourceMappingURL=TextLoader.js.map
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var TextLoader = __webpack_require__(17);
-
-    var JSONLoader = (function () {
-        function JSONLoader(url) {
-            this.url = url;
-        }
-        JSONLoader.prototype.load = function (callback) {
-            new TextLoader(this.url).load(function (err, text) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-                try  {
-                    var obj = JSON.parse(text);
-                } catch (e) {
-                    callback(e, null);
-                }
-                callback(null, obj);
-            });
-        };
-        return JSONLoader;
-    })();
-
-    module.exports = JSONLoader;
-    //# sourceMappingURL=JSONLoader.js.map
-
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var Bitmap = __webpack_require__(2);
-    var SpriteSheet = __webpack_require__(24);
-
-    var ImageDataLoader = __webpack_require__(15);
-
-    var SpriteSheetLoader = (function () {
-        function SpriteSheetLoader(url, opts, useAlpha) {
-            if (typeof useAlpha === "undefined") { useAlpha = false; }
-            this.url = url;
-            this.opts = opts;
-            this.useAlpha = useAlpha;
-        }
-        SpriteSheetLoader.prototype.load = function (callback) {
-            var _this = this;
-            new ImageDataLoader(this.url).load(function (err, image) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-
-                var outerMargin = (_this.opts.outerMargin || 0);
-                var innerMargin = (_this.opts.innerMargin || 0);
-
-                var sheet = new SpriteSheet(_this.opts.spritesX, _this.opts.spritesY);
-
-                for (var iy = 0; iy < _this.opts.spritesY; iy++) {
-                    for (var ix = 0; ix < _this.opts.spritesX; ix++) {
-                        var x = outerMargin + ix * (_this.opts.sizeX + innerMargin);
-                        var y = outerMargin + iy * (_this.opts.sizeY + innerMargin);
-                        sheet.addSprite(Bitmap.clipFromData(image.data, image.width, image.height, 4, x, y, _this.opts.sizeX, _this.opts.sizeY, _this.useAlpha));
-                    }
-                }
-                callback(null, sheet);
-            });
-        };
-        return SpriteSheetLoader;
-    })();
-
-    module.exports = SpriteSheetLoader;
-    //# sourceMappingURL=SpriteSheetLoader.js.map
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var JSONLoader = __webpack_require__(18);
-    var SpriteSheetLoader = __webpack_require__(19);
-
-    var urlExp = /^(.*?)(\/?)([^\/]+?)$/;
-
-    function getURL(main, append) {
-        urlExp.lastIndex = 0;
-        var match = urlExp.exec(main);
-        return match[1] + match[2] + append;
-    }
-
-    var SpriteSheetJSONLoader = (function () {
-        function SpriteSheetJSONLoader(url, useAlpha) {
-            if (typeof useAlpha === "undefined") { useAlpha = false; }
-            this.url = url;
-            this.useAlpha = useAlpha;
-        }
-        SpriteSheetJSONLoader.prototype.load = function (callback) {
-            var _this = this;
-            new JSONLoader(this.url).load(function (err, json) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-                console.log(json);
-                new SpriteSheetLoader(getURL(_this.url, json.image), json, _this.useAlpha).load(callback);
-            });
-        };
-        return SpriteSheetJSONLoader;
-    })();
-
-    module.exports = SpriteSheetJSONLoader;
-    //# sourceMappingURL=SpriteSheetJSONLoader.js.map
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var MultiLoader = (function () {
-        function MultiLoader(loaders) {
-            var _this = this;
-            this.queued = [];
-            if (loaders) {
-                loaders.forEach(function (loader) {
-                    _this.queued.push(loader);
-                });
-            }
-        }
-        MultiLoader.prototype.load = function (callback) {
-            var _this = this;
-            var errored = false;
-            var results = new Array(this.queued.length);
-
-            this.queued.forEach(function (loader, index) {
-                loader.load(function (err, res) {
-                    if (errored) {
-                        return;
-                    }
-                    if (err) {
-                        console.log(loader.url);
-                        console.error(err);
-                        callback(err, null);
-                        errored = true;
-                        return;
-                    }
-                    results[index] = res;
-                    _this.queued[index] = null;
-
-                    if (_this.queued.every(function (loader) {
-                        return !loader;
-                    })) {
-                        callback(err, results);
-                        _this.queued = null;
-                    }
-                });
-            });
-        };
-        return MultiLoader;
-    })();
-
-    module.exports = MultiLoader;
-    //# sourceMappingURL=MultiLoader.js.map
-
-
-/***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2017,31 +2017,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
-    var Char = __webpack_require__(25);
-
-    var Font = (function () {
-        function Font(name, height, data) {
-            var _this = this;
-            this.name = name;
-            this.height = height;
-            this.chars = Object.create(null);
-
-            Object.keys(data).forEach(function (char) {
-                _this.chars[char] = new Char(char, data[char]);
-            });
-        }
-        return Font;
-    })();
-
-    module.exports = Font;
-    //# sourceMappingURL=Font.js.map
-
-
-/***/ },
-/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
@@ -2070,6 +2045,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
     module.exports = SpriteSheet;
     //# sourceMappingURL=SpriteSheet.js.map
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    var Char = __webpack_require__(25);
+
+    var Font = (function () {
+        function Font(name, height, data) {
+            var _this = this;
+            this.name = name;
+            this.height = height;
+            this.chars = Object.create(null);
+
+            Object.keys(data).forEach(function (char) {
+                _this.chars[char] = new Char(char, data[char]);
+            });
+        }
+        return Font;
+    })();
+
+    module.exports = Font;
+    //# sourceMappingURL=Font.js.map
 
 
 /***/ },
