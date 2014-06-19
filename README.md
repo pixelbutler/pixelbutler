@@ -18,9 +18,10 @@ Work-in-progress pre-release :sunglasses:
 
 Usage examples and demo gallery can be found on [pixelbutler.github.io/pixelbutler](https://pixelbutler.github.io/pixelbutler/)
 
+
 ## Get the code
 
-The bundles support [UMD pattern](https://github.com/umdjs/umd) and work as browser global, CommonJS and AMD module. Browserify & Webpack users can also use the npm package directly.
+The bundles support [UMD pattern](https://github.com/umdjs/umd) and work as browser global, CommonJS and AMD module. Browserify & Webpack users can also use the npm package directly. TypeScript users can use the source using `import`'s (at some point definition files will be available too).
 
 
 ### manual
