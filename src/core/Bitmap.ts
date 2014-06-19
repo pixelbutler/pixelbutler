@@ -24,10 +24,6 @@ var magenta = new RGBA(255, 0, 255);
 
 // TODO properly implement alpha and non-alpha
 
-// TODO profile element access
-// TODO profile loop order
-// TODO profile fast-mode
-
 class Bitmap {
 
 	public width: number;
@@ -101,22 +97,43 @@ class Bitmap {
 		return col;
 	}
 
-	fillRect(x: number, y: number, w: number, h: number, col: IRGB): void {
+	fillRect(x: number, y: number, width: number, height: number, col: IRGB): void {
 		x = Math.floor(x);
 		y = Math.floor(y);
-		w = Math.floor(w);
-		h = Math.floor(h);
+		width = Math.floor(width);
+		height = Math.floor(height);
 
-		for (var iy = y; iy < y + h; iy++) {
-			for (var ix = x; ix < x + w; ix++) {
-				// TODO move this outside the loop
-				if (ix < 0 || iy < 0 || ix >= this.width || iy >= this.height) {
-					continue;
-				}
-				var p = (ix + iy * this.width) * this.channels;
-				this.data[p] = col.r;
-				this.data[p + 1] = col.g;
-				this.data[p + 2] = col.b;
+		if (x >= this.width || y >= this.height || x + width < 0 || y + height < 0) {
+			// fast bail
+			return;
+		}
+
+		var left = x;
+		var right = x + width;
+		var top = y;
+		var bottom = y + height;
+
+		if (left < 0) {
+			left = 0;
+		}
+		if (top < 0) {
+			top = 0;
+		}
+
+		if (right >= this.width) {
+			right = this.width;
+		}
+		if (bottom >= this.height) {
+			bottom = this.height;
+		}
+
+
+		for (var iy = top; iy < bottom; iy++) {
+			for (var ix = left; ix < right; ix++) {
+				var write = (ix + iy * this.width) * this.channels;
+				this.data[write] = col.r;
+				this.data[write + 1] = col.g;
+				this.data[write + 2] = col.b;
 			}
 		}
 	}
@@ -127,10 +144,10 @@ class Bitmap {
 		y = clamp(Math.floor(y), 0, this.height);
 
 		for (; x < right; x++) {
-			var p = (x + y * this.width) * this.channels;
-			this.data[p] = col.r;
-			this.data[p + 1] = col.g;
-			this.data[p + 2] = col.b;
+			var write = (x + y * this.width) * this.channels;
+			this.data[write] = col.r;
+			this.data[write + 1] = col.g;
+			this.data[write + 2] = col.b;
 		}
 	}
 
@@ -140,10 +157,10 @@ class Bitmap {
 		y = clamp(Math.floor(y), 0, this.height);
 
 		for (; y < bottom; y++) {
-			var p = (x + y * this.width) * this.channels;
-			this.data[p] = col.r;
-			this.data[p + 1] = col.g;
-			this.data[p + 2] = col.b;
+			var write = (x + y * this.width) * this.channels;
+			this.data[write] = col.r;
+			this.data[write + 1] = col.g;
+			this.data[write + 2] = col.b;
 		}
 	}
 
@@ -152,7 +169,6 @@ class Bitmap {
 		y = Math.floor(y);
 		width = Math.floor(width);
 		height = Math.floor(height);
-
 		this.drawLineH(x, y, width, col);
 		this.drawLineH(x, y + height - 1, width, col);
 		this.drawLineV(x, y, height, col);
@@ -172,10 +188,10 @@ class Bitmap {
 					continue;
 				}
 				if (ix * ix + iy * iy <= r * r) {
-					var p = (x + ix + (y + iy) * this.width) * this.channels;
-					this.data[p] = col.r;
-					this.data[p + 1] = col.g;
-					this.data[p + 2] = col.b;
+					var write = (x + ix + (y + iy) * this.width) * this.channels;
+					this.data[write] = col.r;
+					this.data[write + 1] = col.g;
+					this.data[write + 2] = col.b;
 				}
 			}
 		}
@@ -195,33 +211,32 @@ class Bitmap {
 			if (cx < 0 || cy < 0 || cx >= this.width || cy >= this.height) {
 				continue;
 			}
-			var p = (cx + cy * this.width) * this.channels;
-			this.data[p] = col.r;
-			this.data[p + 1] = col.g;
-			this.data[p + 2] = col.b;
+			var write = (cx + cy * this.width) * this.channels;
+			this.data[write] = col.r;
+			this.data[write + 1] = col.g;
+			this.data[write + 2] = col.b;
 		}
 	}
 
 	shader(f: IShader): void {
 		var iy: number;
 		var ix: number;
-		var p: number;
 		var col: IRGBA;
 
 		var rgb = new RGBA();
 
 		for (iy = 0; iy < this.height; iy++) {
 			for (ix = 0; ix < this.width; ix++) {
-				p = (ix + iy * this.width) * this.channels;
-				rgb.r = this.data[p];
-				rgb.g = this.data[p + 1];
-				rgb.b = this.data[p + 2];
+				var index: number = (ix + iy * this.width) * this.channels;
+				rgb.r = this.data[index];
+				rgb.g = this.data[index + 1];
+				rgb.b = this.data[index + 2];
 
 				col = f(ix, iy, rgb);
 
-				this.data[p] = col.r;
-				this.data[p + 1] = col.g;
-				this.data[p + 2] = col.b;
+				this.data[index] = col.r;
+				this.data[index + 1] = col.g;
+				this.data[index + 2] = col.b;
 			}
 		}
 	}
