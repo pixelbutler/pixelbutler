@@ -34,7 +34,6 @@ class SpriteSheetJSONLoader implements ILoader {
 				callback(err, null);
 				return;
 			}
-			console.log(json);
 			new SpriteSheetLoader(getURL(this.url, json.image), json, this.useAlpha).load(callback);
 		});
 	}
