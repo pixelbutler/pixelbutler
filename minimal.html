@@ -1,0 +1,43 @@
+<html>
+<body>
+<canvas id="gameScreen" width="640" height="480">
+    What, no canvas support? :(
+</canvas>
+</body>
+<script src="js/pixelbutler.js"></script>
+<script type="text/javascript">
+
+    var $pb = new pixelbutler.Stage({
+        // size of the pixel buffer
+        width: 160,
+        height: 120,
+        // id of the canvas element
+        canvas: 'gameScreen'
+    });
+
+    // preset some colors
+    var red = {r: 255, g: 0, b: 0};
+    var green = {r: 0, g: 255, b: 0};
+    var blue = {r: 0, g: 0, b: 255};
+    var black = {r: 0, g: 0, b: 0};
+    var white = {r: 255, g: 255, b: 255};
+
+    // draw loop
+    setInterval(function () {
+        // clear with color
+        $pb.clear(black);
+
+        // draw some stuff
+        $pb.fillCircle(80, 60, 48, green);
+        $pb.fillRect(50, 30, 60, 60, blue);
+        for (var i = 0; i < 15; i++) {
+            $pb.setPixel(pixelbutler.rand($pb.width), pixelbutler.rand($pb.height), red);
+        }
+        $pb.text(5, 5, "Pixelbutler is awesome", white);
+
+        // render to screen
+        $pb.render();
+    }, 30);
+
+</script>
+</html>

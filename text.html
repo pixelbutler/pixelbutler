@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>text - pixelbutler</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
+</head>
+<body>
+<canvas id="gameScreen" width="640" height="480">
+	What, no canvas support? D:
+</canvas>
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.min.js"></script>
+<script type="text/javascript">
+
+	require(['js/pixelbutler'], function (pixelbutler) {
+
+		var $pb = new pixelbutler.Stage({
+			width: 160,
+			height: 120,
+			canvas: 'gameScreen',
+			center: true,
+			scale: 'max'
+		});
+
+		var white = pixelbutler.rgb(255, 255, 255);
+		var black = pixelbutler.rgb(0, 0, 0);
+		var red = pixelbutler.rgb(255, 0, 0);
+		var green = pixelbutler.rgb(0, 255, 0);
+		var blue = pixelbutler.rgb(0, 0, 255);
+		var yellow = pixelbutler.rgb(255, 255);
+
+		function step(frame, delta) {
+
+			$pb.clear(black);
+			$pb.drawRect(1, 1, $pb.width - 2, $pb.height - 2, red);
+
+			$pb.text(5, 5, 'abcdefghijklm', white);
+			$pb.text(5, 10, 'nopqrstuvwxyz', white);
+			$pb.text(5, 15, '0123456789', white);
+			$pb.text(5, 20, '+-*/_\\.,!?', white);
+			$pb.text(5, 25, '<>()[]\'/"\\`~', white);
+
+			$pb.render();
+		}
+
+		pixelbutler.ticker.request(step).start();
+
+	});
+</script>
+</html>
