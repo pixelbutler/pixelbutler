@@ -4,7 +4,7 @@
 
 [![Build Status](https://secure.travis-ci.org/pixelbutler/pixelbutler.svg?branch=master)](http://travis-ci.org/pixelbutler/pixelbutler) [![NPM version](https://badge.fury.io/js/pixelbutler.svg)](http://badge.fury.io/js/pixelbutler) [![Dependency Status](https://david-dm.org/pixelbutler/pixelbutler.svg)](https://david-dm.org/pixelbutler/pixelbutler) [![devDependency Status](https://david-dm.org/pixelbutler/pixelbutler/dev-status.svg)](https://david-dm.org/pixelbutler/pixelbutler#info=devDependencies)
 
-> Bitmap rendering system for low-res pixel rendering on big screens.
+> Low-res bitmap render engine for big screens
 
 The canvas rendering ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily at 60 frames-per-second in high resolutions. This works great on modern mobile devices. 
 

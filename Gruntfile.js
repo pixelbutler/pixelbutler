@@ -15,6 +15,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-gh-pages');
 	grunt.loadNpmTasks('grunt-tslint');
 	grunt.loadNpmTasks('grunt-ts');
+	grunt.loadNpmTasks('grunt-ts-clean');
 	grunt.loadNpmTasks('grunt-webpack');
 
 	var pkg = grunt.file.readJSON('package.json');
@@ -46,6 +47,9 @@ module.exports = function (grunt) {
 			],
 			tmp: [
 				'tmp/**/*'
+			],
+			cruft: [
+				'tscommand-*.txt'
 			],
 			docs: [
 				'docs/'
@@ -103,6 +107,12 @@ module.exports = function (grunt) {
 			index: {
 				src: ['./src/index.ts'],
 				outDir: './build'
+			}
+		},
+		ts_clean: {
+			build: {
+				src: ['./build/**'],
+				dot: true
 			}
 		},
 		typedoc: {
@@ -190,7 +200,8 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('compile', [
 		'prep',
-		'ts:index'
+		'ts:index',
+		'clean:cruft'
 	]);
 
 	grunt.registerTask('build', [
@@ -198,6 +209,7 @@ module.exports = function (grunt) {
 		'compile',
 		'tslint:source',
 		'webpack:demo',
+		'ts_clean:build',
 		'webpack:dist',
 		'webpack:min',
 		'verify:demo',
@@ -215,6 +227,11 @@ module.exports = function (grunt) {
 		'verify:demo'
 	]);
 
+	grunt.registerTask('prepublish', [
+		'build'
+		// more!
+	]);
+
 	grunt.registerTask('server', [
 		'connect:server'
 	]);
@@ -224,7 +241,7 @@ module.exports = function (grunt) {
 	]);
 
 	grunt.registerTask('publish', 'Publish from CLI', [
-		'build',
+		'prepublish',
 		'gh-pages:publish'
 	]);
 

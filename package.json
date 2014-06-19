@@ -1,12 +1,12 @@
 {
-  "private": true,
   "name": "pixelbutler",
-  "version": "0.0.1",
-  "description": "Low-res bitmap render engine",
+  "version": "0.1.0",
+  "description": "Low-res bitmap render engine for big screens",
   "keywords": [
     "framebuffer",
     "canvas",
     "low-res",
+    "pixel",
     "gamejam"
   ],
   "homepage": "https://github.com/pixelbutler/pixelbutler",
@@ -36,6 +36,8 @@
   },
   "main": "./dist/pixelbutler.js",
   "scripts": {
+    "prepublish": "grunt prepublish",
+    "build": "grunt build",
     "test": "grunt test"
   },
   "devDependencies": {
@@ -47,6 +49,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-gh-pages": "^0.9.1",
     "grunt-ts": "^1.11.2",
+    "grunt-ts-clean": "^0.1.1",
     "grunt-tslint": "^0.4.1",
     "grunt-typedoc": "^0.1.0",
     "grunt-webpack": "^1.0.7",
