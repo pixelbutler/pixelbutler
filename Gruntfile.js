@@ -265,6 +265,7 @@ module.exports = function (grunt) {
 			options: {
 				reporter: 'mocha-unfunk-reporter',
 				timeout: 8000,
+				xvfb: (process.env.TRAVIS === 'true'),
 				run: true
 			},
 			test: {
