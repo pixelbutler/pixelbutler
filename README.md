@@ -96,6 +96,18 @@ A simple example using the browser global:
 ````
 For more examples [browse the demo's](https://pixelbutler.github.io/pixelbutler/).
 
+## Browser support
+
+Any modern browser that supports canvas and reasonable JS performance, and preferably WebGL capable.
+
+- Firefox
+- Chrome
+- Safari
+- IE >= 10
+
+Pixelbutler also runs well on WebGL capable modern mobile devices if the CPU load is not too crazy (eg: no PerlinNoise or shader frenzy). Tested on Chrome & Firefox Mobile on Samsung Galaxy S3.
+
+
 ## Development
 
 The project is written in [TypeScript](http://typescriptlang.org), and build for browsers using [grunt](http://gruntjs.com) and [webpack](https://github.com/webpack/webpack). Development tools run on [node.js](http://nodejs.org/) and are pulled from [npm](https://www.npmjs.org/).

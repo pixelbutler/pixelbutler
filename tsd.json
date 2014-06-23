@@ -8,8 +8,14 @@
     "pixi/webgl.d.ts": {
       "commit": "9ff1cf69b31b1e37607110e6c4db349d02fd8341"
     },
-    "stats/stats.d.ts": {
-      "commit": "9ff1cf69b31b1e37607110e6c4db349d02fd8341"
+    "chai/chai-assert.d.ts": {
+      "commit": "fa897a954c351766b00f393548a14ed36c189d87"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "fa897a954c351766b00f393548a14ed36c189d87"
+    },
+    "node/node.d.ts": {
+      "commit": "fa897a954c351766b00f393548a14ed36c189d87"
     }
   }
 }

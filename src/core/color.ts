@@ -8,6 +8,11 @@ import IHSV = require('../types/IHSV');
 import RGBA = require('./RGBA');
 import HSV = require('./HSV');
 
+// hacky util
+export function useAlpha(col: IRGB): boolean {
+	return (typeof (<IRGBA>col).a === 'number' && (<IRGBA>col).a < 255);
+}
+
 /**
  * HSV to RGB color conversion
  *

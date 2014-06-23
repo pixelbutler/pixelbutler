@@ -326,26 +326,27 @@ class Bitmap {
 		}
 	}
 
-	clear(color?: IRGBA): void {
-		color = color || black;
+	clear(col?: IRGB): void {
+		col = col || black;
 
 		var lim: number;
 		var i: number;
 
-		if (this.useAlpha) {
+		if (this.useAlpha && color.useAlpha(col)) {
 			lim = this.width * this.height * 4;
 			for (i = 0; i < lim; i += 4) {
-				this.data[i] = color.r;
-				this.data[i + 1] = color.g;
-				this.data[i + 2] = color.b;
-				this.data[i + 3] = color.a;
+				this.data[i] = col.r;
+				this.data[i + 1] = col.g;
+				this.data[i + 2] = col.b;
+				this.data[i + 3] = (<IRGBA>col).a;
 			}
-		} else {
-			lim = this.width * this.height * 3;
-			for (i = 0; i < lim; i += 3) {
-				this.data[i] = color.r;
-				this.data[i + 1] = color.g;
-				this.data[i + 2] = color.b;
+		}
+		else {
+			lim = this.width * this.height * this.channels;
+			for (i = 0; i < lim; i += this.channels) {
+				this.data[i] = col.r;
+				this.data[i + 1] = col.g;
+				this.data[i + 2] = col.b;
 			}
 		}
 	}

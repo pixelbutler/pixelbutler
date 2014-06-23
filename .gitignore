@@ -7,8 +7,14 @@
 *.psd
 
 /docs
+/scratch
 /build
 /dist/*.js.map
+/dist/*.debug.*
 
 /demo/js/pixelbutler.*
 /demo/README.md
+
+/test/build
+/test/dist
+/test/tmp

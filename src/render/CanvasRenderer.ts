@@ -4,7 +4,7 @@
 
 import Bitmap = require('../core/Bitmap');
 
-import IRenderer = require('../render/IRenderer');
+import IRenderer = require('../types/IRenderer');
 
 function clearAlpha(data: Uint8Array) {
 	var lim = data.length;

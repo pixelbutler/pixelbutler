@@ -12,16 +12,42 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-dts-bundle');
 	grunt.loadNpmTasks('grunt-gh-pages');
 	grunt.loadNpmTasks('grunt-tslint');
 	grunt.loadNpmTasks('grunt-ts');
 	grunt.loadNpmTasks('grunt-ts-clean');
 	grunt.loadNpmTasks('grunt-webpack');
+	grunt.loadNpmTasks('grunt-mocha-slimer');
 
 	var pkg = grunt.file.readJSON('package.json');
 
 	grunt.initConfig({
 		pkg: pkg,
+		'gh-pages': {
+			options: {
+				branch: 'gh-pages',
+				base: 'demo'
+			},
+			publish: {
+				options: {
+					repo: 'https://github.com/pixelbutler/pixelbutler.git',
+					message: 'publish gh-pages (cli)'
+				},
+				src: ['**/*']
+			}
+		},
+		typedoc: {
+			docs: {
+				options: {
+					name: pkg.name + ' - ' + pkg.description,
+					module: 'commonjs',
+					target: 'es5',
+					out: './docs'
+				},
+				src: ['./src']
+			}
+		},
 		jshint: {
 			options: grunt.file.readJSON('.jshintrc'),
 			support: {
@@ -33,7 +59,8 @@ module.exports = function (grunt) {
 				configuration: grunt.file.readJSON('tslint.json'),
 				formatter: 'tslint-path-formatter'
 			},
-			source: ['src/**/*.ts']
+			source: ['src/**/*.ts'],
+			test: ['test/src/**/*.ts']
 		},
 		clean: {
 			dist: [
@@ -48,6 +75,11 @@ module.exports = function (grunt) {
 			tmp: [
 				'tmp/**/*'
 			],
+			test: [
+				'test/tmp/**/*',
+				'test/dist/**/*',
+				'test/build/**/*'
+			],
 			cruft: [
 				'tscommand-*.txt'
 			],
@@ -57,34 +89,34 @@ module.exports = function (grunt) {
 		},
 		connect: {
 			options: {
-				port: 8080,
 				hostname: '0.0.0.0',
 				base: '.'
 			},
 			server: {
 				options: {
+					port: 8080,
 					keepalive: true
+				}
+			},
+			test: {
+				options: {
+					port: 8081,
+					keepalive: false
 				}
 			}
 		},
 		copy: {
-			pixelbutler: {
+			demo: {
 				files: [
-					{expand: true, cwd: '.', src: ['README.md'], dest: 'demo/'}
+					{expand: true, cwd: '.', src: ['README.md'], dest: 'demo/'},
+					{expand: true, cwd: 'dist', src: ['pixelbutler.debug.*'], dest: 'demo/js/', filter: 'isFile', rename: function (dest, src) {
+						return path.join(dest, src.replace('.debug', ''));
+					}}
 				]
-			}
-		},
-		'gh-pages': {
-			options: {
-				branch: 'gh-pages',
-				base: 'demo'
 			},
-			publish: {
-				options: {
-					repo: 'https://github.com/pixelbutler/pixelbutler.git',
-					message: 'publish gh-pages (cli)'
-				},
-				src: ['**/*']
+			def: {
+				src: 'build/index.d.ts',
+				dest: 'dist/pixelbutler.d.ts'
 			}
 		},
 		watch: {
@@ -105,25 +137,29 @@ module.exports = function (grunt) {
 				sourceMap: true
 			},
 			index: {
+				options: {
+					declaration: true
+				},
 				src: ['./src/index.ts'],
 				outDir: './build'
+			},
+			test: {
+				src: ['./test/src/**/*.ts'],
+				outDir: './test/build'
 			}
 		},
 		ts_clean: {
 			build: {
-				src: ['./build/**'],
+				src: ['./build/**', '!./build/index.d.ts'],
 				dot: true
 			}
 		},
-		typedoc: {
-			docs: {
+		dts_bundle: {
+			index: {
 				options: {
-					name: pkg.name + ' - ' + pkg.description,
-					module: 'commonjs',
-					target: 'es5',
-					out: './docs'
-				},
-				src: ['./src']
+					name: 'pixelbutler',
+					main: 'build/index.d.ts'
+				}
 			}
 		},
 		webpack: {
@@ -150,6 +186,25 @@ module.exports = function (grunt) {
 					filename: 'pixelbutler.js'
 				}
 			},
+			debug: {
+				devtool: 'source-map',
+				module: {
+					preLoaders: [
+						{
+							test: /\.js$/,
+							loader: 'source-map-loader'
+						}
+					]
+				},
+				entry: './build/index.js',
+				output: {
+					sourcePrefix: '    ',
+					library: 'pixelbutler',
+					libraryTarget: 'umd',
+					path: './dist/',
+					filename: 'pixelbutler.debug.js'
+				}
+			},
 			dist: {
 				entry: './build/index.js',
 				output: {
@@ -171,6 +226,25 @@ module.exports = function (grunt) {
 					path: './dist/',
 					filename: 'pixelbutler.min.js'
 				}
+			},
+			test: {
+				entry: ['./test/build/index.js'],
+				devtool: 'source-map',
+				module: {
+					preLoaders: [
+						{
+							test: /\.js$/,
+							loader: 'source-map-loader'
+						}
+					]
+				},
+				output: {
+					library: 'tests',
+					libraryTarget: 'umd',
+					sourcePrefix: '    ',
+					path: './test/dist',
+					filename: 'bundle.js'
+				}
 			}
 		},
 		verify: {
@@ -182,8 +256,21 @@ module.exports = function (grunt) {
 			dist: {
 				list: [
 					'./dist/pixelbutler.js',
+					'./dist/pixelbutler.d.ts',
 					'./dist/pixelbutler.min.js'
 				]
+			}
+		},
+		mocha_slimer: {
+			options: {
+				reporter: 'mocha-unfunk-reporter',
+				timeout: 8000,
+				run: true
+			},
+			test: {
+				options: {
+					urls: ['http://localhost:8081/test/index.html']
+				}
 			}
 		}
 	});
@@ -191,16 +278,23 @@ module.exports = function (grunt) {
 	// setup main aliases
 	grunt.registerTask('default', ['build']);
 
+	grunt.registerTask('lint', [
+		'jshint',
+		'tslint'
+	]);
+
 	grunt.registerTask('prep', [
 		'clean:tmp',
 		'clean:dist',
 		'clean:build',
+		'clean:test',
 		'clean:demo'
 	]);
 
 	grunt.registerTask('compile', [
 		'prep',
 		'ts:index',
+		'dts_bundle:index',
 		'clean:cruft'
 	]);
 
@@ -208,23 +302,37 @@ module.exports = function (grunt) {
 		'jshint:support',
 		'compile',
 		'tslint:source',
-		'webpack:demo',
+		'webpack:debug',
 		'ts_clean:build',
 		'webpack:dist',
 		'webpack:min',
+		'copy:demo',
+		'copy:def',
 		'verify:demo',
 		'verify:dist'
 	]);
 
+	grunt.registerTask('runtest', [
+		'ts:test',
+		'tslint:test',
+		'webpack:test',
+		'connect:test',
+		'mocha_slimer:test'
+	]);
+
 	grunt.registerTask('test', [
-		'build'
+		'build',
+		'runtest',
 		// more!
 	]);
 
+	grunt.registerTask('run', [
+		'runtest'
+	]);
+
 	grunt.registerTask('dev', [
-		'compile',
-		'webpack:demo',
-		'verify:demo'
+		'connect:test',
+		'mocha_slimer:test'
 	]);
 
 	grunt.registerTask('prepublish', [

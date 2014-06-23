@@ -6,7 +6,7 @@ import IOptions = require('./../types/IOptions');
 
 import Bitmap = require('./Bitmap');
 
-import IRenderer = require('./../render/IRenderer');
+import IRenderer = require('./../types/IRenderer');
 import CanvasRenderer = require('./../render/CanvasRenderer');
 import WebGLRenderer = require('./../render/WebGLRenderer');
 
@@ -21,7 +21,7 @@ class Stage extends Bitmap {
 	public autoSize: IAutoSize;
 
 	constructor(opts: IOptions) {
-		super((opts.width || 32), (opts.height || 32), false);
+		super((opts.width || 32), (opts.height || 32), !!opts.transparent);
 	
 		// grab canvas stuff
 		this.canvas = <HTMLCanvasElement>(typeof opts.canvas === 'string' ? document.getElementById(opts.canvas) : opts.canvas);
@@ -46,10 +46,12 @@ class Stage extends Bitmap {
 			this.renderer = new CanvasRenderer(this, this.canvas);
 		}
 
-		this.autoSize = new autosize.AutoSize(this, {
-			center: opts.center,
-			scale: opts.scale
-		});
+		if (opts.center || opts.scale) {
+			this.autoSize = new autosize.AutoSize(this, {
+				center: opts.center,
+				scale: opts.scale
+			});
+		}
 	}
 
 	resizeTo(width: number, height: number): void {
@@ -57,7 +59,9 @@ class Stage extends Bitmap {
 			return;
 		}
 		super.resizeTo(width, height);
-		this.autoSize.update();
+		if (this.autoSize) {
+			this.autoSize.update();
+		}
 	}
 
 	render(): void {
@@ -65,10 +69,14 @@ class Stage extends Bitmap {
 	}
 
 	destruct(): void {
-		this.autoSize.stop();
-		this.autoSize = null;
-		this.renderer.destruct();
-		this.renderer = null;
+		if (this.autoSize) {
+			this.autoSize.stop();
+			this.autoSize = null;
+		}
+		if (this.renderer) {
+			this.renderer.destruct();
+			this.renderer = null;
+		}
 		this.canvas = null;
 	}
 }

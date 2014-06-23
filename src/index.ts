@@ -7,8 +7,8 @@ export import Stage = require('./core/Stage');
 export import Bitmap = require('./core/Bitmap');
 export import FPS = require('./core/FPS');
 
-import RGBA = require('./core/RGBA');
-import HSV = require('./core/HSV');
+export import RGBA = require('./core/RGBA');
+export import HSV = require('./core/HSV');
 
 export import PerlinNoise = require('./extra/PerlinNoise');
 
@@ -33,6 +33,10 @@ export function hsv(h: number, s: number, v: number): RGBA {
 	hsvTmp.s = s;
 	hsvTmp.v = v;
 	return hsv2rgb(hsvTmp);
+}
+
+export function supportsWebGL(): boolean {
+	return (!!window && !!window.WebGLRenderingContext && !!ArrayBuffer && !!Uint8Array && !!Uint8ClampedArray);
 }
 
 // fake stuff for compiler bug (borked unused-imports-optimiser errornously removes exports)

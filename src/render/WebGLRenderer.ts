@@ -3,7 +3,7 @@
 'use strict';
 
 import Bitmap = require('../core/Bitmap');
-import IRenderer = require('../render/IRenderer');
+import IRenderer = require('../types/IRenderer');
 
 var vertexShaderSource = [
 	// refer the vertices and texture coordinates
@@ -68,6 +68,10 @@ class WebGLRender implements IRenderer {
 		this.canvas = canvas;
 		this.width = bitmap.width;
 		this.height = bitmap.height;
+
+		if (!bitmap.buffer || !Uint8Array) {
+			throw new Error('bitmap doesn\'t support buffer operations');
+		}
 
 		// use a Uint8Array view for WebGL compatibility
 		this.px = new Uint8Array(bitmap.buffer);

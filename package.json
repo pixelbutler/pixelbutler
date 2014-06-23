@@ -34,32 +34,40 @@
   "engines": {
     "node": ">= 0.10.0"
   },
-  "main": "./dist/pixelbutler.js",
+  "main": "./build/index.js",
   "scripts": {
     "prepublish": "grunt prepublish",
     "build": "grunt build",
     "test": "grunt test"
   },
+  "typescript": {
+    "definition": "./build/index.d.ts"
+  },
+  "dependencies": {
+    "xhr": "^1.9.0"
+  },
   "devDependencies": {
+    "chai": "^1.9.1",
+    "detect-indent": "^0.2.0",
     "grunt": "^0.4.4",
     "grunt-contrib-clean": "^0.5.0",
     "grunt-contrib-connect": "^0.7.1",
     "grunt-contrib-copy": "^0.5.0",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-dts-bundle": "^0.1.0",
     "grunt-gh-pages": "^0.9.1",
+    "grunt-mocha-slimer": "git+https://github.com/Bartvds/grunt-mocha-slimer.git",
     "grunt-ts": "^1.11.2",
-    "grunt-ts-clean": "^0.1.1",
+    "grunt-ts-clean": "^0.2.0",
     "grunt-tslint": "^0.4.1",
     "grunt-typedoc": "^0.1.0",
     "grunt-webpack": "^1.0.7",
+    "mocha-unfunk-reporter": "^0.4.0",
     "source-map-loader": "^0.1.3",
     "tslint-path-formatter": "^0.1.1",
     "typescript": "^1.0.1",
     "webpack": "^1.3.0-beta5",
     "webpack-dev-server": "^1.4.1"
-  },
-  "dependencies": {
-    "xhr": "^1.9.0"
   }
 }

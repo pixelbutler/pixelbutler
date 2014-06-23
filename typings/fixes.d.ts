@@ -20,4 +20,7 @@ declare var Uint8ClampedArray: {
 
 interface Window {
 	WebGLRenderingContext: boolean;
+	Uint8ClampedArray: typeof Uint8ClampedArray;
+	Uint8Array: typeof Uint8Array;
+	ArrayBuffer: typeof ArrayBuffer;
 }
