@@ -1,6 +1,7 @@
 /.idea
 /tmp
 /node_modules
+/bower_components
 /*.tgz
 /.grunt
 /tscommand*

@@ -1,14 +1,13 @@
 /.idea
 /node_modules
+/bower_components
 /test
 /demo
-/build
 /src
 /scratch
 /typings
 
-/dist/pixelbutler.min.js
-/dist/*.debug.*
+/dist
 
 
 /*.tgz
