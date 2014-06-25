@@ -1,6 +1,7 @@
 declare module 'pixelbutler' {
     export import Stage = require('__pixelbutler/core/Stage');
     export import Bitmap = require('__pixelbutler/core/Bitmap');
+    export import IBitmapData = require('__pixelbutler/types/IBitmapData');
     export import FPS = require('__pixelbutler/core/FPS');
     export import RGBA = require('__pixelbutler/core/RGBA');
     export import HSV = require('__pixelbutler/core/HSV');
@@ -36,9 +37,10 @@ declare module '__pixelbutler/core/Stage' {
 
 declare module '__pixelbutler/core/Bitmap' {
     import INumberArray = require('__pixelbutler/types/INumberArray');
+    import IBitmapData = require('__pixelbutler/types/IBitmapData');
     import IShader = require('__pixelbutler/types/IShader');
     import IRGB = require('__pixelbutler/types/IRGB');
-    class Bitmap {
+    class Bitmap implements IBitmapData {
         width: number;
         height: number;
         useAlpha: boolean;
@@ -63,6 +65,18 @@ declare module '__pixelbutler/core/Bitmap' {
         static clipFromData(inputData: INumberArray, inputWidth: number, inputHeight: number, inputChannels: number, x: number, y: number, width: number, height: number, useAlpha: boolean): Bitmap;
     }
     export = Bitmap;
+}
+
+declare module '__pixelbutler/types/IBitmapData' {
+    import INumberArray = require('__pixelbutler/types/INumberArray');
+    interface IBitmapData {
+        width: number;
+        height: number;
+        useAlpha: boolean;
+        channels: number;
+        data: INumberArray;
+    }
+    export = IBitmapData;
 }
 
 declare module '__pixelbutler/core/FPS' {

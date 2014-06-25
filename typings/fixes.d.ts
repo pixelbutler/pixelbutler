@@ -23,4 +23,9 @@ interface Window {
 	Uint8ClampedArray: typeof Uint8ClampedArray;
 	Uint8Array: typeof Uint8Array;
 	ArrayBuffer: typeof ArrayBuffer;
+	atob(str: string): string;
+	btoa(str: string): string;
 }
+
+declare function escape(str: string): string;
+declare function unescape(str: string): string;

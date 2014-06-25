@@ -2,6 +2,7 @@
 
 // trick local definition
 import PixelButler = require('pixelbutler');
+import LZS = require('lz-string');
 
 export var pb: typeof PixelButler = require('../../../build/index');
 
@@ -72,4 +73,26 @@ export function createTestCanvas(opts: ICanvasOpts): ICanvas {
 		canvas: canvas
 	};
 	return ret;
+}
+
+function utf8_to_b64( str ) {
+	return window.btoa(encodeURIComponent(escape(str)));
+}
+
+function b64_to_utf8( str ) {
+	return unescape(decodeURIComponent(window.atob(str)));
+}
+export function encodeBitmapData(bitmap: PixelButler.Bitmap): string {
+	var res = {
+		width: bitmap.width,
+		height: bitmap.height,
+		useAlpha: bitmap.useAlpha,
+		channels: bitmap.channels,
+		data: bitmap.data
+	};
+	return utf8_to_b64(LZS.compress(JSON.stringify(res)));
+}
+
+export function decodeBitmapData(str: string): PixelButler.IBitmapData {
+	return JSON.parse(LZS.decompress(b64_to_utf8(str)));
 }

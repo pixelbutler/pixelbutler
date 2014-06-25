@@ -20,6 +20,12 @@ describe('Stage', () => {
 			height: 32
 		});
 		stage.render();
+
+		// var data = helper.encodeBitmapData(stage);
+
+		// console.log(helper.decodeBitmapData(data));
+
+		console.log('suup?');
 		done();
 	});
 

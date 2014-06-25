@@ -3,6 +3,7 @@
 'use strict';
 
 import INumberArray = require('../types/INumberArray');
+import IBitmapData = require('../types/IBitmapData');
 import IShader = require('../types/IShader');
 import IRGB = require('../types/IRGB');
 import IRGBA = require('../types/IRGBA');
@@ -24,7 +25,7 @@ var magenta = new RGBA(255, 0, 255);
 
 // TODO properly implement alpha and non-alpha
 
-class Bitmap {
+class Bitmap implements IBitmapData {
 
 	public width: number;
 	public height: number;

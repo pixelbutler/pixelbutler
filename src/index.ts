@@ -5,6 +5,7 @@
 export import Stage = require('./core/Stage');
 
 export import Bitmap = require('./core/Bitmap');
+export import IBitmapData = require('./types/IBitmapData');
 export import FPS = require('./core/FPS');
 
 export import RGBA = require('./core/RGBA');

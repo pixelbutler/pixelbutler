@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="../node_modules/grunt-mocha-slimer/node_modules/mocha/mocha.css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="../node_modules/grunt-mocha-slimer/node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/chai/chai.js"></script>
     <style type="text/css">
         body {
             font-family: sans-serif;
@@ -31,8 +30,7 @@
     <script>
         mocha.setup('bdd');
         window.onload = function () {
-            if (navigator.userAgent.indexOf('PhantomJS') < 0) {
-				console.log('run mocha run')
+            if (navigator.userAgent.indexOf('SlimerJS') < 0) {
                 mocha.run();
             }
         };
