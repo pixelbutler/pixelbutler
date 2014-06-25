@@ -4,9 +4,12 @@
 /demo
 /build
 /src
+/scratch
 /typings
 
 /dist/pixelbutler.min.js
+/dist/*.debug.*
+
 
 /*.tgz
 .jshintrc

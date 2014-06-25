@@ -41,7 +41,7 @@
     "test": "grunt test"
   },
   "typescript": {
-    "definition": "./build/index.d.ts"
+    "definition": "./build/pixelbutler.d.ts"
   },
   "dependencies": {
     "xhr": "^1.9.0"

@@ -1,33 +1,40 @@
 {
-    "name": "pixelbutler",
-    "version": "0.1.0",
-    "description": "Low-res bitmap render engine for big screens",
-    "homepage": "https://github.com/pixelbutler/pixelbutler",
-    "authors": [
-        {
-            "name": "Stephen Whitmore",
-            "url": "https://github.com/noffle"
-        },
-        {
-            "name": "Bart van der Schoor",
-            "url": "https://github.com/Bartvds"
-        }
-    ],
-    "license": {
-        "type": "MIT",
-        "url": "https://raw.github.com/pixelbutler/pixelbutler/master/LICENSE-MIT"
+  "name": "pixelbutler",
+  "version": "0.1.0",
+  "description": "Low-res bitmap render engine for big screens",
+  "homepage": "https://github.com/pixelbutler/pixelbutler",
+  "authors": [
+    {
+      "name": "Stephen Whitmore",
+      "url": "https://github.com/noffle"
     },
-    "main": "./dist/pixelbutler.js",
-    "ignore": [
-        ".*",
-        "*.txt",
-        "tsd.json",
-        "tslint.json",
-        "build",
-        "demo",
-        "Gruntfile.js",
-        "node_modules",
-        "src",
-        "typings"
-    ]
+    {
+      "name": "Bart van der Schoor",
+      "url": "https://github.com/Bartvds"
+    }
+  ],
+  "license": {
+    "type": "MIT",
+    "url": "https://raw.github.com/pixelbutler/pixelbutler/master/LICENSE-MIT"
+  },
+  "typescript": {
+    "definition": "./build/pixelbutler.d.ts"
+  },
+  "main": "./dist/pixelbutler.js",
+  "ignore": [
+    ".*",
+    "*.txt",
+    "*.tgz",
+    "*.log",
+    "tsd.json",
+    "tslint.json",
+    "build",
+    "demo",
+    "scratch",
+    "Gruntfile.js",
+    "node_modules",
+    "src",
+    "tmp",
+    "typings"
+  ]
 }

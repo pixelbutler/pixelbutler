@@ -11,9 +11,6 @@ The canvas rendering ensures up-scaling with 100% crispy pixels while the WebGL 
 pixelbutler is especially suited for 32x32 pixel micro games on large screens or classic 320x240 gaming.
 
 
-Work-in-progress pre-release :sunglasses:
-
-
 ## Demo
 
 Usage examples and demo gallery can be found on [pixelbutler.github.io/pixelbutler](https://pixelbutler.github.io/pixelbutler/)
@@ -21,33 +18,33 @@ Usage examples and demo gallery can be found on [pixelbutler.github.io/pixelbutl
 
 ## Get the code
 
-The bundles support [UMD pattern](https://github.com/umdjs/umd) and work as browser global, CommonJS and AMD module. Browserify & Webpack users can also use the npm package directly. TypeScript users can use the source using `import`'s (at some point definition files will be available too).
+The bundles support [UMD pattern](https://github.com/umdjs/umd) and work as browser global, CommonJS and AMD module. 
+
+Browserify & Webpack users can also use the npm package directly. 
+
+TypeScript users can use the source using `import`'s, or use the npm or bower packages with the `dist/pixelbutler.d.ts.` definition file.
 
 
 ### manual
 
-Take one of the files from the `./dist` folder and include it in your project.
-
-
-### npm
-
-~~The modules are also available as [npm](https://www.npmjs.org/) package for use with CommonJS enabled build systems like [browserify](https://github.com/substack/node-browserify).~~
-
-:warning: This is queued for release.
-
-````bash
-$ npm install pixelbutler
-````
+Take one of the files from the `./dist` folder and include it in your project as a `<script>`.
 
 
 ### bower
 
-~~Alternately install via [bower](https://github.com/twitter/bower) ans use a browser global or AMD module~~
-
-:warning: This is queued for release.
+Install via [bower](https://github.com/twitter/bower) and use as a browser global or AMD module.
 
 ````bash
 $ bower install pixelbutler
+````
+
+
+### npm
+
+The modules are also available as [npm](https://www.npmjs.org/) package for use with CommonJS enabled build systems like [browserify](https://github.com/substack/node-browserify).
+
+````bash
+$ npm install pixelbutler
 ````
 
 
@@ -56,9 +53,7 @@ $ bower install pixelbutler
 A simple example using the browser global:
 
 ````html
-<canvas id="gameScreen" width="640" height="480">
-    What, no canvas support? :(
-</canvas>
+<canvas id="gameScreen" width="640" height="480"></canvas>
 <script src="js/pixelbutler.js"></script>
 <script type="text/javascript">
 
@@ -96,9 +91,14 @@ A simple example using the browser global:
 ````
 For more examples [browse the demo's](https://pixelbutler.github.io/pixelbutler/).
 
+## API documentation
+
+Not yet, check the demos :sunglasses:
+
+
 ## Browser support
 
-Any modern browser that supports canvas and reasonable JS performance, and preferably WebGL capable.
+Any modern browser that supports canvas and reasonable JS performance, and preferably WebGL support.
 
 - Firefox
 - Chrome
