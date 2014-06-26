@@ -18,7 +18,7 @@
     "url": "https://raw.github.com/pixelbutler/pixelbutler/master/LICENSE-MIT"
   },
   "typescript": {
-    "definition": "./build/pixelbutler.d.ts"
+    "definition": "./dist/pixelbutler.d.ts"
   },
   "main": "./dist/pixelbutler.js",
   "ignore": [
