@@ -4,15 +4,17 @@
 
 [![Build Status](https://secure.travis-ci.org/pixelbutler/pixelbutler.svg?branch=master)](http://travis-ci.org/pixelbutler/pixelbutler) [![NPM version](https://badge.fury.io/js/pixelbutler.svg)](http://badge.fury.io/js/pixelbutler) [![Dependency Status](https://david-dm.org/pixelbutler/pixelbutler.svg)](https://david-dm.org/pixelbutler/pixelbutler) [![devDependency Status](https://david-dm.org/pixelbutler/pixelbutler/dev-status.svg)](https://david-dm.org/pixelbutler/pixelbutler#info=devDependencies)
 
-> Fast, upscaled, low-res framebuffer rendering: at your service.
+> Fast, simple, low-res framebuffer rendering: _at your service_.
 
-pixelbutler supports both a Canvas and WebGL renderer. The canvas rendering
-ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily
-at 60 frames-per-second in high resolutions. Works great on modern mobile
-devices.
+pixelbutler boasts both a Canvas and WebGL renderer. The canvas rendering
+ensures clean upscaling with 100% crispy pixels while the WebGL renderer runs
+easily at 60 FPS in high resolutions. Works great on modern mobile devices,
+too.
 
-pixelbutler was initially created for the [2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014),
-and has grown significantly in quality and capabilities since.
+pixelbutler was initially hacked together for the
+[2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014) by
+[Stephen Whitmore][sww], and has grown significantly in code quality and
+capabilities since thanks to [Bart van der Schoor][bvds].
 
 ## Installation
 
@@ -72,52 +74,52 @@ plop it into a `<script>`. See below example.
 
 ### Basics
 
-#### `$fb = new pixelbutler.Stage({ width: 120, height: 160, canvas: 'canvasId', center: true, scale: 'fit' })`
+`$fb = new pixelbutler.Stage({ width: 120, height: 160, canvas: 'canvasId', center: true, scale: 'fit' })`
 Creates a new framebuffer object with the given `width` and `height`. This
 assumes you already have a canvas element in your DOM with id `canvasId`. The
 framebuffer will stretch to fill the canvas, so selecting the correct aspect
 ratio is left up to the user. The resulting framebuffer object supports the
 following operations:
 
-#### `$fb.clear(rgb)`
+##### `$fb.clear(rgb)`
 Sets all pixels to the colour `rgb`.
 
-#### `pixelbutler.rgb(64, 128, 255)`
+##### `pixelbutler.rgb(64, 128, 255)`
 Colours take the form `{ r: 100, g: 200, b: 255 }` or `pixelbutler.rgb(100, 200, 255)`.
 Values range from `0` - `255`.
 
-#### `$fb.render()`
+##### `$fb.render()`
 Draws the state of the framebuffer to the canvas.
 
-#### `$fb.setPixel(x, y, rgb)`
+##### `$fb.setPixel(x, y, rgb)`
 Safely (ignoring any out-of-bounds coordinates for you) draws a single pixel at
 coordinates `x`,`y` of colour `rgb`.
 
 ### Shapes
-#### `$fb.drawRect(x, y, width, height, rgb)`
-#### `$fb.fillRect(x, y, width, height, rgb)`
+##### `$fb.drawRect(x, y, width, height, rgb)`
+##### `$fb.fillRect(x, y, width, height, rgb)`
 Draws a filled or unfilled rectangle at `x`,`y` with the given `width`,
 `height` and colour `rgb`.
 
-#### `$fb.drawCircle(x, y, radius, rgb)`
-#### `$fb.fillCircle(x, y, radius, rgb)`
+##### `$fb.drawCircle(x, y, radius, rgb)`
+##### `$fb.fillCircle(x, y, radius, rgb)`
 Draws a filled or unfilled circle at `x`,`y` with the given `radius` and colour
 `rgb`.
 
 ### Text
-#### `$fb.text(x, y, txt, rgb)`
+##### `$fb.text(x, y, txt, rgb)`
 pixelbutler includes a built-in low res 4x4 font that's ready to be used out of
 the box.
 
 ### Sprites
-#### `var sprite = new pixelbutler.Bitmap(width, height)`
+##### `var sprite = new pixelbutler.Bitmap(width, height)`
 Allocates a `width`x`height` offscreen buffer that functions not unlike the
 framebuffer itself.
 
-#### `sprite.setPixel(x, y, rgb)`
+##### `sprite.setPixel(x, y, rgb)`
 Does bounds checking.
 
-#### `$fb.blit(sprite, x, y, width, height, sourceX, sourceY)`
+##### `$fb.blit(sprite, x, y, width, height, sourceX, sourceY)`
 Draws a sprite to the framebuffer at the given `x`,`y` coordinates.
 
 `width` and `height` are used if present, but default to the full size of the sprite.
@@ -128,7 +130,7 @@ begins, where `(0,0)` is the top left of the image.
 ### Shaders
 pixelbutler supports software shaders!
 
-#### `$fb.shader(func)`
+##### `$fb.shader(func)`
 This runs an arbitrary function across all of the framebuffer's pixels,
 modifying the framebuffer immediately.
 
@@ -168,13 +170,13 @@ $fb.render();
 ### Utilities
 pixelbutler provides a few helper methods for manipulating colour.
 
-#### `pixelbutler.rand(n)`
+##### `pixelbutler.rand(n)`
 Generates a random integer between `0` and `n`.
 
-#### `pixelbutler.rgb2hsv(rgb)`
+##### `pixelbutler.rgb2hsv(rgb)`
 Converts a `rgb` value to an `hsv` value.
 
-#### `pixelbutler.hsv2rgb(hsv)`
+##### `pixelbutler.hsv2rgb(hsv)`
 Converts an `hsv` value to an `rgb` value.
 
 ## Browser support
@@ -205,33 +207,33 @@ To regenerate the bundles use the following steps:
 
 2) Make sure you have the global grunt command:
 
-````bash
+```bash
 $ npm install grunt-cli -g
-````
+```
 
 4) Install development dependencies from npm:
 
-````bash
+```bash
 $ npm install
-````
+```
 
 5) Rebuild bundles using grunt:
 
-````bash
+```bash
 $ grunt build
-````
+```
 
 6) ~~Watch tasks to auto-build during development:~~
 
-````bash
+```bash
 $ grunt watch
-````
+```
 
 7) Run a local test server for the demo's and tests:
 
-````bash
+```bash
 $ grunt server
-````
+```
 
 See the `Gruntfile.js` and `$ grunt --help` for additional commands.
 
@@ -243,7 +245,10 @@ to run `grunt test` before sending a pull request.
 
 ## License
 
-Copyright (c) 2014 [Stephen Whitmore](https://github.com/noffle) &
-[Bart van der Schoor](https://github.com/Bartvds)
+Copyright (c) 2014 [Stephen Whitmore][sww] & [Bart van der Schoor][bvds]
 
 Licensed under the MIT license.
+
+
+[sww]: https://github.com/noffle
+[bvds]: https://github.com/Bartvds
