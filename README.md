@@ -1,71 +1,48 @@
-<img src="https://i.imgur.com/5VZKIzo.png">
+<img src="http://www.stephenwhitmore.com/pixelbutler.png">
 
 # pixelbutler
 
 [![Build Status](https://secure.travis-ci.org/pixelbutler/pixelbutler.svg?branch=master)](http://travis-ci.org/pixelbutler/pixelbutler) [![NPM version](https://badge.fury.io/js/pixelbutler.svg)](http://badge.fury.io/js/pixelbutler) [![Dependency Status](https://david-dm.org/pixelbutler/pixelbutler.svg)](https://david-dm.org/pixelbutler/pixelbutler) [![devDependency Status](https://david-dm.org/pixelbutler/pixelbutler/dev-status.svg)](https://david-dm.org/pixelbutler/pixelbutler#info=devDependencies)
 
-> Low-res bitmap render engine for big screens
+> Fast, upscaled, low-res framebuffer rendering: at your service.
 
-The canvas rendering ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily at 60 frames-per-second in high resolutions. This works great on modern mobile devices. 
+pixelbutler supports both a Canvas and WebGL renderer. The canvas rendering
+ensures up-scaling with 100% crispy pixels while the WebGL renderer runs easily
+at 60 frames-per-second in high resolutions. Works great on modern mobile
+devices.
 
-pixelbutler is especially suited for 32x32 pixel micro games on large screens or classic 320x240 gaming.
+pixelbutler was initially created for the [2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014),
+and has grown significantly in quality and capabilities since.
 
+## Installation
 
-## Demo
+pixelbutler is available on `npm` and `bower`.
 
-Usage examples and demo gallery can be found on [pixelbutler.github.io/pixelbutler](https://pixelbutler.github.io/pixelbutler/)
+It uses [UMD](https://github.com/umdjs/umd), and will work happily as a browser
+global, or as a CommonJS or AMD module. Browserify & Webpack users can also use
+the npm package directly.
 
+TypeScript users can use the source using `import`, or by using the npm or
+bower packages with the `dist/pixelbutler.d.ts.` definition file.
 
-## Get the code
-
-The bundles support [UMD pattern](https://github.com/umdjs/umd) and work as browser global, CommonJS and AMD module. 
-
-Browserify & Webpack users can also use the npm package directly. 
-
-TypeScript users can use the source using `import`'s, or use the npm or bower packages with the `dist/pixelbutler.d.ts.` definition file.
-
-
-### manual
-
-Take one of the files from the `./dist` folder and include it in your project as a `<script>`.
-
-
-### bower
-
-Install via [bower](https://github.com/twitter/bower) and use as a browser global or AMD module.
-
-````bash
-$ bower install pixelbutler
-````
-
-
-### npm
-
-The modules are also available as [npm](https://www.npmjs.org/) package for use with CommonJS enabled build systems like [browserify](https://github.com/substack/node-browserify).
-
-````bash
-$ npm install pixelbutler
-````
-
+**tl;dr** If you just want to get started, grab `dist/pixelbutler.min.js` and
+plop it into a `<script>`. See below example.
 
 ## Usage
 
-A simple example using the browser global:
+```html
+<canvas id="game" width="640" height="480"></canvas>
 
-````html
-<canvas id="gameScreen" width="640" height="480"></canvas>
 <script src="js/pixelbutler.js"></script>
-<script type="text/javascript">
 
+<script type="text/javascript">
     var $pb = new pixelbutler.Stage({
-        // size of the pixel buffer
         width: 160,
         height: 120,
-        // id of the canvas element
-        canvas: 'gameScreen'
+        canvas: 'game'
     });
 
-    // preset some colors
+    // colours are in RGB format as a map with keys 'r', 'g', and 'b'.
     var red = {r: 255, g: 0, b: 0};
     var green = {r: 0, g: 255, b: 0};
     var blue = {r: 0, g: 0, b: 255};
@@ -86,32 +63,141 @@ A simple example using the browser global:
 
         $pb.render();
     }, 30);
-    
 </script>
-````
-For more examples [browse the demo's](https://pixelbutler.github.io/pixelbutler/).
+```
 
-## API documentation
+[Browse more examples](https://pixelbutler.github.io/pixelbutler/)!
 
-Not yet, check the demos :sunglasses:
+## API
 
+### Basics
+
+#### `$fb = new pixelbutler.Stage({ width: 120, height: 160, canvas: 'canvasId', center: true, scale: 'fit' })`
+Creates a new framebuffer object with the given `width` and `height`. This
+assumes you already have a canvas element in your DOM with id `canvasId`. The
+framebuffer will stretch to fill the canvas, so selecting the correct aspect
+ratio is left up to the user. The resulting framebuffer object supports the
+following operations:
+
+#### `$fb.clear(rgb)`
+Sets all pixels to the colour `rgb`.
+
+#### `pixelbutler.rgb(64, 128, 255)`
+Colours take the form `{ r: 100, g: 200, b: 255 }` or `pixelbutler.rgb(100, 200, 255)`.
+Values range from `0` - `255`.
+
+#### `$fb.render()`
+Draws the state of the framebuffer to the canvas.
+
+#### `$fb.setPixel(x, y, rgb)`
+Safely (ignoring any out-of-bounds coordinates for you) draws a single pixel at
+coordinates `x`,`y` of colour `rgb`.
+
+### Shapes
+#### `$fb.drawRect(x, y, width, height, rgb)`
+#### `$fb.fillRect(x, y, width, height, rgb)`
+Draws a filled or unfilled rectangle at `x`,`y` with the given `width`,
+`height` and colour `rgb`.
+
+#### `$fb.drawCircle(x, y, radius, rgb)`
+#### `$fb.fillCircle(x, y, radius, rgb)`
+Draws a filled or unfilled circle at `x`,`y` with the given `radius` and colour
+`rgb`.
+
+### Text
+#### `$fb.text(x, y, txt, rgb)`
+pixelbutler includes a built-in low res 4x4 font that's ready to be used out of
+the box.
+
+### Sprites
+#### `var sprite = new pixelbutler.Bitmap(width, height)`
+Allocates a `width`x`height` offscreen buffer that functions not unlike the
+framebuffer itself.
+
+#### `sprite.setPixel(x, y, rgb)`
+Does bounds checking.
+
+#### `$fb.blit(sprite, x, y, width, height, sourceX, sourceY)`
+Draws a sprite to the framebuffer at the given `x`,`y` coordinates.
+
+`width` and `height` are used if present, but default to the full size of the sprite.
+
+`sourceX` and `sourceY` refer to where within the source sprite the blit
+begins, where `(0,0)` is the top left of the image.
+
+### Shaders
+pixelbutler supports software shaders!
+
+#### `$fb.shader(func)`
+This runs an arbitrary function across all of the framebuffer's pixels,
+modifying the framebuffer immediately.
+
+The function provided should have the form `function(x, y, rgb)`. Its return
+value is the final colour the pixel at `x`,`y` will take.
+
+e.g. grayscale shader
+```javascript
+$fb.shader(function(x, y, rgb) {
+  var hsv = pixelbutler.hsv(rgb);
+  return pixelbutler.rgb(hsv[0], 0, hsv[2]);
+});
+$fb.render();
+```
+
+Shaders can also be chained, creating pipelines.
+
+```javascript
+var invert = function(x, y, rgb) {
+  return pixelbutler.rgb(255-rgb[0], 255-rgb[1], 255-rgb[2]);
+};
+
+var halfBrightness = function(x, y, rgb) {
+  var hsv = pixelbutler.rgb2hsv(rgb);
+  hsv[2] *= 0.5;
+  return pixelbutler.hsv2rgb(hsv);
+}
+
+var pipeline = function(x, y, rgb) {
+  return halfBrightness(x, y, invert(x, y, rgb));
+};
+
+$fb.shader(pipeline);
+$fb.render();
+```
+
+### Utilities
+pixelbutler provides a few helper methods for manipulating colour.
+
+#### `pixelbutler.rand(n)`
+Generates a random integer between `0` and `n`.
+
+#### `pixelbutler.rgb2hsv(rgb)`
+Converts a `rgb` value to an `hsv` value.
+
+#### `pixelbutler.hsv2rgb(hsv)`
+Converts an `hsv` value to an `rgb` value.
 
 ## Browser support
 
-Any modern browser that supports canvas and reasonable JS performance, and preferably WebGL support.
+Any modern browser that supports canvas and reasonable JS performance, and
+preferably WebGL support.
 
 - Firefox
 - Chrome
 - Safari
 - IE >= 10
 
-Pixelbutler also runs well on WebGL capable modern mobile devices if the CPU load is not too crazy (eg: no PerlinNoise or shader frenzy). Tested on Chrome & Firefox Mobile on Samsung Galaxy S3.
-
+pixelbutler also runs well on WebGL capable modern mobile devices if the CPU
+load is not too crazy (eg: no PerlinNoise or massive shaders). Tested on Chrome
+& Firefox Mobile on Samsung Galaxy S3.
 
 ## Development
 
-The project is written in [TypeScript](http://typescriptlang.org), and build for browsers using [grunt](http://gruntjs.com) and [webpack](https://github.com/webpack/webpack). Development tools run on [node.js](http://nodejs.org/) and are pulled from [npm](https://www.npmjs.org/).
-
+The project is written in [TypeScript](http://typescriptlang.org), and built
+for browsers using [grunt](http://gruntjs.com) and
+[webpack](https://github.com/webpack/webpack). Development tools run on
+[node.js](http://nodejs.org/) and are pulled from
+[npm](https://www.npmjs.org/).
 
 To regenerate the bundles use the following steps:
 
@@ -121,7 +207,7 @@ To regenerate the bundles use the following steps:
 
 ````bash
 $ npm install grunt-cli -g
-```` 
+````
 
 4) Install development dependencies from npm:
 
@@ -152,11 +238,12 @@ See the `Gruntfile.js` and `$ grunt --help` for additional commands.
 
 ## Contributions
 
-They are very welcome. Try to stay idiomatic and make sure you run `grunt test` before you send a pull request.
-
+..are very welcome. Try to stay consistent with existing style, and make sure
+to run `grunt test` before sending a pull request.
 
 ## License
 
-Copyright (c) 2014 [Stephen Whitmore](https://github.com/noffle) & [Bart van der Schoor](https://github.com/Bartvds)
+Copyright (c) 2014 [Stephen Whitmore](https://github.com/noffle) &
+[Bart van der Schoor](https://github.com/Bartvds)
 
 Licensed under the MIT license.
