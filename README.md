@@ -6,7 +6,7 @@
 
 > Fast, simple, low-res framebuffer rendering: _at your service_.
 
-pixelbutler boasts both a Canvas and WebGL renderer. The canvas rendering
+pixelbutler features both a Canvas and WebGL renderer. The canvas rendering
 ensures clean upscaling with 100% crispy pixels while the WebGL renderer runs
 easily at 60 FPS in high resolutions. Works great on modern mobile devices,
 too.
@@ -20,17 +20,14 @@ capabilities since thanks to [Bart van der Schoor][bvds].
 
 pixelbutler is available on `npm` and `bower`.
 
-It uses [UMD](https://github.com/umdjs/umd), and will work happily as a browser
-global, or as a CommonJS or AMD module. Browserify & Webpack users can also use
-the npm package directly.
+Since it uses [UMD](https://github.com/umdjs/umd), it will happily work as a
+browser global, or as a CommonJS or AMD module. Browserify & Webpack users can
+also use the npm package directly.
 
 TypeScript users can use the source using `import`, or by using the npm or
 bower packages with the `dist/pixelbutler.d.ts.` definition file.
 
-**tl;dr** If you just want to get started, grab `dist/pixelbutler.min.js` and
-plop it into a `<script>`. See below example.
-
-## Usage
+## Quick 'n Easy Usage
 
 ```html
 <canvas id="game" width="640" height="480"></canvas>
@@ -61,7 +58,7 @@ plop it into a `<script>`. See below example.
             $pb.setPixel(pixelbutler.rand($pb.width), pixelbutler.rand($pb.height), red);
         }
 
-        $pb.text(5, 5, "Pixelbutler is awesome", white);
+        $pb.text(5, 5, "pixelbutler: serving you awesome", white);
 
         $pb.render();
     }, 30);
@@ -72,9 +69,14 @@ plop it into a `<script>`. See below example.
 
 ## API
 
-### Basics
+### Colours
+##### `pixelbutler.rgb(r, g, b)`
+Colours take the form `{ r: 100, g: 200, b: 255 }` or `pixelbutler.rgb(100, 200, 255)`.
 
-`$fb = new pixelbutler.Stage({ width: 120, height: 160, canvas: 'canvasId', center: true, scale: 'fit' })`
+Values range from `0` - `255`.
+
+### Basics
+##### `$fb = new pixelbutler.Stage({ width: 120, height: 160, canvas: 'canvasId', center: true, scale: 'fit' })`
 Creates a new framebuffer object with the given `width` and `height`. This
 assumes you already have a canvas element in your DOM with id `canvasId`. The
 framebuffer will stretch to fill the canvas, so selecting the correct aspect
@@ -83,10 +85,6 @@ following operations:
 
 ##### `$fb.clear(rgb)`
 Sets all pixels to the colour `rgb`.
-
-##### `pixelbutler.rgb(64, 128, 255)`
-Colours take the form `{ r: 100, g: 200, b: 255 }` or `pixelbutler.rgb(100, 200, 255)`.
-Values range from `0` - `255`.
 
 ##### `$fb.render()`
 Draws the state of the framebuffer to the canvas.
