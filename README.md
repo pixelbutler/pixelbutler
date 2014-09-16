@@ -177,20 +177,6 @@ Converts a `rgb` value to an `hsv` value.
 ##### `pixelbutler.hsv2rgb(hsv)`
 Converts an `hsv` value to an `rgb` value.
 
-## Browser support
-
-Any modern browser that supports canvas and reasonable JS performance, and
-preferably WebGL support.
-
-- Firefox
-- Chrome
-- Safari
-- IE >= 10
-
-pixelbutler also runs well on WebGL capable modern mobile devices if the CPU
-load is not too crazy (eg: no PerlinNoise or massive shaders). Tested on Chrome
-& Firefox Mobile on Samsung Galaxy S3.
-
 ## Development
 
 The project is written in [TypeScript](http://typescriptlang.org), and built
