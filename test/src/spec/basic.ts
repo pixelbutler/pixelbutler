@@ -49,5 +49,5 @@ describe('API', () => {
 		assert.isFunction(pb.ticker.interval, 'interval');
 		assert.isFunction(pb.ticker.request, 'request');
 	});
-	
+
 });
