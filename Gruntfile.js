@@ -115,7 +115,7 @@ module.exports = function (grunt) {
 				]
 			},
 			def: {
-				src: 'build/index.d.ts',
+				src: 'build/pixelbutler.d.ts',
 				dest: 'dist/pixelbutler.d.ts'
 			}
 		},
@@ -150,13 +150,14 @@ module.exports = function (grunt) {
 		},
 		ts_clean: {
 			build: {
-				src: ['./build/**', '!./build/index.d.ts'],
+				src: ['./build/**', '!./build/pixelbutler.d.ts'],
 				dot: true
 			}
 		},
 		dts_bundle: {
 			index: {
 				options: {
+					removeTypings: true,
 					name: 'pixelbutler',
 					main: 'build/index.d.ts'
 				}
@@ -257,7 +258,13 @@ module.exports = function (grunt) {
 				list: [
 					'./dist/pixelbutler.js',
 					'./dist/pixelbutler.d.ts',
-					'./dist/pixelbutler.min.js'
+					'./dist/pixelbutler.min.js',
+				]
+			},
+			build: {
+				list: [
+					'./build/index.js',
+					'./build/pixelbutler.d.ts'
 				]
 			}
 		},
@@ -310,6 +317,7 @@ module.exports = function (grunt) {
 		'copy:demo',
 		'copy:def',
 		'verify:demo',
+		'verify:build',
 		'verify:dist'
 	]);
 

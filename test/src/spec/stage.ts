@@ -24,8 +24,6 @@ describe('Stage', () => {
 		// var data = helper.encodeBitmapData(stage);
 
 		// console.log(helper.decodeBitmapData(data));
-
-		console.log('suup?');
 		done();
 	});
 

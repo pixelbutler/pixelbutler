@@ -30,12 +30,9 @@
     "tslint.json",
     "build",
     "demo",
-    "test",
-    "scratch",
-    "Gruntfile.js",
-    "node_modules",
     "src",
-    "tmp",
+    "test",
     "typings"
+    "Gruntfile.js"
   ]
 }
