@@ -22,7 +22,7 @@ class Stage extends Bitmap {
 
 	constructor(opts: IOptions) {
 		super((opts.width || 32), (opts.height || 32), !!opts.transparent);
-	
+
 		// grab canvas stuff
 		this.canvas = <HTMLCanvasElement>(typeof opts.canvas === 'string' ? document.getElementById(opts.canvas) : opts.canvas);
 		if (!this.canvas) {
