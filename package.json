@@ -55,7 +55,7 @@
     "grunt-contrib-copy": "^0.5.0",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-dts-bundle": "^0.1.0",
+    "grunt-dts-bundle": "^0.2.0",
     "grunt-gh-pages": "^0.9.1",
     "grunt-mocha-slimer": "0.0.2",
     "grunt-ts": "^1.12.1",

@@ -890,7 +890,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
-    var browser = __webpack_require__(22);
+    var browser = __webpack_require__(23);
     function assertMode(scaleMode) {
         if ((typeof scaleMode === 'number' && scaleMode > 0) || scaleMode === 'max' || scaleMode === 'fit' || scaleMode === 'none') {
             return;
@@ -1078,7 +1078,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
-    var xhr = __webpack_require__(25);
+    var xhr = __webpack_require__(26);
     var TextLoader = (function () {
         function TextLoader(url) {
             this.url = url;
@@ -1134,7 +1134,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
     'use strict';
     var Bitmap = __webpack_require__(2);
-    var SpriteSheet = __webpack_require__(23);
+    var SpriteSheet = __webpack_require__(22);
     var ImageDataLoader = __webpack_require__(12);
     var SpriteSheetLoader = (function () {
         function SpriteSheetLoader(url, opts, useAlpha) {
@@ -1786,23 +1786,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
-    function getViewport() {
-        var e = window;
-        var a = 'inner';
-        if (!('innerWidth' in window)) {
-            a = 'client';
-            e = document.documentElement || document.body;
-        }
-        return { width: e[a + 'Width'], height: e[a + 'Height'] };
-    }
-    exports.getViewport = getViewport;
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-    'use strict';
     var SpriteSheet = (function () {
         function SpriteSheet(width, height) {
             this.sprites = [];
@@ -1827,11 +1810,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+    'use strict';
+    function getViewport() {
+        var e = window;
+        var a = 'inner';
+        if (!('innerWidth' in window)) {
+            a = 'client';
+            e = document.documentElement || document.body;
+        }
+        return { width: e[a + 'Width'], height: e[a + 'Height'] };
+    }
+    exports.getViewport = getViewport;
+
+
+/***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
-    var Char = __webpack_require__(26);
+    var Char = __webpack_require__(25);
     var Font = (function () {
         function Font(name, height, data) {
             var _this = this;
@@ -1849,140 +1849,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-    var window = __webpack_require__(27)
-    var once = __webpack_require__(28)
-
-    var messages = {
-        "0": "Internal XMLHttpRequest Error",
-        "4": "4xx Client Error",
-        "5": "5xx Server Error"
-    }
-
-    var XHR = window.XMLHttpRequest || noop
-    var XDR = "withCredentials" in (new XHR()) ?
-            window.XMLHttpRequest : window.XDomainRequest
-
-    module.exports = createXHR
-
-    function createXHR(options, callback) {
-        if (typeof options === "string") {
-            options = { uri: options }
-        }
-
-        options = options || {}
-        callback = once(callback)
-
-        var xhr = options.xhr || null
-
-        if (!xhr && options.cors) {
-            xhr = new XDR()
-        } else if (!xhr) {
-            xhr = new XHR()
-        }
-
-        var uri = xhr.url = options.uri || options.url;
-        var method = xhr.method = options.method || "GET"
-        var body = options.body || options.data
-        var headers = xhr.headers = options.headers || {}
-        var sync = !!options.sync
-        var isJson = false
-        var key
-
-        if ("json" in options) {
-            isJson = true
-            headers["Accept"] = "application/json"
-            if (method !== "GET" && method !== "HEAD") {
-                headers["Content-Type"] = "application/json"
-                body = JSON.stringify(options.json)
-            }
-        }
-
-        xhr.onreadystatechange = readystatechange
-        xhr.onload = load
-        xhr.onerror = error
-        // IE9 must have onprogress be set to a unique function.
-        xhr.onprogress = function () {
-            // IE must die
-        }
-        // hate IE
-        xhr.ontimeout = noop
-        xhr.open(method, uri, !sync)
-        if (options.cors) {
-            xhr.withCredentials = true
-        }
-        // Cannot set timeout with sync request
-        if (!sync) {
-            xhr.timeout = "timeout" in options ? options.timeout : 5000
-        }
-
-        if (xhr.setRequestHeader) {
-            for(key in headers){
-                if(headers.hasOwnProperty(key)){
-                    xhr.setRequestHeader(key, headers[key])
-                }
-            }
-        }
-
-        if ("responseType" in options) {
-            xhr.responseType = options.responseType
-        }
-
-        xhr.send(body)
-
-        return xhr
-
-        function readystatechange() {
-            if (xhr.readyState === 4) {
-                load()
-            }
-        }
-
-        function load() {
-            var error = null
-            var status = xhr.statusCode = xhr.status
-            // Chrome with requestType=blob throws errors arround when even testing access to responseText
-            var body = null
-
-            if (xhr.response) {
-                body = xhr.body = xhr.response
-            } else if (xhr.responseType === 'text' || xhr.responseType === '') {
-                body = xhr.body = xhr.responseText || xhr.responseXML
-            }
-
-            if (status === 1223) {
-                status = 204
-            }
-
-            if (status === 0 || (status >= 400 && status < 600)) {
-                var message = (typeof body === "string" ? body : false) ||
-                    messages[String(xhr.status).charAt(0)]
-                error = new Error(message)
-
-                error.statusCode = xhr.status
-            }
-
-            if (isJson) {
-                try {
-                    body = xhr.body = JSON.parse(body)
-                } catch (e) {}
-            }
-
-            callback(error, xhr, body)
-        }
-
-        function error(evt) {
-            callback(evt, xhr)
-        }
-    }
-
-
-    function noop() {}
-
-
-/***/ },
-/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
     'use strict';
@@ -2004,21 +1870,241 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+    var window = __webpack_require__(27)
+    var once = __webpack_require__(29)
+    var parseHeaders = __webpack_require__(28)
+
+    var messages = {
+        "0": "Internal XMLHttpRequest Error",
+        "4": "4xx Client Error",
+        "5": "5xx Server Error"
+    }
+
+    var XHR = window.XMLHttpRequest || noop
+    var XDR = "withCredentials" in (new XHR()) ? XHR : window.XDomainRequest
+
+    module.exports = createXHR
+
+    function createXHR(options, callback) {
+        if (typeof options === "string") {
+            options = { uri: options }
+        }
+
+        options = options || {}
+        callback = once(callback)
+
+        var xhr = options.xhr || null
+
+        if (!xhr) {
+            if (options.cors || options.useXDR) {
+                xhr = new XDR()
+            }else{
+                xhr = new XHR()
+            }
+        }
+
+        var uri = xhr.url = options.uri || options.url
+        var method = xhr.method = options.method || "GET"
+        var body = options.body || options.data
+        var headers = xhr.headers = options.headers || {}
+        var sync = !!options.sync
+        var isJson = false
+        var key
+        var load = options.response ? loadResponse : loadXhr
+
+        if ("json" in options) {
+            isJson = true
+            headers["Accept"] = "application/json"
+            if (method !== "GET" && method !== "HEAD") {
+                headers["Content-Type"] = "application/json"
+                body = JSON.stringify(options.json)
+            }
+        }
+
+        xhr.onreadystatechange = readystatechange
+        xhr.onload = load
+        xhr.onerror = error
+        // IE9 must have onprogress be set to a unique function.
+        xhr.onprogress = function () {
+            // IE must die
+        }
+        // hate IE
+        xhr.ontimeout = noop
+        xhr.open(method, uri, !sync)
+                                        //backward compatibility
+        if (options.withCredentials || (options.cors && options.withCredentials !== false)) {
+            xhr.withCredentials = true
+        }
+
+        // Cannot set timeout with sync request
+        if (!sync) {
+            xhr.timeout = "timeout" in options ? options.timeout : 5000
+        }
+
+        if (xhr.setRequestHeader) {
+            for(key in headers){
+                if(headers.hasOwnProperty(key)){
+                    xhr.setRequestHeader(key, headers[key])
+                }
+            }
+        } else if (options.headers) {
+            throw new Error("Headers cannot be set on an XDomainRequest object")
+        }
+
+        if ("responseType" in options) {
+            xhr.responseType = options.responseType
+        }
+        
+        if ("beforeSend" in options && 
+            typeof options.beforeSend === "function"
+        ) {
+            options.beforeSend(xhr)
+        }
+
+        xhr.send(body)
+
+        return xhr
+
+        function readystatechange() {
+            if (xhr.readyState === 4) {
+                load()
+            }
+        }
+
+        function getBody() {
+            // Chrome with requestType=blob throws errors arround when even testing access to responseText
+            var body = null
+
+            if (xhr.response) {
+                body = xhr.response
+            } else if (xhr.responseType === 'text' || !xhr.responseType) {
+                body = xhr.responseText || xhr.responseXML
+            }
+
+            if (isJson) {
+                try {
+                    body = JSON.parse(body)
+                } catch (e) {}
+            }
+
+            return body
+        }
+
+        function getStatusCode() {
+            return xhr.status === 1223 ? 204 : xhr.status
+        }
+
+        // if we're getting a none-ok statusCode, build & return an error
+        function errorFromStatusCode(status) {
+            var error = null
+            if (status === 0 || (status >= 400 && status < 600)) {
+                var message = (typeof body === "string" ? body : false) ||
+                    messages[String(status).charAt(0)]
+                error = new Error(message)
+                error.statusCode = status
+            }
+
+            return error
+        }
+
+        // will load the data & process the response in a special response object
+        function loadResponse() {
+            var status = getStatusCode()
+            var error = errorFromStatusCode(status)
+            var response = {
+                body: getBody(),
+                statusCode: status,
+                statusText: xhr.statusText,
+                raw: xhr
+            }
+            if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
+                response.headers = parseHeaders(xhr.getAllResponseHeaders())
+            } else {
+                response.headers = {}
+            }
+
+            callback(error, response, response.body)
+        }
+
+        // will load the data and add some response properties to the source xhr
+        // and then respond with that
+        function loadXhr() {
+            var status = getStatusCode()
+            var error = errorFromStatusCode(status)
+
+            xhr.status = xhr.statusCode = status
+            xhr.body = getBody()
+            xhr.headers = parseHeaders(xhr.getAllResponseHeaders())
+
+            callback(error, xhr, xhr.body)
+        }
+
+        function error(evt) {
+            callback(evt, xhr)
+        }
+    }
+
+
+    function noop() {}
+
+
+/***/ },
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
     /* WEBPACK VAR INJECTION */(function(global) {if (typeof window !== "undefined") {
-        module.exports = window
+        module.exports = window;
     } else if (typeof global !== "undefined") {
-        module.exports = global
+        module.exports = global;
+    } else if (typeof self !== "undefined"){
+        module.exports = self;
     } else {
-        module.exports = {}
+        module.exports = {};
     }
     
     /* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 /* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+    var trim = __webpack_require__(31)
+      , forEach = __webpack_require__(30)
+      , isArray = function(arg) {
+          return Object.prototype.toString.call(arg) === '[object Array]';
+        }
+
+    module.exports = function (headers) {
+      if (!headers)
+        return {}
+
+      var result = {}
+
+      forEach(
+          trim(headers).split('\n')
+        , function (row) {
+            var index = row.indexOf(':')
+              , key = trim(row.slice(0, index)).toLowerCase()
+              , value = trim(row.slice(index + 1))
+
+            if (typeof(result[key]) === 'undefined') {
+              result[key] = value
+            } else if (isArray(result[key])) {
+              result[key].push(value)
+            } else {
+              result[key] = [ result[key], value ]
+            }
+          }
+      )
+
+      return result
+    }
+
+/***/ },
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
     module.exports = once
@@ -2042,6 +2128,99 @@ return /******/ (function(modules) { // webpackBootstrap
     }
 
 
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+    var isFunction = __webpack_require__(32)
+
+    module.exports = forEach
+
+    var toString = Object.prototype.toString
+    var hasOwnProperty = Object.prototype.hasOwnProperty
+
+    function forEach(list, iterator, context) {
+        if (!isFunction(iterator)) {
+            throw new TypeError('iterator must be a function')
+        }
+
+        if (arguments.length < 3) {
+            context = this
+        }
+        
+        if (toString.call(list) === '[object Array]')
+            forEachArray(list, iterator, context)
+        else if (typeof list === 'string')
+            forEachString(list, iterator, context)
+        else
+            forEachObject(list, iterator, context)
+    }
+
+    function forEachArray(array, iterator, context) {
+        for (var i = 0, len = array.length; i < len; i++) {
+            if (hasOwnProperty.call(array, i)) {
+                iterator.call(context, array[i], i, array)
+            }
+        }
+    }
+
+    function forEachString(string, iterator, context) {
+        for (var i = 0, len = string.length; i < len; i++) {
+            // no such thing as a sparse string.
+            iterator.call(context, string.charAt(i), i, string)
+        }
+    }
+
+    function forEachObject(object, iterator, context) {
+        for (var k in object) {
+            if (hasOwnProperty.call(object, k)) {
+                iterator.call(context, object[k], k, object)
+            }
+        }
+    }
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+    
+    exports = module.exports = trim;
+
+    function trim(str){
+      return str.replace(/^\s*|\s*$/g, '');
+    }
+
+    exports.left = function(str){
+      return str.replace(/^\s*/, '');
+    };
+
+    exports.right = function(str){
+      return str.replace(/\s*$/, '');
+    };
+
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+    module.exports = isFunction
+
+    var toString = Object.prototype.toString
+
+    function isFunction (fn) {
+      var string = toString.call(fn)
+      return string === '[object Function]' ||
+        (typeof fn === 'function' && string !== '[object RegExp]') ||
+        (typeof window !== 'undefined' &&
+         // IE8 and below
+         (fn === window.setTimeout ||
+          fn === window.alert ||
+          fn === window.confirm ||
+          fn === window.prompt))
+    };
+
+
 /***/ }
 /******/ ])
-})
+});

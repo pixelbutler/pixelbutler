@@ -159,7 +159,8 @@ module.exports = function (grunt) {
 				options: {
 					removeTypings: true,
 					name: 'pixelbutler',
-					main: 'build/index.d.ts'
+					main: 'build/index.d.ts',
+					out: 'pixelbutler.d.ts'
 				}
 			}
 		},
@@ -382,7 +383,6 @@ module.exports = function (grunt) {
 		});
 
 		if (missing.length > 0) {
-			grunt.log.writeln('');
 			missing.forEach(function (file) {
 				grunt.log.error(file);
 			});
