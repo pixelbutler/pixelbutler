@@ -224,8 +224,11 @@ See the `Gruntfile.js` and `$ grunt --help` for additional commands.
 ## Showcase
 
 [Coffee Box](http://gamejolt.com/games/platformer/coffee-box/27476/) by Christopher L Hall
+
 [Orbit: Omega](http://gamejolt.com/games/arcade/orbit-omega/27160/) by Andrew Wang
+
 [Eat To Live](http://gamejolt.com/games/strategy-sim/eattolive/26448/) by Jeremy Robert Anderson
+
 [Peggle Demake](https://gamblore.net/www/demake/) by Adam Metcalf
 
 
