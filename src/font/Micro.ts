@@ -7,7 +7,7 @@ import Font = require('../core/Font');
  * Based off of a Gist of a 4x4 font by Martin Holzhauer:
  * https://gist.github.com/woodworker/7696835
  *
- * Features fairly significant modifications to fit characters into smaller horizontal space by @noffle
+ * Features fairly significant modifications to fit characters into smaller horizontal space by @hackergrrl
  *
  * Expanded with numerals and special characters by @bartvds
  */

@@ -1,4 +1,4 @@
-<img src="http://www.stephenwhitmore.com/pixelbutler.png">
+<img src="http://kira.solar/pub/pixelbutler.png">
 
 # pixelbutler
 
@@ -13,7 +13,7 @@ too.
 
 pixelbutler was initially hacked together for the
 [2014 lowrezjam](http://jams.gamejolt.io/lowrezjam2014) by
-[Stephen Whitmore][sww], and has grown significantly in code quality and
+[Kira Oakley][kira], and has grown significantly in code quality and
 capabilities since thanks to [Bart van der Schoor][bvds].
 
 ## Installation
@@ -239,10 +239,10 @@ to run `grunt test` before sending a pull request.
 
 ## License
 
-Copyright (c) 2014 [Stephen Whitmore][sww] & [Bart van der Schoor][bvds]
+Copyright (c) 2014 [Kira Oakley][kira] & [Bart van der Schoor][bvds]
 
 Licensed under the MIT license.
 
 
-[sww]: https://github.com/noffle
+[kira]: https://github.com/hackergrrl
 [bvds]: https://github.com/Bartvds
