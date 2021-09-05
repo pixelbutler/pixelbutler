@@ -35,33 +35,33 @@ bower packages with the `dist/pixelbutler.d.ts.` definition file.
 <script src="js/pixelbutler.js"></script>
 
 <script type="text/javascript">
-    var $pb = new pixelbutler.Stage({
+    var stage = new pixelbutler.Stage({
         width: 160,
         height: 120,
         canvas: 'game'
-    });
+    })
 
     // colours are in RGB format as a map with keys 'r', 'g', and 'b'.
-    var red = {r: 255, g: 0, b: 0};
-    var green = {r: 0, g: 255, b: 0};
-    var blue = {r: 0, g: 0, b: 255};
-    var black = {r: 0, g: 0, b: 0};
-    var white = {r: 255, g: 255, b: 255};
+    var red = {r: 255, g: 0, b: 0}
+    var green = {r: 0, g: 255, b: 0}
+    var blue = {r: 0, g: 0, b: 255}
+    var black = {r: 0, g: 0, b: 0}
+    var white = {r: 255, g: 255, b: 255}
 
     setInterval(function () {
-        $pb.clear(black);
+        stage.clear(black)
 
-        $pb.fillCircle(80, 60, 48, green);
-        $pb.fillRect(50, 30, 60, 60, blue);
+        stage.fillCircle(80, 60, 48, green)
+        stage.fillRect(50, 30, 60, 60, blue)
 
         for (var i = 0; i < 15; i++) {
-            $pb.setPixel(pixelbutler.rand($pb.width), pixelbutler.rand($pb.height), red);
+            stage.setPixel(pixelbutler.rand(stage.width), pixelbutler.rand(stage.height), red)
         }
 
-        $pb.text(5, 5, "pixelbutler: serving you awesome", white);
+        stage.text(5, 5, "pixelbutler: serving you awesome", white)
 
-        $pb.render();
-    }, 30);
+        stage.render()
+    }, 30)
 </script>
 ```
 
@@ -76,36 +76,36 @@ Colours take the form `{ r: 100, g: 200, b: 255 }` or `pixelbutler.rgb(100, 200,
 Values range from `0` - `255`.
 
 ### Basics
-##### `$fb = new pixelbutler.Stage({ width: 120, height: 160, canvas: 'canvasId', center: true, scale: 'fit' })`
+##### `stage = new pixelbutler.Stage({ width: 120, height: 160, canvas: 'canvasId', center: true, scale: 'fit' })`
 Creates a new framebuffer object with the given `width` and `height`. This
 assumes you already have a canvas element in your DOM with id `canvasId`. The
 framebuffer will stretch to fill the canvas, so selecting the correct aspect
 ratio is left up to the user. The resulting framebuffer object supports the
 following operations:
 
-##### `$fb.clear(rgb)`
+##### `stage.clear(rgb)`
 Sets all pixels to the colour `rgb`.
 
-##### `$fb.render()`
+##### `stage.render()`
 Draws the state of the framebuffer to the canvas.
 
-##### `$fb.setPixel(x, y, rgb)`
+##### `stage.setPixel(x, y, rgb)`
 Safely (ignoring any out-of-bounds coordinates for you) draws a single pixel at
 coordinates `x`,`y` of colour `rgb`.
 
 ### Shapes
-##### `$fb.drawRect(x, y, width, height, rgb)`
-##### `$fb.fillRect(x, y, width, height, rgb)`
+##### `stage.drawRect(x, y, width, height, rgb)`
+##### `stage.fillRect(x, y, width, height, rgb)`
 Draws a filled or unfilled rectangle at `x`,`y` with the given `width`,
 `height` and colour `rgb`.
 
-##### `$fb.drawCircle(x, y, radius, rgb)`
-##### `$fb.fillCircle(x, y, radius, rgb)`
+##### `stage.drawCircle(x, y, radius, rgb)`
+##### `stage.fillCircle(x, y, radius, rgb)`
 Draws a filled or unfilled circle at `x`,`y` with the given `radius` and colour
 `rgb`.
 
 ### Text
-##### `$fb.text(x, y, txt, rgb)`
+##### `stage.text(x, y, txt, rgb)`
 pixelbutler includes a built-in low res 4x4 font that's ready to be used out of
 the box.
 
@@ -117,7 +117,7 @@ framebuffer itself.
 ##### `sprite.setPixel(x, y, rgb)`
 Does bounds checking.
 
-##### `$fb.blit(sprite, x, y, width, height, sourceX, sourceY)`
+##### `stage.blit(sprite, x, y, width, height, sourceX, sourceY)`
 Draws a sprite to the framebuffer at the given `x`,`y` coordinates.
 
 `width` and `height` are used if present, but default to the full size of the sprite.
@@ -128,7 +128,7 @@ begins, where `(0,0)` is the top left of the image.
 ### Shaders
 pixelbutler supports software shaders!
 
-##### `$fb.shader(func)`
+##### `stage.shader(func)`
 This runs an arbitrary function across all of the framebuffer's pixels,
 modifying the framebuffer immediately.
 
@@ -137,32 +137,32 @@ value is the final colour the pixel at `x`,`y` will take.
 
 e.g. grayscale shader
 ```javascript
-$fb.shader(function(x, y, rgb) {
-  var hsv = pixelbutler.hsv(rgb);
-  return pixelbutler.rgb(hsv[0], 0, hsv[2]);
-});
-$fb.render();
+stage.shader(function(x, y, rgb) {
+  var hsv = pixelbutler.hsv(rgb)
+  return pixelbutler.rgb(hsv[0], 0, hsv[2])
+})
+stage.render()
 ```
 
 Shaders can also be chained, creating pipelines.
 
 ```javascript
 var invert = function(x, y, rgb) {
-  return pixelbutler.rgb(255-rgb[0], 255-rgb[1], 255-rgb[2]);
-};
+  return pixelbutler.rgb(255-rgb[0], 255-rgb[1], 255-rgb[2])
+}
 
 var halfBrightness = function(x, y, rgb) {
-  var hsv = pixelbutler.rgb2hsv(rgb);
-  hsv[2] *= 0.5;
-  return pixelbutler.hsv2rgb(hsv);
+  var hsv = pixelbutler.rgb2hsv(rgb)
+  hsv[2] *= 0.5
+  return pixelbutler.hsv2rgb(hsv)
 }
 
 var pipeline = function(x, y, rgb) {
-  return halfBrightness(x, y, invert(x, y, rgb));
-};
+  return halfBrightness(x, y, invert(x, y, rgb))
+}
 
-$fb.shader(pipeline);
-$fb.render();
+stage.shader(pipeline)
+stage.render()
 ```
 
 ### Utilities
